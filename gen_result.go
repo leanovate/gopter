@@ -1,13 +1,19 @@
 package gopter
 
 type GenResult struct {
-	result interface{}
 	Labels []string
-	Sieve  func(interface{}) bool
+	result interface{}
+	sieve  func(interface{}) bool
+}
+
+func NewGenResult(result interface{}) *GenResult {
+	return &GenResult{
+		result: result,
+	}
 }
 
 func (r *GenResult) Retrieve() (interface{}, bool) {
-	if r.result != nil && r.Sieve(r.result) {
+	if r.result != nil && (r.sieve == nil || r.sieve(r.result)) {
 		return r.result, true
 	}
 	return nil, false

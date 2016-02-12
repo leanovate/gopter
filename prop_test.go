@@ -7,10 +7,10 @@ import (
 
 func TestPropPassed(t *testing.T) {
 	var called int64
-	prop := Prop(func(genParams *GenParameters) PropResult {
+	prop := Prop(func(genParams *GenParameters) *PropResult {
 		atomic.AddInt64(&called, 1)
 
-		return PropResult{
+		return &PropResult{
 			Status: PropTrue,
 		}
 	})
@@ -28,10 +28,10 @@ func TestPropPassed(t *testing.T) {
 
 func TestPropPassedMulti(t *testing.T) {
 	var called int64
-	prop := Prop(func(genParams *GenParameters) PropResult {
+	prop := Prop(func(genParams *GenParameters) *PropResult {
 		atomic.AddInt64(&called, 1)
 
-		return PropResult{
+		return &PropResult{
 			Status: PropTrue,
 		}
 	})

@@ -16,11 +16,11 @@ func (p *GenParameters) WithSize(size int) *GenParameters {
 	return &newParameters
 }
 
-func DefaultGenParameters() *GenParameters {
+var DefaultGenParameters = func() *GenParameters {
 	seed := time.Now().UnixNano()
 
 	return &GenParameters{
 		Size: 100,
 		Rng:  rand.New(rand.NewSource(seed)),
 	}
-}
+}()

@@ -2,8 +2,10 @@ package gopter
 
 import "math"
 
-type Prop func(*GenParameters) PropResult
+// Prop represent some kind of property that (drums please) can and should be checked
+type Prop func(*GenParameters) *PropResult
 
+// Check the property using specific parameters
 func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 	iterations := math.Ceil(float64(parameters.MinSuccessfulTests) / float64(parameters.Workers))
 	sizeStep := float64(parameters.MaxSize-parameters.MinSize) / (iterations * float64(parameters.Workers))
