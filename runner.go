@@ -9,6 +9,7 @@ const (
 	Proved
 	Failed
 	Exhausted
+	PropError
 )
 
 type TestResult struct {
@@ -17,9 +18,14 @@ type TestResult struct {
 	Discarded int
 }
 
+type shouldStop func() bool
+
+type worker func(int, shouldStop) *TestResult
+
 type runner struct {
-	parameters *Parameters
-	worker     func(int) *TestResult
+	sync.RWMutex
+	parameters *TestParameters
+	worker     worker
 }
 
 func (r *runner) mergeTestResults(r1, r2 *TestResult) *TestResult {
@@ -44,8 +50,11 @@ func (r *runner) mergeTestResults(r1, r2 *TestResult) *TestResult {
 }
 
 func (r *runner) runWorkers() *TestResult {
+	var stopFlag Flag
+	defer stopFlag.Set()
+
 	if r.parameters.Workers < 2 {
-		return r.worker(0)
+		return r.worker(0, stopFlag.Get)
 	}
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(r.parameters.Workers)
@@ -66,7 +75,7 @@ func (r *runner) runWorkers() *TestResult {
 	for i := 0; i < r.parameters.Workers; i++ {
 		go func() {
 			defer waitGroup.Done()
-			results <- r.worker(i)
+			results <- r.worker(i, stopFlag.Get)
 		}()
 	}
 	waitGroup.Wait()
