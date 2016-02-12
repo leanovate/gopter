@@ -7,6 +7,7 @@ type Prop func(*GenParameters) PropResult
 func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 	iterations := math.Ceil(float64(parameters.MinSuccessfulTests) / float64(parameters.Workers))
 	sizeStep := float64(parameters.MaxSize-parameters.MinSize) / (iterations * float64(parameters.Workers))
+
 	genParameters := GenParameters{
 		Rng: parameters.Rng,
 	}

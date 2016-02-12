@@ -57,10 +57,10 @@ func (r *runner) runWorkers() *CheckResult {
 		combinedResult <- combined
 	}()
 	for i := 0; i < r.parameters.Workers; i++ {
-		go func() {
+		go func(workerIdx int) {
 			defer waitGroup.Done()
-			results <- r.worker(i, stopFlag.Get)
-		}()
+			results <- r.worker(workerIdx, stopFlag.Get)
+		}(i)
 	}
 	waitGroup.Wait()
 	close(results)

@@ -12,5 +12,6 @@ const (
 
 type PropResult struct {
 	Status status
+	Args   []PropArg
 	Error  error
 }
