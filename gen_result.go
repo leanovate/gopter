@@ -1,14 +1,16 @@
 package gopter
 
 type GenResult struct {
-	Labels []string
-	result interface{}
-	sieve  func(interface{}) bool
+	Labels   []string
+	Shrinker Shrinker
+	result   interface{}
+	sieve    func(interface{}) bool
 }
 
-func NewGenResult(result interface{}) *GenResult {
+func NewGenResult(result interface{}, shrinker Shrinker) *GenResult {
 	return &GenResult{
-		result: result,
+		Shrinker: shrinker,
+		result:   result,
 	}
 }
 

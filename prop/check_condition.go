@@ -10,6 +10,15 @@ import (
 // This is what testers usually have to implement
 type CheckCondition func(...interface{}) (interface{}, error)
 
+func NewCheck1(f func(interface{}) (interface{}, error)) CheckCondition {
+	return func(args ...interface{}) (interface{}, error) {
+		if len(args) != 1 {
+			return nil, fmt.Errorf("Expected 1 argument, got %d", len(args))
+		}
+		return f(args[0])
+	}
+}
+
 func convertResult(result interface{}, err error) *gopter.PropResult {
 	if err != nil {
 		return &gopter.PropResult{

@@ -6,6 +6,6 @@ import "github.com/untoldwind/gopter"
 // Not the most exciting generator, but can be helpful from time to time
 func Const(value interface{}) gopter.Gen {
 	return func(*gopter.GenParameters) *gopter.GenResult {
-		return gopter.NewGenResult(value)
+		return gopter.NewGenResult(value, gopter.NoShrinker)
 	}
 }

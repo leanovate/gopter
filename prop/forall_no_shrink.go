@@ -6,20 +6,8 @@ import (
 	"github.com/untoldwind/gopter"
 )
 
-func noShrinkArgs(genResults []*gopter.GenResult, values []interface{}) []gopter.PropArg {
-	result := make([]gopter.PropArg, len(genResults))
-	for i, genResult := range genResults {
-		result[i] = gopter.PropArg{
-			Label:   strings.Join(genResult.Labels, ", "),
-			Arg:     values[i],
-			OrigArg: values[i],
-			Shrinks: 0,
-		}
-	}
-	return result
-}
-
 // ForAllNoShrink creates a property that requires the check condition to be true for all values
+// As the name suggests the generated values will not be shrinked if the condition falsiies
 func ForAllNoShrink(checkCondition CheckCondition, gens ...gopter.Gen) gopter.Prop {
 	return func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResults := make([]*gopter.GenResult, len(gens))
@@ -36,4 +24,17 @@ func ForAllNoShrink(checkCondition CheckCondition, gens ...gopter.Gen) gopter.Pr
 		}
 		return convertResult(checkCondition(values...)).WithArgs(noShrinkArgs(genResults, values))
 	}
+}
+
+func noShrinkArgs(genResults []*gopter.GenResult, values []interface{}) []gopter.PropArg {
+	result := make([]gopter.PropArg, len(genResults))
+	for i, genResult := range genResults {
+		result[i] = gopter.PropArg{
+			Label:   strings.Join(genResult.Labels, ", "),
+			Arg:     values[i],
+			OrigArg: values[i],
+			Shrinks: 0,
+		}
+	}
+	return result
 }
