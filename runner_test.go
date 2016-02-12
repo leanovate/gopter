@@ -3,12 +3,12 @@ package gopter
 import "testing"
 
 func TestRunnerSingleWorker(t *testing.T) {
-	parameters := DefaultTestParameters()
+	parameters := DefaultCheckParameters()
 	testRunner := &runner{
 		parameters: parameters,
-		worker: func(num int, shouldStop shouldStop) *TestResult {
-			return &TestResult{
-				Status:    Passed,
+		worker: func(num int, shouldStop shouldStop) *CheckResult {
+			return &CheckResult{
+				Status:    CheckPassed,
 				Succeeded: 1,
 				Discarded: 0,
 			}
@@ -17,7 +17,7 @@ func TestRunnerSingleWorker(t *testing.T) {
 
 	result := testRunner.runWorkers()
 
-	if result.Status != Passed ||
+	if result.Status != CheckPassed ||
 		result.Succeeded != 1 ||
 		result.Discarded != 0 {
 		t.Errorf("Invalid result: %#v", result)
@@ -25,13 +25,13 @@ func TestRunnerSingleWorker(t *testing.T) {
 }
 
 func TestRunnerParallelWorkers(t *testing.T) {
-	parameters := DefaultTestParameters()
+	parameters := DefaultCheckParameters()
 	parameters.Workers = 50
 	testRunner := &runner{
 		parameters: parameters,
-		worker: func(num int, shouldStop shouldStop) *TestResult {
-			return &TestResult{
-				Status:    Passed,
+		worker: func(num int, shouldStop shouldStop) *CheckResult {
+			return &CheckResult{
+				Status:    CheckPassed,
 				Succeeded: 10,
 				Discarded: 1,
 			}
@@ -40,7 +40,7 @@ func TestRunnerParallelWorkers(t *testing.T) {
 
 	result := testRunner.runWorkers()
 
-	if result.Status != Passed ||
+	if result.Status != CheckPassed ||
 		result.Succeeded != 500 ||
 		result.Discarded != 50 {
 		t.Errorf("Invalid result: %#v", result)

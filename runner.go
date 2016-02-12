@@ -2,54 +2,38 @@ package gopter
 
 import "sync"
 
-type TestStatus int
-
-const (
-	Passed TestStatus = iota
-	Proved
-	Failed
-	Exhausted
-	PropError
-)
-
-type TestResult struct {
-	Status    TestStatus
-	Succeeded int
-	Discarded int
-}
-
 type shouldStop func() bool
 
-type worker func(int, shouldStop) *TestResult
+type worker func(int, shouldStop) *CheckResult
 
 type runner struct {
 	sync.RWMutex
-	parameters *TestParameters
+	parameters *CheckParameters
 	worker     worker
 }
 
-func (r *runner) mergeTestResults(r1, r2 *TestResult) *TestResult {
-	var status TestStatus
-	if r1.Status != Passed && r1.Status != Exhausted {
+func (r *runner) mergeCheckResults(r1, r2 *CheckResult) *CheckResult {
+	var status CheckStatus
+	if r1.Status != CheckPassed && r1.Status != CheckExhausted {
 		status = r1.Status
-	} else if r2.Status != Passed && r2.Status != Exhausted {
+	} else if r2.Status != CheckPassed && r2.Status != CheckExhausted {
 		status = r2.Status
 	} else {
 		if r1.Succeeded+r2.Succeeded >= r.parameters.MinSuccessfulTests &&
 			float64(r1.Discarded+r2.Discarded) <= float64(r1.Succeeded+r2.Succeeded)*r.parameters.MaxDiscardRatio {
-			status = Passed
+			status = CheckPassed
 		} else {
-			status = Exhausted
+			status = CheckExhausted
 		}
 	}
-	return &TestResult{
+	return &CheckResult{
 		Status:    status,
 		Succeeded: r1.Succeeded + r2.Succeeded,
 		Discarded: r1.Discarded + r2.Discarded,
 	}
 }
 
-func (r *runner) runWorkers() *TestResult {
+func (r *runner) runWorkers() *CheckResult {
 	var stopFlag Flag
 	defer stopFlag.Set()
 
@@ -58,16 +42,16 @@ func (r *runner) runWorkers() *TestResult {
 	}
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(r.parameters.Workers)
-	results := make(chan *TestResult, r.parameters.Workers)
-	combinedResult := make(chan *TestResult)
+	results := make(chan *CheckResult, r.parameters.Workers)
+	combinedResult := make(chan *CheckResult)
 
 	go func() {
-		var combined *TestResult
+		var combined *CheckResult
 		for result := range results {
 			if combined == nil {
 				combined = result
 			} else {
-				combined = r.mergeTestResults(combined, result)
+				combined = r.mergeCheckResults(combined, result)
 			}
 		}
 		combinedResult <- combined

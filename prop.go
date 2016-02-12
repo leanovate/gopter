@@ -2,9 +2,9 @@ package gopter
 
 import "math"
 
-type Prop func(*GenParameters) Result
+type Prop func(*GenParameters) PropResult
 
-func (prop Prop) check(parameters *TestParameters) *TestResult {
+func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 	iterations := math.Ceil(float64(parameters.MinSuccessfulTests) / float64(parameters.Workers))
 	sizeStep := float64(parameters.MaxSize-parameters.MinSize) / (iterations * float64(parameters.Workers))
 	genParameters := GenParameters{
@@ -12,7 +12,7 @@ func (prop Prop) check(parameters *TestParameters) *TestResult {
 	}
 	runner := &runner{
 		parameters: parameters,
-		worker: func(workerIdx int, shouldStop shouldStop) *TestResult {
+		worker: func(workerIdx int, shouldStop shouldStop) *CheckResult {
 			var n int
 			var d int
 
@@ -21,38 +21,38 @@ func (prop Prop) check(parameters *TestParameters) *TestResult {
 					float64(1+parameters.Workers*n)*parameters.MaxDiscardRatio < float64(d)
 			}
 
-			for !shouldStop() {
+			for !shouldStop() && n < int(iterations) {
 				size := float64(parameters.MinSize) + (sizeStep * float64(workerIdx+(parameters.Workers*(n+d))))
 				propResult := prop(genParameters.WithSize(int(size)))
 
 				switch propResult.Status {
-				case Undecided:
+				case PropUndecided:
 					d++
 					if isExhaused() {
-						return &TestResult{
-							Status:    Exhausted,
+						return &CheckResult{
+							Status:    CheckExhausted,
 							Succeeded: n,
 							Discarded: d,
 						}
 					}
-				case True:
+				case PropTrue:
 					n++
-				case Proof:
+				case PropProof:
 					n++
-					return &TestResult{
-						Status:    Proved,
+					return &CheckResult{
+						Status:    CheckProved,
 						Succeeded: n,
 						Discarded: d,
 					}
-				case False:
-					return &TestResult{
-						Status:    Failed,
+				case PropFalse:
+					return &CheckResult{
+						Status:    CheckFailed,
 						Succeeded: n,
 						Discarded: d,
 					}
-				case Error:
-					return &TestResult{
-						Status:    PropError,
+				case PropError:
+					return &CheckResult{
+						Status:    CheckError,
 						Succeeded: n,
 						Discarded: d,
 					}
@@ -60,14 +60,14 @@ func (prop Prop) check(parameters *TestParameters) *TestResult {
 			}
 
 			if isExhaused() {
-				return &TestResult{
-					Status:    Exhausted,
+				return &CheckResult{
+					Status:    CheckExhausted,
 					Succeeded: n,
 					Discarded: d,
 				}
 			}
-			return &TestResult{
-				Status:    Passed,
+			return &CheckResult{
+				Status:    CheckPassed,
 				Succeeded: n,
 				Discarded: d,
 			}
