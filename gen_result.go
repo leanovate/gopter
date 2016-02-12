@@ -6,9 +6,9 @@ type GenResult struct {
 	Sieve  func(interface{}) bool
 }
 
-func (r *GenResult) Retrieve() interface{} {
+func (r *GenResult) Retrieve() (interface{}, bool) {
 	if r.result != nil && r.Sieve(r.result) {
-		return r.result
+		return r.result, true
 	}
-	return nil
+	return nil, false
 }

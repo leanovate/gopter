@@ -15,3 +15,7 @@ type PropResult struct {
 	Args   []PropArg
 	Error  error
 }
+
+func (r *PropResult) Success() bool {
+	return r.Status == PropTrue || r.Status == PropProof
+}
