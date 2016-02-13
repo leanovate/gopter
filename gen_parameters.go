@@ -16,6 +16,18 @@ func (p *GenParameters) WithSize(size int) *GenParameters {
 	return &newParameters
 }
 
+func (p *GenParameters) NextBool() bool {
+	return p.Rng.Int63()&1 == 0
+}
+
+func (p *GenParameters) NextInt64() int64 {
+	v := p.Rng.Int63()
+	if p.NextBool() {
+		return -v
+	}
+	return v
+}
+
 func (p *GenParameters) NextUint64() uint64 {
 	first := uint64(p.Rng.Int63())
 	second := uint64(p.Rng.Int63())

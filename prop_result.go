@@ -15,6 +15,22 @@ const (
 	PropError
 )
 
+func (s propStatus) String() string {
+	switch s {
+	case PropProof:
+		return "PROOF"
+	case PropTrue:
+		return "TRUE"
+	case PropFalse:
+		return "FALSE"
+	case PropUndecided:
+		return "UNDECIDED"
+	case PropError:
+		return "ERROR"
+	}
+	return ""
+}
+
 // PropResult contains the result of a property
 type PropResult struct {
 	Status propStatus
