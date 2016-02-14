@@ -6,7 +6,7 @@ import "math"
 type Prop func(*GenParameters) *PropResult
 
 // Check the property using specific parameters
-func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
+func (prop Prop) Check(parameters *TestParameters) *TestResult {
 	iterations := math.Ceil(float64(parameters.MinSuccessfulTests) / float64(parameters.Workers))
 	sizeStep := float64(parameters.MaxSize-parameters.MinSize) / (iterations * float64(parameters.Workers))
 
@@ -15,7 +15,7 @@ func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 	}
 	runner := &runner{
 		parameters: parameters,
-		worker: func(workerIdx int, shouldStop shouldStop) *CheckResult {
+		worker: func(workerIdx int, shouldStop shouldStop) *TestResult {
 			var n int
 			var d int
 
@@ -32,8 +32,8 @@ func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 				case PropUndecided:
 					d++
 					if isExhaused() {
-						return &CheckResult{
-							Status:    CheckExhausted,
+						return &TestResult{
+							Status:    TestExhausted,
 							Succeeded: n,
 							Discarded: d,
 						}
@@ -42,20 +42,20 @@ func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 					n++
 				case PropProof:
 					n++
-					return &CheckResult{
-						Status:    CheckProved,
+					return &TestResult{
+						Status:    TestProved,
 						Succeeded: n,
 						Discarded: d,
 					}
 				case PropFalse:
-					return &CheckResult{
-						Status:    CheckFailed,
+					return &TestResult{
+						Status:    TestFailed,
 						Succeeded: n,
 						Discarded: d,
 					}
 				case PropError:
-					return &CheckResult{
-						Status:    CheckError,
+					return &TestResult{
+						Status:    TestError,
 						Succeeded: n,
 						Discarded: d,
 					}
@@ -63,14 +63,14 @@ func (prop Prop) Check(parameters *CheckParameters) *CheckResult {
 			}
 
 			if isExhaused() {
-				return &CheckResult{
-					Status:    CheckExhausted,
+				return &TestResult{
+					Status:    TestExhausted,
 					Succeeded: n,
 					Discarded: d,
 				}
 			}
-			return &CheckResult{
-				Status:    CheckPassed,
+			return &TestResult{
+				Status:    TestPassed,
 				Succeeded: n,
 				Discarded: d,
 			}

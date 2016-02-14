@@ -3,14 +3,14 @@ package gopter
 import "testing"
 
 type Properties struct {
-	parameters *CheckParameters
+	parameters *TestParameters
 	props      map[string]Prop
 	propNames  []string
 }
 
-func NewProperties(parameters *CheckParameters) *Properties {
+func NewProperties(parameters *TestParameters) *Properties {
 	if parameters == nil {
-		parameters = DefaultCheckParameters()
+		parameters = DefaultTestParameters()
 	}
 	return &Properties{
 		parameters: parameters,
@@ -30,7 +30,7 @@ func (p *Properties) Run(t *testing.T) {
 
 		result := prop.Check(p.parameters)
 
-		if result.Success() {
+		if result.Passed() {
 			t.Logf("Property %s: %s", propName, result.Status.String())
 		} else {
 			t.Errorf("Property %s: %s", propName, result.Status.String())

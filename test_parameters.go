@@ -6,7 +6,7 @@ import (
 )
 
 // TestParameters to run property tests
-type CheckParameters struct {
+type TestParameters struct {
 	MinSuccessfulTests int
 	MinSize            int
 	MaxSize            int
@@ -16,10 +16,10 @@ type CheckParameters struct {
 }
 
 // DefaultTestParameters creates reasonable default Parameters for most cases
-func DefaultCheckParameters() *CheckParameters {
+func DefaultTestParameters() *TestParameters {
 	seed := time.Now().UnixNano()
 
-	return &CheckParameters{
+	return &TestParameters{
 		MinSuccessfulTests: 100,
 		MinSize:            0,
 		MaxSize:            100,

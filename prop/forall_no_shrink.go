@@ -8,7 +8,7 @@ import (
 
 // ForAllNoShrink creates a property that requires the check condition to be true for all values
 // As the name suggests the generated values will not be shrinked if the condition falsiies
-func ForAllNoShrink(checkCondition CheckCondition, gens ...gopter.Gen) gopter.Prop {
+func ForAllNoShrink(check Check, gens ...gopter.Gen) gopter.Prop {
 	return func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResults := make([]*gopter.GenResult, len(gens))
 		values := make([]interface{}, len(gens))
@@ -22,7 +22,7 @@ func ForAllNoShrink(checkCondition CheckCondition, gens ...gopter.Gen) gopter.Pr
 				}
 			}
 		}
-		return convertResult(checkCondition(values...)).WithArgs(noShrinkArgs(genResults, values))
+		return convertResult(check(values...)).WithArgs(noShrinkArgs(genResults, values))
 	}
 }
 

@@ -15,10 +15,10 @@ func TestPropPassed(t *testing.T) {
 		}
 	})
 
-	parameters := DefaultCheckParameters()
+	parameters := DefaultTestParameters()
 	result := prop.Check(parameters)
 
-	if result.Status != CheckPassed || result.Succeeded != parameters.MinSuccessfulTests {
+	if result.Status != TestPassed || result.Succeeded != parameters.MinSuccessfulTests {
 		t.Errorf("Invalid result: %#v", result)
 	}
 	if called != int64(parameters.MinSuccessfulTests) {
@@ -36,11 +36,11 @@ func TestPropPassedMulti(t *testing.T) {
 		}
 	})
 
-	parameters := DefaultCheckParameters()
+	parameters := DefaultTestParameters()
 	parameters.Workers = 10
 	result := prop.Check(parameters)
 
-	if result.Status != CheckPassed || result.Succeeded != parameters.MinSuccessfulTests {
+	if result.Status != TestPassed || result.Succeeded != parameters.MinSuccessfulTests {
 		t.Errorf("Invalid result: %#v", result)
 	}
 	if called != int64(parameters.MinSuccessfulTests) {

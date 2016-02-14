@@ -1,26 +1,23 @@
 package gopter
 
-import "sync"
+import "sync/atomic"
 
+// Flag is a convenient helper for an atomic boolean
 type Flag struct {
-	lock sync.RWMutex
-	flag bool
+	flag int32
 }
 
+// Get the value of the flag
 func (f *Flag) Get() bool {
-	f.lock.RLock()
-	defer f.lock.RUnlock()
-	return f.flag
+	return atomic.LoadInt32(&f.flag) > 0
 }
 
+// Set the the flag
 func (f *Flag) Set() {
-	f.lock.Lock()
-	defer f.lock.Unlock()
-	f.flag = true
+	atomic.StoreInt32(&f.flag, 1)
 }
 
+// Unset the flag
 func (f *Flag) Unset() {
-	f.lock.Lock()
-	defer f.lock.Unlock()
-	f.flag = false
+	atomic.StoreInt32(&f.flag, 0)
 }

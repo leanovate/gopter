@@ -13,7 +13,7 @@ func TestTimeFormat(t *testing.T) {
 	properties := gopter.NewProperties(nil)
 
 	properties.Property("time can be parsed",
-		prop.ForAllNoShrink(prop.NewCheck1(func(arg interface{}) (interface{}, error) {
+		prop.ForAllNoShrink(prop.Check1(func(arg interface{}) (interface{}, error) {
 			actual := arg.(time.Time)
 			str := actual.Format(time.RFC3339Nano)
 			parsed, err := time.Parse(time.RFC3339Nano, str)

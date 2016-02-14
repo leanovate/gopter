@@ -4,36 +4,36 @@ import "sync"
 
 type shouldStop func() bool
 
-type worker func(int, shouldStop) *CheckResult
+type worker func(int, shouldStop) *TestResult
 
 type runner struct {
 	sync.RWMutex
-	parameters *CheckParameters
+	parameters *TestParameters
 	worker     worker
 }
 
-func (r *runner) mergeCheckResults(r1, r2 *CheckResult) *CheckResult {
-	var status CheckStatus
-	if r1.Status != CheckPassed && r1.Status != CheckExhausted {
+func (r *runner) mergeCheckResults(r1, r2 *TestResult) *TestResult {
+	var status testStatus
+	if r1.Status != TestPassed && r1.Status != TestExhausted {
 		status = r1.Status
-	} else if r2.Status != CheckPassed && r2.Status != CheckExhausted {
+	} else if r2.Status != TestPassed && r2.Status != TestExhausted {
 		status = r2.Status
 	} else {
 		if r1.Succeeded+r2.Succeeded >= r.parameters.MinSuccessfulTests &&
 			float64(r1.Discarded+r2.Discarded) <= float64(r1.Succeeded+r2.Succeeded)*r.parameters.MaxDiscardRatio {
-			status = CheckPassed
+			status = TestPassed
 		} else {
-			status = CheckExhausted
+			status = TestExhausted
 		}
 	}
-	return &CheckResult{
+	return &TestResult{
 		Status:    status,
 		Succeeded: r1.Succeeded + r2.Succeeded,
 		Discarded: r1.Discarded + r2.Discarded,
 	}
 }
 
-func (r *runner) runWorkers() *CheckResult {
+func (r *runner) runWorkers() *TestResult {
 	var stopFlag Flag
 	defer stopFlag.Set()
 
@@ -42,11 +42,11 @@ func (r *runner) runWorkers() *CheckResult {
 	}
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(r.parameters.Workers)
-	results := make(chan *CheckResult, r.parameters.Workers)
-	combinedResult := make(chan *CheckResult)
+	results := make(chan *TestResult, r.parameters.Workers)
+	combinedResult := make(chan *TestResult)
 
 	go func() {
-		var combined *CheckResult
+		var combined *TestResult
 		for result := range results {
 			if combined == nil {
 				combined = result

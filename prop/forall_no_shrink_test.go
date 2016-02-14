@@ -9,26 +9,26 @@ import (
 )
 
 func TestForAllNoShrink(t *testing.T) {
-	parameters := gopter.DefaultCheckParameters()
+	parameters := gopter.DefaultTestParameters()
 	simpleForAll := prop.ForAllNoShrink(
-		prop.NewCheck1(func(value interface{}) (interface{}, error) {
+		prop.Check1(func(value interface{}) (interface{}, error) {
 			return value.(string) == "const value", nil
 		}), gen.Const("const value"))
 
 	simpleResult := simpleForAll.Check(parameters)
 
-	if simpleResult.Status != gopter.CheckPassed || simpleResult.Succeeded != parameters.MinSuccessfulTests {
+	if simpleResult.Status != gopter.TestPassed || simpleResult.Succeeded != parameters.MinSuccessfulTests {
 		t.Errorf("Invalid simpleResult: %#v", simpleResult)
 	}
 
 	simpleForAllFail := prop.ForAllNoShrink(
-		prop.NewCheck1(func(value interface{}) (interface{}, error) {
+		prop.Check1(func(value interface{}) (interface{}, error) {
 			return value.(string) != "const value", nil
 		}), gen.Const("const value"))
 
 	simpleResultFail := simpleForAllFail.Check(parameters)
 
-	if simpleResultFail.Status != gopter.CheckFailed || simpleResultFail.Succeeded != 0 {
+	if simpleResultFail.Status != gopter.TestFailed || simpleResultFail.Succeeded != 0 {
 		t.Errorf("Invalid simpleResultFail: %#v", simpleResultFail)
 	}
 }

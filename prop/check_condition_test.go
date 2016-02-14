@@ -8,7 +8,7 @@ import (
 )
 
 func TestCheckCondition(t *testing.T) {
-	trueCondition := CheckCondition(func(...interface{}) (interface{}, error) {
+	trueCondition := Check(func(...interface{}) (interface{}, error) {
 		return true, nil
 	})
 
@@ -17,7 +17,7 @@ func TestCheckCondition(t *testing.T) {
 		t.Errorf("Invalid true result: %#v", trueResult)
 	}
 
-	falseCondition := CheckCondition(func(...interface{}) (interface{}, error) {
+	falseCondition := Check(func(...interface{}) (interface{}, error) {
 		return false, nil
 	})
 
@@ -26,7 +26,7 @@ func TestCheckCondition(t *testing.T) {
 		t.Errorf("Invalid false result: %#v", falseResult)
 	}
 
-	errorCondition := CheckCondition(func(...interface{}) (interface{}, error) {
+	errorCondition := Check(func(...interface{}) (interface{}, error) {
 		return "Anthing", errors.New("Booom")
 	})
 
@@ -35,7 +35,7 @@ func TestCheckCondition(t *testing.T) {
 		t.Errorf("Invalid error result: %#v", errorResult)
 	}
 
-	propCondition := CheckCondition(func(...interface{}) (interface{}, error) {
+	propCondition := Check(func(...interface{}) (interface{}, error) {
 		return &gopter.PropResult{
 			Status: gopter.PropProof,
 		}, nil
