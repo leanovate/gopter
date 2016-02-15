@@ -12,19 +12,20 @@ func (s *int64Shrink) Next() (interface{}, bool) {
 		return nil, false
 	}
 	value := s.original - s.half
-	s.half >>= 1
+	s.half /= 2
 	return value, true
 }
 
 func Int64Shrinker(v interface{}) gopter.Shrink {
-	int64Shrink := int64Shrink{
+	posShrink := int64Shrink{
 		original: v.(int64),
 		half:     v.(int64),
 	}
-	shrink := gopter.Shrink(int64Shrink.Next)
-	return shrink.Interleave(shrink.Map(func(v interface{}) interface{} {
-		return -v.(int64)
-	}))
+	negShrink := int64Shrink{
+		original: -v.(int64),
+		half:     -v.(int64) / 2,
+	}
+	return gopter.Shrink(posShrink.Next).Interleave(gopter.Shrink(negShrink.Next))
 }
 
 func Int32Shrinker(v interface{}) gopter.Shrink {
