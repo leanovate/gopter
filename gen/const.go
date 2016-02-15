@@ -1,6 +1,6 @@
 package gen
 
-import "github.com/untoldwind/gopter"
+import "github.com/leanovate/gopter"
 
 // Const creates a generator for a constant value
 // Not the most exciting generator, but can be helpful from time to time

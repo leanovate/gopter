@@ -4,7 +4,7 @@ import (
 	"testing"
 	"unicode"
 
-	"github.com/untoldwind/gopter/gen"
+	"github.com/leanovate/gopter/gen"
 )
 
 func TestNumChar(t *testing.T) {

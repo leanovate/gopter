@@ -4,7 +4,7 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 // Int64Range generates a range of int64 numbers

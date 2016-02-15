@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/untoldwind/gopter"
-	"github.com/untoldwind/gopter/gen"
-	"github.com/untoldwind/gopter/prop"
+	"github.com/leanovate/gopter"
+	"github.com/leanovate/gopter/gen"
+	"github.com/leanovate/gopter/prop"
 )
 
 func TestTimeFormat(t *testing.T) {

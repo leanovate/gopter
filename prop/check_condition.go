@@ -3,7 +3,7 @@ package prop
 import (
 	"fmt"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 // Check is a condition by which a property can be chacked

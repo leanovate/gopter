@@ -3,7 +3,7 @@ package gen
 import (
 	"reflect"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 // Fail is a generator that always fails to generate a value

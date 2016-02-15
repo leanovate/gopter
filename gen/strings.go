@@ -1,6 +1,6 @@
 package gen
 
-import "github.com/untoldwind/gopter"
+import "github.com/leanovate/gopter"
 
 func RuneRange(min, max rune) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).Map(func(value interface{}) interface{} {

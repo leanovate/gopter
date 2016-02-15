@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 func TestCheckCondition(t *testing.T) {

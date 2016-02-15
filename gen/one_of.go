@@ -1,6 +1,6 @@
 package gen
 
-import "github.com/untoldwind/gopter"
+import "github.com/leanovate/gopter"
 
 func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {

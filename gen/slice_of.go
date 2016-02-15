@@ -3,7 +3,7 @@ package gen
 import (
 	"reflect"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 func SliceOf(elementGen gopter.Gen) gopter.Gen {

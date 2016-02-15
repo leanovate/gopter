@@ -1,6 +1,6 @@
 package prop
 
-import "github.com/untoldwind/gopter"
+import "github.com/leanovate/gopter"
 
 func ForAll1(gen gopter.Gen, check func(interface{}) (interface{}, error)) gopter.Prop {
 	return func(genParams *gopter.GenParameters) *gopter.PropResult {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/untoldwind/gopter/gen"
+	"github.com/leanovate/gopter/gen"
 )
 
 func TestTime(t *testing.T) {

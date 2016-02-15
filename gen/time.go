@@ -3,7 +3,7 @@ package gen
 import (
 	"time"
 
-	"github.com/untoldwind/gopter"
+	"github.com/leanovate/gopter"
 )
 
 func Time() gopter.Gen {

@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/untoldwind/gopter/gen"
+	"github.com/leanovate/gopter/gen"
 )
 
 func TestInt64Range(t *testing.T) {

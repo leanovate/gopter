@@ -1,6 +1,6 @@
 package prop
 
-import "github.com/untoldwind/gopter"
+import "github.com/leanovate/gopter"
 
 // ForAllNoShrink1 creates a property that requires the check condition to be true for all values
 // As the name suggests the generated values will not be shrinked if the condition falsiies
