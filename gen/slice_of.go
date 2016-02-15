@@ -6,6 +6,7 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+// SliceOf generates an arbitrary slice of generated elements
 func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		len := genParams.Rng.Intn(genParams.Size)
@@ -29,6 +30,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	}
 }
 
+// SliceOf generates a slice of generated elements with definied length
 func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		element := elementGen(genParams)

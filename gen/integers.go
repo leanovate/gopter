@@ -7,7 +7,7 @@ import (
 	"github.com/leanovate/gopter"
 )
 
-// Int64Range generates a range of int64 numbers
+// Int64Range generates int64 numbers within a given range
 func Int64Range(min, max int64) gopter.Gen {
 	if max < min {
 		return Fail(reflect.TypeOf(int64(0)))
@@ -33,7 +33,7 @@ func Int64() gopter.Gen {
 	return Int64Range(math.MinInt64, math.MaxInt64)
 }
 
-// Int32Range generates a range of int32 numbers
+// Int32Range generates int32 numbers within a given range
 func Int32Range(min, max int32) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To32, Int32Shrinker).
@@ -42,7 +42,12 @@ func Int32Range(min, max int32) gopter.Gen {
 	})
 }
 
-// Int16Range generates a range of int16 numbers
+// Int32 generate arbitrary int32 numbers
+func Int32() gopter.Gen {
+	return Int32Range(math.MinInt32, math.MaxInt32)
+}
+
+// Int16Range generates int16 numbers within a given range
 func Int16Range(min, max int16) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To16, Int16Shrinker).
@@ -51,13 +56,23 @@ func Int16Range(min, max int16) gopter.Gen {
 	})
 }
 
-// Int8Range generates a range of int8 numbers
+// Int16 generate arbitrary int16 numbers
+func Int16() gopter.Gen {
+	return Int16Range(math.MinInt16, math.MaxInt16)
+}
+
+// Int8Range generates int8 numbers within a given range
 func Int8Range(min, max int8) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To8, Int8Shrinker).
 		SuchThat(func(v interface{}) bool {
 		return v.(int8) >= min && v.(int8) <= max
 	})
+}
+
+// Int8 generate arbitrary int16 numbers
+func Int8() gopter.Gen {
+	return Int8Range(math.MinInt8, math.MaxInt8)
 }
 
 func int64To32(value interface{}) interface{} {
