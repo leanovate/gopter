@@ -10,16 +10,10 @@ import (
 // As the name suggests the generated values will not be shrinked if the condition falsiies
 func ForAllNoShrink(check Check, gens ...gopter.Gen) gopter.Prop {
 	return func(genParams *gopter.GenParameters) *gopter.PropResult {
-		genResults := make([]*gopter.GenResult, len(gens))
-		values := make([]interface{}, len(gens))
-		var ok bool
-		for i, gen := range gens {
-			genResults[i] = gen(genParams)
-			values[i], ok = genResults[i].Retrieve()
-			if !ok {
-				return &gopter.PropResult{
-					Status: gopter.PropUndecided,
-				}
+		genResults, values, ok := generatorResults(genParams, gens)
+		if !ok {
+			return &gopter.PropResult{
+				Status: gopter.PropUndecided,
 			}
 		}
 		return convertResult(check(values...)).WithArgs(noShrinkArgs(genResults, values))
@@ -37,4 +31,18 @@ func noShrinkArgs(genResults []*gopter.GenResult, values []interface{}) []gopter
 		}
 	}
 	return result
+}
+
+func generatorResults(genParams *gopter.GenParameters, gens []gopter.Gen) ([]*gopter.GenResult, []interface{}, bool) {
+	genResults := make([]*gopter.GenResult, len(gens))
+	values := make([]interface{}, len(gens))
+	var ok bool
+	for i, gen := range gens {
+		genResults[i] = gen(genParams)
+		values[i], ok = genResults[i].Retrieve()
+		if !ok {
+			return nil, nil, false
+		}
+	}
+	return genResults, values, true
 }

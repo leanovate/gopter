@@ -19,11 +19,11 @@ func TestInt64Range(t *testing.T) {
 		value, ok := limited.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid limited: $#v", value)
+			t.Errorf("Invalid limited: %#v", value)
 		}
 		v, ok := value.(int64)
 		if !ok || v < -123456 || v > 234567 {
-			t.Errorf("Invalid limited: $#v", value)
+			t.Errorf("Invalid limited: %#v", value)
 		}
 	}
 
@@ -32,11 +32,11 @@ func TestInt64Range(t *testing.T) {
 		value, ok := pos.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid pos: $#v", value)
+			t.Errorf("Invalid pos: %#v", value)
 		}
 		v, ok := value.(int64)
 		if !ok || v <= 0 {
-			t.Errorf("Invalid pos: $#v", value)
+			t.Errorf("Invalid pos: %#v", value)
 		}
 	}
 
@@ -45,11 +45,11 @@ func TestInt64Range(t *testing.T) {
 		value, ok := neg.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid neg: $#v", value)
+			t.Errorf("Invalid neg: %#v", value)
 		}
 		v, ok := value.(int64)
 		if !ok || v >= 0 {
-			t.Errorf("Invalid neg: $#v", value)
+			t.Errorf("Invalid neg: %#v", value)
 		}
 	}
 }

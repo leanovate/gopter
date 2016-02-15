@@ -2,22 +2,22 @@ package gen
 
 import "github.com/untoldwind/gopter"
 
-func OneConstOf(values ...interface{}) gopter.Gen {
-	if len(values) == 0 {
-		return Fail
-	}
+func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		idx := genParams.Rng.Intn(len(values))
-		return gopter.NewGenResult(values[idx], gopter.NoShrinker)
+		idx := genParams.Rng.Intn(len(other) + 1)
+		if idx == 0 {
+			gopter.NewGenResult(first, gopter.NoShrinker)
+		}
+		return gopter.NewGenResult(other[idx-1], gopter.NoShrinker)
 	}
 }
 
-func OneGenOf(generators ...gopter.Gen) gopter.Gen {
-	if len(generators) == 0 {
-		return Fail
-	}
+func OneGenOf(first gopter.Gen, other ...gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		idx := genParams.Rng.Intn(len(generators))
-		return generators[idx](genParams)
+		idx := genParams.Rng.Intn(len(other) + 1)
+		if idx == 0 {
+			return first(genParams)
+		}
+		return other[idx+1](genParams)
 	}
 }

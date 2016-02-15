@@ -10,6 +10,21 @@ func (g Gen) Sample() (interface{}, bool) {
 	return g(DefaultGenParameters()).Retrieve()
 }
 
+func (g Gen) SuchThat(f func(interface{}) bool) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		result := g(genParams)
+		prevSieve := result.Sieve
+		if prevSieve == nil {
+			result.Sieve = f
+		} else {
+			result.Sieve = func(value interface{}) bool {
+				return prevSieve(value) && f(value)
+			}
+		}
+		return result
+	}
+}
+
 func (g Gen) Map(f func(interface{}) interface{}) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)

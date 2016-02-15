@@ -13,11 +13,11 @@ func TestTime(t *testing.T) {
 		value, ok := timeGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid time: $#v", value)
+			t.Errorf("Invalid time: %#v", value)
 		}
 		v, ok := value.(time.Time)
 		if !ok || v.String() == "" {
-			t.Errorf("Invalid time: $#v", value)
+			t.Errorf("Invalid time: %#v", value)
 		}
 	}
 }
@@ -32,11 +32,11 @@ func TestTimeRegion(t *testing.T) {
 		value, ok := timeRange.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid time: $#v", value)
+			t.Errorf("Invalid time: %#v", value)
 		}
 		v, ok := value.(time.Time)
 		if !ok || v.Before(from) || v.After(until) {
-			t.Errorf("Invalid time: $#v", value)
+			t.Errorf("Invalid time: %#v", value)
 		}
 	}
 }
