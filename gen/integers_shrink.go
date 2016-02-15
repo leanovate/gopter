@@ -17,15 +17,15 @@ func (s *int64Shrink) Next() (interface{}, bool) {
 }
 
 func Int64Shrinker(v interface{}) gopter.Shrink {
-	posShrink := int64Shrink{
-		original: v.(int64),
-		half:     v.(int64),
-	}
 	negShrink := int64Shrink{
 		original: -v.(int64),
-		half:     -v.(int64) / 2,
+		half:     -v.(int64),
 	}
-	return gopter.Shrink(posShrink.Next).Interleave(gopter.Shrink(negShrink.Next))
+	posShrink := int64Shrink{
+		original: v.(int64),
+		half:     v.(int64) / 2,
+	}
+	return gopter.Shrink(negShrink.Next).Interleave(gopter.Shrink(posShrink.Next))
 }
 
 func Int32Shrinker(v interface{}) gopter.Shrink {
