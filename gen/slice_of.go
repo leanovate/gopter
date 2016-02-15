@@ -30,7 +30,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	}
 }
 
-// SliceOf generates a slice of generated elements with definied length
+// SliceOfN generates a slice of generated elements with definied length
 func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		element := elementGen(genParams)
@@ -47,7 +47,10 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 		}
 
 		genResult := gopter.NewGenResult(result.Interface(), gopter.NoShrinker)
-		genResult.Sieve = forAllSieve(elementSieve)
+		genResult.Sieve = func(v interface{}) bool {
+			rv := reflect.ValueOf(v)
+			return rv.Len() == len && forAllSieve(elementSieve)(v)
+		}
 		return genResult
 	}
 }

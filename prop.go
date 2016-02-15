@@ -1,9 +1,28 @@
 package gopter
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // Prop represent some kind of property that (drums please) can and should be checked
 type Prop func(*GenParameters) *PropResult
+
+// SaveProp creates s save property by handling all panics from an inner property
+func SaveProp(prop Prop) Prop {
+	return func(genParams *GenParameters) (result *PropResult) {
+		defer func() {
+			if r := recover(); r != nil {
+				result = &PropResult{
+					Status: PropError,
+					Error:  fmt.Errorf("Check paniced: %#v", r),
+				}
+			}
+		}()
+
+		return prop(genParams)
+	}
+}
 
 // Check the property using specific parameters
 func (prop Prop) Check(parameters *TestParameters) *TestResult {

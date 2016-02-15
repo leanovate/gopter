@@ -2,6 +2,7 @@ package gen
 
 import "github.com/leanovate/gopter"
 
+// OneConstOf generate one of a list of constant values
 func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		idx := genParams.Rng.Intn(len(other) + 1)
@@ -12,6 +13,7 @@ func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
 	}
 }
 
+// OneGenOf generate one value from a a list of generators
 func OneGenOf(first gopter.Gen, other ...gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		idx := genParams.Rng.Intn(len(other) + 1)
