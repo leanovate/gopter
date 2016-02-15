@@ -1,48 +1,18 @@
 package prop
 
-import (
-	"strings"
+import "github.com/untoldwind/gopter"
 
-	"github.com/untoldwind/gopter"
-)
-
-// ForAllNoShrink creates a property that requires the check condition to be true for all values
+// ForAllNoShrink1 creates a property that requires the check condition to be true for all values
 // As the name suggests the generated values will not be shrinked if the condition falsiies
-func ForAllNoShrink(check Check, gens ...gopter.Gen) gopter.Prop {
+func ForAllNoShrink1(gen gopter.Gen, check func(interface{}) (interface{}, error)) gopter.Prop {
 	return func(genParams *gopter.GenParameters) *gopter.PropResult {
-		genResults, values, ok := generatorResults(genParams, gens)
+		genResult := gen(genParams)
+		value, ok := genResult.Retrieve()
 		if !ok {
 			return &gopter.PropResult{
 				Status: gopter.PropUndecided,
 			}
 		}
-		return convertResult(check(values...)).WithArgs(noShrinkArgs(genResults, values))
+		return convertResult(check(value)).WithArg(gopter.NewPropArg(genResult, 0, value, value))
 	}
-}
-
-func noShrinkArgs(genResults []*gopter.GenResult, values []interface{}) []gopter.PropArg {
-	result := make([]gopter.PropArg, len(genResults))
-	for i, genResult := range genResults {
-		result[i] = gopter.PropArg{
-			Label:   strings.Join(genResult.Labels, ", "),
-			Arg:     values[i],
-			OrigArg: values[i],
-			Shrinks: 0,
-		}
-	}
-	return result
-}
-
-func generatorResults(genParams *gopter.GenParameters, gens []gopter.Gen) ([]*gopter.GenResult, []interface{}, bool) {
-	genResults := make([]*gopter.GenResult, len(gens))
-	values := make([]interface{}, len(gens))
-	var ok bool
-	for i, gen := range gens {
-		genResults[i] = gen(genParams)
-		values[i], ok = genResults[i].Retrieve()
-		if !ok {
-			return nil, nil, false
-		}
-	}
-	return genResults, values, true
 }

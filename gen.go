@@ -25,13 +25,16 @@ func (g Gen) SuchThat(f func(interface{}) bool) Gen {
 	}
 }
 
-func (g Gen) Map(f func(interface{}) interface{}) Gen {
+func (g Gen) Map(f func(interface{}) interface{}, shrinker Shrinker) Gen {
+	if shrinker == nil {
+		shrinker = NoShrinker
+	}
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
 		value, ok := result.Retrieve()
 		if ok {
 			return &GenResult{
-				Shrinker: NoShrinker,
+				Shrinker: shrinker,
 				result:   f(value),
 				Labels:   result.Labels,
 			}

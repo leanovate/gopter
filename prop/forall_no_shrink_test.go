@@ -10,10 +10,12 @@ import (
 
 func TestForAllNoShrink(t *testing.T) {
 	parameters := gopter.DefaultTestParameters()
-	simpleForAll := prop.ForAllNoShrink(
-		prop.Check1(func(value interface{}) (interface{}, error) {
+	simpleForAll := prop.ForAllNoShrink1(
+		gen.Const("const value"),
+		func(value interface{}) (interface{}, error) {
 			return value.(string) == "const value", nil
-		}), gen.Const("const value"))
+		},
+	)
 
 	simpleResult := simpleForAll.Check(parameters)
 
@@ -21,10 +23,12 @@ func TestForAllNoShrink(t *testing.T) {
 		t.Errorf("Invalid simpleResult: %#v", simpleResult)
 	}
 
-	simpleForAllFail := prop.ForAllNoShrink(
-		prop.Check1(func(value interface{}) (interface{}, error) {
+	simpleForAllFail := prop.ForAllNoShrink1(
+		gen.Const("const value"),
+		func(value interface{}) (interface{}, error) {
 			return value.(string) != "const value", nil
-		}), gen.Const("const value"))
+		},
+	)
 
 	simpleResultFail := simpleForAllFail.Check(parameters)
 

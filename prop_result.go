@@ -35,7 +35,7 @@ func (s propStatus) String() string {
 type PropResult struct {
 	Status propStatus
 	Error  error
-	Args   []PropArg
+	Args   []*PropArg
 	Labels []string
 }
 
@@ -45,11 +45,13 @@ func NewPropResult(success bool, label string) *PropResult {
 		return &PropResult{
 			Status: PropTrue,
 			Labels: []string{label},
+			Args:   make([]*PropArg, 0),
 		}
 	}
 	return &PropResult{
 		Status: PropFalse,
 		Labels: []string{label},
+		Args:   make([]*PropArg, 0),
 	}
 }
 
@@ -59,7 +61,7 @@ func (r *PropResult) Success() bool {
 }
 
 // WithArgs adds argument descriptors to the PropResult for reporting
-func (r *PropResult) WithArgs(args []PropArg) *PropResult {
-	r.Args = args
+func (r *PropResult) WithArg(args *PropArg) *PropResult {
+	r.Args = append(r.Args, args)
 	return r
 }

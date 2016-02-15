@@ -5,7 +5,7 @@ import "github.com/untoldwind/gopter"
 func RuneRange(min, max rune) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).Map(func(value interface{}) interface{} {
 		return rune(value.(int64))
-	}).SuchThat(func(v interface{}) bool {
+	}, nil).SuchThat(func(v interface{}) bool {
 		return v.(rune) >= min && v.(rune) <= max
 	})
 }
