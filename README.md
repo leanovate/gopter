@@ -1,6 +1,6 @@
 # GOPTER
 
-... the GOlang Property TesTER [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
+... the GOlang Property TestER [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
 
 Even though there are already some working examples the API has not fully stabilized yet.
 
