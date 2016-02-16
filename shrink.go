@@ -29,6 +29,31 @@ func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
 	}
 }
 
+type concatedShrink struct {
+	index   int
+	shrinks []Shrink
+}
+
+func (c *concatedShrink) Next() (interface{}, bool) {
+	for c.index < len(c.shrinks) {
+		value, ok := c.shrinks[c.index]()
+		if ok {
+			return value, ok
+		}
+		c.index++
+	}
+	return nil, false
+}
+
+// ConcatShinks concats an array of shrinks to a single shrinks
+func ConcatShrinks(shrinks []Shrink) Shrink {
+	concated := &concatedShrink{
+		index:   0,
+		shrinks: shrinks,
+	}
+	return concated.Next
+}
+
 type interleaved struct {
 	first          Shrink
 	second         Shrink

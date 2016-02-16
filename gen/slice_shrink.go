@@ -7,6 +7,44 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+type sliceShrinkOne struct {
+	original      reflect.Value
+	index         int
+	elementShrink gopter.Shrink
+}
+
+func (s *sliceShrinkOne) Next() (interface{}, bool) {
+	value, ok := s.elementShrink()
+	if !ok {
+		return nil, false
+	}
+	result := reflect.MakeSlice(s.original.Type(), s.original.Len(), s.original.Len())
+	reflect.Copy(result, s.original)
+	result.Index(s.index).Set(reflect.ValueOf(value))
+
+	return result.Interface(), true
+}
+
+func SliceShrinkerOne(elementShrinker gopter.Shrinker) gopter.Shrinker {
+	return func(v interface{}) gopter.Shrink {
+		rv := reflect.ValueOf(v)
+		if rv.Kind() != reflect.Slice {
+			panic(fmt.Sprintf("%#v is not a slice", v))
+		}
+
+		shrinks := make([]gopter.Shrink, 0, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			sliceShrinkOne := &sliceShrinkOne{
+				original:      rv,
+				index:         i,
+				elementShrink: elementShrinker(rv.Index(i).Interface()),
+			}
+			shrinks = append(shrinks, sliceShrinkOne.Next)
+		}
+		return gopter.ConcatShrinks(shrinks)
+	}
+}
+
 type sliceShrink struct {
 	original    reflect.Value
 	length      int
@@ -30,17 +68,29 @@ func (s *sliceShrink) Next() (interface{}, bool) {
 	return value.Interface(), true
 }
 
-func SliceShrinker(v interface{}) gopter.Shrink {
-	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("%#v is not a slice", v))
-	}
-	sliceShrink := &sliceShrink{
-		original:    rv,
-		offset:      0,
-		length:      rv.Len(),
-		chunkLength: rv.Len() >> 1,
-	}
+func SliceShrinker(elementShrinker gopter.Shrinker) gopter.Shrinker {
+	return func(v interface{}) gopter.Shrink {
+		rv := reflect.ValueOf(v)
+		if rv.Kind() != reflect.Slice {
+			panic(fmt.Sprintf("%#v is not a slice", v))
+		}
+		sliceShrink := &sliceShrink{
+			original:    rv,
+			offset:      0,
+			length:      rv.Len(),
+			chunkLength: rv.Len() >> 1,
+		}
 
-	return sliceShrink.Next
+		shrinks := make([]gopter.Shrink, 0, rv.Len()+1)
+		shrinks = append(shrinks, sliceShrink.Next)
+		for i := 0; i < rv.Len(); i++ {
+			sliceShrinkOne := &sliceShrinkOne{
+				original:      rv,
+				index:         i,
+				elementShrink: elementShrinker(rv.Index(i).Interface()),
+			}
+			shrinks = append(shrinks, sliceShrinkOne.Next)
+		}
+		return gopter.ConcatShrinks(shrinks)
+	}
 }

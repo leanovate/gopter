@@ -12,6 +12,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 		len := genParams.Rng.Intn(genParams.Size)
 		element := elementGen(genParams)
 		elementSieve := element.Sieve
+		elementShrinker := element.Shrinker
 
 		result := reflect.MakeSlice(element.ResultType, 0, len)
 
@@ -26,6 +27,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 
 		genResult := gopter.NewGenResult(result.Interface(), gopter.NoShrinker)
 		genResult.Sieve = forAllSieve(elementSieve)
+		genResult.Shrinker = SliceShrinker(elementShrinker)
 		return genResult
 	}
 }
@@ -35,6 +37,7 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		element := elementGen(genParams)
 		elementSieve := element.Sieve
+		elementShrinker := element.Shrinker
 
 		result := reflect.MakeSlice(element.ResultType, 0, len)
 		for i := 0; i < len; i++ {
@@ -51,6 +54,7 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 			rv := reflect.ValueOf(v)
 			return rv.Len() == len && forAllSieve(elementSieve)(v)
 		}
+		genResult.Shrinker = SliceShrinkerOne(elementShrinker)
 		return genResult
 	}
 }
