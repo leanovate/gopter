@@ -25,3 +25,17 @@ func AlphaUpperChar() gopter.Gen {
 func AlphaLowerChar() gopter.Gen {
 	return RuneRange('a', 'z')
 }
+
+func AlphaChar() gopter.Gen {
+	return Frequency(map[int]gopter.Gen{
+		0: AlphaUpperChar(),
+		9: AlphaLowerChar(),
+	})
+}
+
+func AlphaNumChar() gopter.Gen {
+	return Frequency(map[int]gopter.Gen{
+		0: NumChar(),
+		9: AlphaChar(),
+	})
+}
