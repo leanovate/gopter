@@ -14,20 +14,21 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 		elementSieve := element.Sieve
 		elementShrinker := element.Shrinker
 
-		result := reflect.MakeSlice(element.ResultType, 0, len)
+		result := reflect.MakeSlice(reflect.SliceOf(element.ResultType), 0, len)
 
 		for i := 0; i < len; i++ {
 			value, ok := element.Retrieve()
 
 			if ok {
-				reflect.Append(result, reflect.ValueOf(value))
+				result = reflect.Append(result, reflect.ValueOf(value))
 			}
 			element = elementGen(genParams)
 		}
 
-		genResult := gopter.NewGenResult(result.Interface(), gopter.NoShrinker)
-		genResult.Sieve = forAllSieve(elementSieve)
-		genResult.Shrinker = SliceShrinker(elementShrinker)
+		genResult := gopter.NewGenResult(result.Interface(), SliceShrinker(elementShrinker))
+		if elementSieve != nil {
+			genResult.Sieve = forAllSieve(elementSieve)
+		}
 		return genResult
 	}
 }
@@ -39,22 +40,27 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 		elementSieve := element.Sieve
 		elementShrinker := element.Shrinker
 
-		result := reflect.MakeSlice(element.ResultType, 0, len)
+		result := reflect.MakeSlice(reflect.SliceOf(element.ResultType), 0, len)
 		for i := 0; i < len; i++ {
 			value, ok := element.Retrieve()
 
 			if ok {
-				reflect.Append(result, reflect.ValueOf(value))
+				result = reflect.Append(result, reflect.ValueOf(value))
 			}
 			element = elementGen(genParams)
 		}
 
-		genResult := gopter.NewGenResult(result.Interface(), gopter.NoShrinker)
-		genResult.Sieve = func(v interface{}) bool {
-			rv := reflect.ValueOf(v)
-			return rv.Len() == len && forAllSieve(elementSieve)(v)
+		genResult := gopter.NewGenResult(result.Interface(), SliceShrinkerOne(elementShrinker))
+		if elementSieve != nil {
+			genResult.Sieve = func(v interface{}) bool {
+				rv := reflect.ValueOf(v)
+				return rv.Len() == len && forAllSieve(elementSieve)(v)
+			}
+		} else {
+			genResult.Sieve = func(v interface{}) bool {
+				return reflect.ValueOf(v).Len() == len
+			}
 		}
-		genResult.Shrinker = SliceShrinkerOne(elementShrinker)
 		return genResult
 	}
 }

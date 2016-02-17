@@ -39,3 +39,9 @@ func AlphaNumChar() gopter.Gen {
 		9: AlphaChar(),
 	})
 }
+
+func AlphaString() gopter.Gen {
+	return SliceOf(AlphaChar()).Map(func(v interface{}) interface{} {
+		return string(v.([]rune))
+	}, SliceShrinker(gopter.NoShrinker))
+}
