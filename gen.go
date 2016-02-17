@@ -27,21 +27,46 @@ func (g Gen) SuchThat(f func(interface{}) bool) Gen {
 	}
 }
 
-func (g Gen) Map(f func(interface{}) interface{}, shrinker Shrinker) Gen {
-	if shrinker == nil {
-		shrinker = NoShrinker
+func (g Gen) WithShrinker(shrinker Shrinker) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		result := g(genParams)
+		if shrinker == nil {
+			result.Shrinker = NoShrinker
+		} else {
+			result.Shrinker = shrinker
+		}
+		return result
 	}
+}
+
+func (g Gen) Map(f func(interface{}) interface{}) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
 		value, ok := result.Retrieve()
 		if ok {
 			mapped := f(value)
 			return &GenResult{
-				Shrinker:   shrinker,
+				Shrinker:   NoShrinker,
 				result:     mapped,
 				Labels:     result.Labels,
 				ResultType: reflect.TypeOf(mapped),
 			}
+		}
+		return &GenResult{
+			Shrinker:   NoShrinker,
+			result:     nil,
+			Labels:     result.Labels,
+			ResultType: reflect.TypeOf(nil),
+		}
+	}
+}
+
+func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		result := g(genParams)
+		value, ok := result.Retrieve()
+		if ok {
+			return f(value)(genParams)
 		}
 		return &GenResult{
 			Shrinker:   NoShrinker,

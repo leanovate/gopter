@@ -9,3 +9,7 @@ type Commands interface {
 	GenCommand() gopter.Gen
 	InitialPreCondition(state State) bool
 }
+
+func CommandsProp(commands Commands) gopter.Prop {
+	return nil
+}

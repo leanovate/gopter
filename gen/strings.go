@@ -6,7 +6,7 @@ import "github.com/leanovate/gopter"
 func RuneRange(min, max rune) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).Map(func(value interface{}) interface{} {
 		return rune(value.(int64))
-	}, nil).SuchThat(func(v interface{}) bool {
+	}).SuchThat(func(v interface{}) bool {
 		return v.(rune) >= min && v.(rune) <= max
 	})
 }
@@ -43,5 +43,5 @@ func AlphaNumChar() gopter.Gen {
 func AlphaString() gopter.Gen {
 	return SliceOf(AlphaChar()).Map(func(v interface{}) interface{} {
 		return string(v.([]rune))
-	}, SliceShrinker(gopter.NoShrinker))
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
 }

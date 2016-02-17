@@ -36,7 +36,8 @@ func Int64() gopter.Gen {
 // Int32Range generates int32 numbers within a given range
 func Int32Range(min, max int32) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
-		Map(int64To32, Int32Shrinker).
+		Map(int64To32).
+		WithShrinker(Int32Shrinker).
 		SuchThat(func(v interface{}) bool {
 		return v.(int32) >= min && v.(int32) <= max
 	})
@@ -50,7 +51,8 @@ func Int32() gopter.Gen {
 // Int16Range generates int16 numbers within a given range
 func Int16Range(min, max int16) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
-		Map(int64To16, Int16Shrinker).
+		Map(int64To16).
+		WithShrinker(Int16Shrinker).
 		SuchThat(func(v interface{}) bool {
 		return v.(int16) >= min && v.(int16) <= max
 	})
@@ -64,7 +66,8 @@ func Int16() gopter.Gen {
 // Int8Range generates int8 numbers within a given range
 func Int8Range(min, max int8) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
-		Map(int64To8, Int8Shrinker).
+		Map(int64To8).
+		WithShrinker(Int8Shrinker).
 		SuchThat(func(v interface{}) bool {
 		return v.(int8) >= min && v.(int8) <= max
 	})
