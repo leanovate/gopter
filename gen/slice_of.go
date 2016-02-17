@@ -69,7 +69,7 @@ func forAllSieve(elementSieve func(interface{}) bool) func(interface{}) bool {
 	return func(v interface{}) bool {
 		rv := reflect.ValueOf(v)
 		for i := rv.Len() - 1; i >= 0; i-- {
-			if !elementSieve(rv.Index(i)) {
+			if !elementSieve(rv.Index(i).Interface()) {
 				return false
 			}
 		}

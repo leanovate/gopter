@@ -1,5 +1,7 @@
 package gopter
 
+import "reflect"
+
 // Gen generator of arbitrary values
 // Usually properties are checked by verifing a condition holds true for arbitrary input parameters
 type Gen func(*GenParameters) *GenResult
@@ -33,16 +35,19 @@ func (g Gen) Map(f func(interface{}) interface{}, shrinker Shrinker) Gen {
 		result := g(genParams)
 		value, ok := result.Retrieve()
 		if ok {
+			mapped := f(value)
 			return &GenResult{
-				Shrinker: shrinker,
-				result:   f(value),
-				Labels:   result.Labels,
+				Shrinker:   shrinker,
+				result:     mapped,
+				Labels:     result.Labels,
+				ResultType: reflect.TypeOf(mapped),
 			}
 		}
 		return &GenResult{
-			Shrinker: NoShrinker,
-			result:   nil,
-			Labels:   result.Labels,
+			Shrinker:   NoShrinker,
+			result:     nil,
+			Labels:     result.Labels,
+			ResultType: reflect.TypeOf(nil),
 		}
 	}
 }

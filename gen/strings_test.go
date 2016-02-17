@@ -51,3 +51,38 @@ func TestAlphaLower(t *testing.T) {
 		}
 	}
 }
+
+func TestAlphaChar(t *testing.T) {
+	alphaCharGen := gen.AlphaChar()
+	for i := 0; i < 100; i++ {
+		value, ok := alphaCharGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid char: %#v", value)
+		}
+		v, ok := value.(rune)
+		if !ok || !unicode.IsLetter(v) {
+			t.Errorf("Invalid char: %#v", value)
+		}
+	}
+}
+
+func TestAlphaString(t *testing.T) {
+	alphaStrGen := gen.AlphaString()
+	for i := 0; i < 100; i++ {
+		value, ok := alphaStrGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		v, ok := value.(string)
+		if !ok {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		for _, ch := range v {
+			if !unicode.IsLetter(ch) {
+				t.Errorf("Invalid string: %#v", v)
+			}
+		}
+	}
+}

@@ -23,6 +23,8 @@ func Frequency(weightedGens map[int]gopter.Gen) gopter.Gen {
 		idx := weights.Search(genParams.Rng.Intn(max + 1))
 		gen := weightedGens[weights[idx]]
 
-		return gen(genParams)
+		result := gen(genParams)
+		result.Sieve = nil
+		return result
 	}
 }
