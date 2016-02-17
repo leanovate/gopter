@@ -65,18 +65,21 @@ func (prop Prop) Check(parameters *TestParameters) *TestResult {
 						Status:    TestProved,
 						Succeeded: n,
 						Discarded: d,
+						Args:      propResult.Args,
 					}
 				case PropFalse:
 					return &TestResult{
 						Status:    TestFailed,
 						Succeeded: n,
 						Discarded: d,
+						Args:      propResult.Args,
 					}
 				case PropError:
 					return &TestResult{
 						Status:    TestError,
 						Succeeded: n,
 						Discarded: d,
+						Args:      propResult.Args,
 					}
 				}
 			}

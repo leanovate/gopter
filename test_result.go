@@ -30,6 +30,7 @@ type TestResult struct {
 	Status    testStatus
 	Succeeded int
 	Discarded int
+	Args      []*PropArg
 }
 
 // Passed checks if the check has passed
