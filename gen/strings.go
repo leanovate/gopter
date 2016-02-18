@@ -1,6 +1,10 @@
 package gen
 
-import "github.com/leanovate/gopter"
+import (
+	"unicode"
+
+	"github.com/leanovate/gopter"
+)
 
 // RuneRange generates runes within a given range
 func RuneRange(min, max rune) gopter.Gen {
@@ -43,5 +47,48 @@ func AlphaNumChar() gopter.Gen {
 func AlphaString() gopter.Gen {
 	return SliceOf(AlphaChar()).Map(func(v interface{}) interface{} {
 		return string(v.([]rune))
+	}).SuchThat(func(v interface{}) bool {
+		for _, ch := range v.(string) {
+			if !unicode.IsLetter(ch) {
+				return false
+			}
+		}
+		return true
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+}
+
+func NumString() gopter.Gen {
+	return SliceOf(NumChar()).Map(func(v interface{}) interface{} {
+		return string(v.([]rune))
+	}).SuchThat(func(v interface{}) bool {
+		for _, ch := range v.(string) {
+			if !unicode.IsDigit(ch) {
+				return false
+			}
+		}
+		return true
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+}
+
+func Identifier() gopter.Gen {
+	return gopter.CombineGens([]gopter.Gen{
+		AlphaLowerChar(),
+		SliceOf(AlphaNumChar()),
+	}, func(values []interface{}) interface{} {
+		first := values[0].(rune)
+		tail := values[1].([]rune)
+		result := make([]rune, 0, len(tail)+1)
+		return append(append(result, first), tail...)
+	}).SuchThat(func(v interface{}) bool {
+		str := v.(string)
+		if len(str) < 1 || !unicode.IsLower(([]rune(str))[0]) {
+			return false
+		}
+		for _, ch := range str {
+			if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) {
+				return false
+			}
+		}
+		return true
 	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
 }

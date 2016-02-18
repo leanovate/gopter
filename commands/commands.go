@@ -6,7 +6,7 @@ type Commands interface {
 	NewSystemUnderTest() SystemUnderTest
 	DestroySystemUnderTest() SystemUnderTest
 	GenInitialState() gopter.Gen
-	GenCommand() gopter.Gen
+	GenCommand(state State) gopter.Gen
 	InitialPreCondition(state State) bool
 }
 

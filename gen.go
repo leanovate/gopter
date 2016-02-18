@@ -76,3 +76,32 @@ func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
 		}
 	}
 }
+
+func CombineGens(gens []Gen, combiner func([]interface{}) interface{}) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		values := make([]interface{}, len(gens))
+		labels := make([]string, 0)
+
+		var ok bool
+		for i, gen := range gens {
+			result := gen(genParams)
+			labels = append(labels, result.Labels...)
+			values[i], ok = result.Retrieve()
+			if !ok {
+				return &GenResult{
+					Shrinker:   NoShrinker,
+					result:     nil,
+					Labels:     result.Labels,
+					ResultType: reflect.TypeOf(nil),
+				}
+			}
+		}
+		combined := combiner(values)
+		return &GenResult{
+			Shrinker:   NoShrinker,
+			result:     combined,
+			Labels:     labels,
+			ResultType: reflect.TypeOf(combined),
+		}
+	}
+}
