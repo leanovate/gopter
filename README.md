@@ -2,7 +2,18 @@
 
 ... the GOlang Property TestER [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
 
-Even though there are already some working examples the API has not fully stabilized yet.
+## Synopsis
+
+Gopter tries to bring the goodness of [ScalaCheck](https://www.scalacheck.org/) (and impliticly the goodness of [QuickCheck](http://hackage.haskell.org/package/QuickCheck)) to Go.
+
+Main differences to ScalaCheck:
+
+* It is Go ... duh
+* ... nevertheless: Do not expect the same typesafety and elegance as in ScalaCheck.
+* For simplicity [Shrink](https://www.scalacheck.org/files/scalacheck_2.11-1.12.5-api/index.html#org.scalacheck.Shrink) has become part of the generators. They can be still easily changed if necessary.
+* There is no [Pretty](https://www.scalacheck.org/files/scalacheck_2.11-1.12.5-api/index.html#org.scalacheck.util.Pretty) ... so far gopter feels quiet comfortable being ugly.
+* No arbitraries ... yet!
+* No parallel commands ... yet?
 
 ## License
 
