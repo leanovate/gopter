@@ -1,14 +1,34 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
 type actions struct {
-	state              State
+	initialState       State
 	sequentialCommands []Command
 	// parallel commands will come later
+}
+
+func (a *actions) String() string {
+	return fmt.Sprintf("initial=%v sequential=%s", a.initialState, a.sequentialCommands)
+}
+
+func (a *actions) run(systemUnderTest SystemUnderTest) (interface{}, error) {
+	state := a.initialState
+	propResult := &gopter.PropResult{Status: gopter.PropTrue}
+	for _, command := range a.sequentialCommands {
+		if !command.PreCondition(state) {
+			return &gopter.PropResult{Status: gopter.PropFalse}, nil
+		}
+		result := command.Run(systemUnderTest)
+		propResult = propResult.And(command.PostCondition(state, result))
+		state = command.NextState(state)
+	}
+	return propResult, nil
 }
 
 type sizedCommands struct {
@@ -17,14 +37,20 @@ type sizedCommands struct {
 }
 
 func actionsShrinker(v interface{}) gopter.Shrink {
-	return gen.SliceShrinker(gopter.NoShrinker)(v.(actions).sequentialCommands)
+	a := v.(*actions)
+	return gen.SliceShrinker(gopter.NoShrinker)(a.sequentialCommands).Map(func(v interface{}) interface{} {
+		return &actions{
+			initialState:       a.initialState,
+			sequentialCommands: v.([]Command),
+		}
+	})
 }
 
 func genActions(commands Commands) gopter.Gen {
 	return commands.GenInitialState().FlatMap(func(initialState interface{}) gopter.Gen {
 		return genSizedCommands(commands, initialState.(State)).Map(func(v interface{}) interface{} {
-			return actions{
-				state:              initialState.(State),
+			return &actions{
+				initialState:       initialState.(State),
 				sequentialCommands: v.(sizedCommands).commands,
 			}
 		}).WithShrinker(actionsShrinker)

@@ -65,3 +65,36 @@ func (r *PropResult) WithArg(args *PropArg) *PropResult {
 	r.Args = append(r.Args, args)
 	return r
 }
+
+func (r *PropResult) And(other *PropResult) *PropResult {
+	switch {
+	case r.Status == PropError:
+		return r
+	case other.Status == PropError:
+		return other
+	case r.Status == PropFalse:
+		return r
+	case other.Status == PropFalse:
+		return other
+	case r.Status == PropUndecided:
+		return r
+	case other.Status == PropUndecided:
+		return other
+	case r.Status == PropProof:
+		return r.mergeWith(other, other.Status)
+	case other.Status == PropProof:
+		return r.mergeWith(other, r.Status)
+	case r.Status == PropTrue && other.Status == PropTrue:
+		return r.mergeWith(other, PropTrue)
+	default:
+		return r
+	}
+}
+
+func (r *PropResult) mergeWith(other *PropResult, status propStatus) *PropResult {
+	return &PropResult{
+		Status: status,
+		Args:   append(append(make([]*PropArg, 0, len(r.Args)+len(other.Args)), r.Args...), other.Args...),
+		Labels: append(append(make([]string, 0, len(r.Labels)+len(other.Labels)), r.Labels...), other.Labels...),
+	}
+}

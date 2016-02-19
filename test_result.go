@@ -30,6 +30,7 @@ type TestResult struct {
 	Status    testStatus
 	Succeeded int
 	Discarded int
+	Error     error
 	Args      []*PropArg
 }
 

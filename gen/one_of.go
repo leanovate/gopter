@@ -7,7 +7,7 @@ func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		idx := genParams.Rng.Intn(len(other) + 1)
 		if idx == 0 {
-			gopter.NewGenResult(first, gopter.NoShrinker)
+			return gopter.NewGenResult(first, gopter.NoShrinker)
 		}
 		return gopter.NewGenResult(other[idx-1], gopter.NoShrinker)
 	}

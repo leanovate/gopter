@@ -13,9 +13,11 @@ type Command interface {
 	NextState(state State) State
 	PreCondition(state State) bool
 	PostCondition(state State, result Result) *gopter.PropResult
+	String() string
 }
 
 type ProtoCommand struct {
+	Name              string
 	RunFunc           func(systemUnderTest SystemUnderTest) Result
 	NextStateFunc     func(state State) State
 	PreConditionFunc  func(state State) bool
@@ -48,4 +50,8 @@ func (p *ProtoCommand) PostCondition(state State, result Result) *gopter.PropRes
 		return p.PostConditionFunc(state, result)
 	}
 	return &gopter.PropResult{Status: gopter.PropTrue}
+}
+
+func (p *ProtoCommand) String() string {
+	return p.Name
 }

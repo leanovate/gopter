@@ -3,6 +3,7 @@ package gopter
 import (
 	"fmt"
 	"math"
+	"runtime/debug"
 )
 
 // Prop represent some kind of property that (drums please) can and should be checked
@@ -15,7 +16,7 @@ func SaveProp(prop Prop) Prop {
 			if r := recover(); r != nil {
 				result = &PropResult{
 					Status: PropError,
-					Error:  fmt.Errorf("Check paniced: %#v", r),
+					Error:  fmt.Errorf("Check paniced: %v %s", r, debug.Stack()),
 				}
 			}
 		}()
@@ -79,6 +80,7 @@ func (prop Prop) Check(parameters *TestParameters) *TestResult {
 						Status:    TestError,
 						Succeeded: n,
 						Discarded: d,
+						Error:     propResult.Error,
 						Args:      propResult.Args,
 					}
 				}

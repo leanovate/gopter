@@ -14,7 +14,10 @@ type Commands interface {
 }
 
 func CommandsProp(commands Commands) gopter.Prop {
-	return prop.ForAll1(genActions(commands), func(actions interface{}) (interface{}, error) {
-		return true, nil
+	return prop.ForAll1(genActions(commands), func(a interface{}) (interface{}, error) {
+		systemUnderTest := commands.NewSystemUnderTest()
+		defer commands.DestroySystemUnderTest(systemUnderTest)
+
+		return a.(*actions).run(systemUnderTest)
 	})
 }
