@@ -2,7 +2,7 @@ package prop
 
 import "github.com/leanovate/gopter"
 
-func ForAll1(gen gopter.Gen, check func(interface{}) (interface{}, error)) gopter.Prop {
+func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gopter.Prop {
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResult := gen(genParams)
 		value, ok := genResult.Retrieve()
@@ -17,6 +17,14 @@ func ForAll1(gen gopter.Gen, check func(interface{}) (interface{}, error)) gopte
 		}
 
 		return shrinkValue(genResult, value, result, check)
+	})
+}
+
+func ForAll2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{}, error)) gopter.Prop {
+	return ForAll1(gen1, func(v1 interface{}) (interface{}, error) {
+		return ForAll1(gen2, func(v2 interface{}) (interface{}, error) {
+			return check(v1, v2)
+		}), nil
 	})
 }
 

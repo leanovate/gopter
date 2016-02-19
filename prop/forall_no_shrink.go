@@ -16,3 +16,11 @@ func ForAllNoShrink1(gen gopter.Gen, check func(interface{}) (interface{}, error
 		return convertResult(check(value)).WithArg(gopter.NewPropArg(genResult, 0, value, value))
 	})
 }
+
+func ForAllNoShrink2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{}, error)) gopter.Prop {
+	return ForAllNoShrink1(gen1, func(v1 interface{}) (interface{}, error) {
+		return ForAllNoShrink1(gen2, func(v2 interface{}) (interface{}, error) {
+			return check(v1, v2)
+		}), nil
+	})
+}
