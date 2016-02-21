@@ -1,6 +1,9 @@
 package gopter
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 type Properties struct {
 	parameters *TestParameters
@@ -31,9 +34,10 @@ func (p *Properties) Run(t *testing.T) {
 		result := prop.Check(p.parameters)
 
 		if result.Passed() {
-			t.Logf("Property %s: %s", propName, result.Status.String())
+			fmt.Println(formatLines(fmt.Sprintf("+ %s: %s", propName, result.Report()), "", "", 75))
 		} else {
-			t.Errorf("Property %s: %s", propName, result.Status.String())
+			fmt.Println(formatLines(fmt.Sprintf("! %s: %s", propName, result.Report()), "", "", 75))
+			t.Fail()
 		}
 	}
 }

@@ -1,6 +1,9 @@
 package gopter
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type shouldStop func() bool
 
@@ -37,8 +40,11 @@ func (r *runner) runWorkers() *TestResult {
 	var stopFlag Flag
 	defer stopFlag.Set()
 
+	start := time.Now()
 	if r.parameters.Workers < 2 {
-		return r.worker(0, stopFlag.Get)
+		result := r.worker(0, stopFlag.Get)
+		result.Time = time.Since(start)
+		return result
 	}
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(r.parameters.Workers)
@@ -65,5 +71,7 @@ func (r *runner) runWorkers() *TestResult {
 	waitGroup.Wait()
 	close(results)
 
-	return <-combinedResult
+	result := <-combinedResult
+	result.Time = time.Since(start)
+	return result
 }

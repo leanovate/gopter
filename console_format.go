@@ -2,23 +2,12 @@ package gopter
 
 import "strings"
 
-type PrettyParameters struct {
-	Verbosity int
-}
-
-func DefaultPrettyParameters() *PrettyParameters {
-	return &PrettyParameters{
-		Verbosity: 0,
-	}
-}
-
-func Pretty(prettyParams *PrettyParameters, result *TestResult) string {
-	return ""
-}
-
 func formatLines(str, lead, trail string, width int) string {
 	result := ""
 	for _, line := range strings.Split(str, "\n") {
+		if result != "" {
+			result += "\n"
+		}
 		result += breakLine(lead+line+trail, "  ", width)
 	}
 	return result
@@ -31,5 +20,18 @@ func breakLine(str, lead string, length int) string {
 		str = str[length:]
 	}
 	result += str
+	return result
+}
+
+func concatLines(strs ...string) string {
+	result := ""
+	for _, str := range strs {
+		if str != "" {
+			if result != "" {
+				result += "\n"
+			}
+			result += str
+		}
+	}
 	return result
 }
