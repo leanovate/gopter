@@ -16,6 +16,7 @@ func (s *int64Shrink) Next() (interface{}, bool) {
 	return value, true
 }
 
+// Int64Shrinker is a shrinker for int64 numbers
 func Int64Shrinker(v interface{}) gopter.Shrink {
 	negShrink := int64Shrink{
 		original: -v.(int64),
@@ -28,14 +29,17 @@ func Int64Shrinker(v interface{}) gopter.Shrink {
 	return gopter.Shrink(negShrink.Next).Interleave(gopter.Shrink(posShrink.Next))
 }
 
+// Int32Shrinker is a shrinker for int32 numbers
 func Int32Shrinker(v interface{}) gopter.Shrink {
 	return Int64Shrinker(int64(v.(int32))).Map(int64To32)
 }
 
+// Int16Shrinker is a shrinker for int16 numbers
 func Int16Shrinker(v interface{}) gopter.Shrink {
 	return Int64Shrinker(int64(v.(int16))).Map(int64To16)
 }
 
+// Int8Shrinker is a shrinker for int8 numbers
 func Int8Shrinker(v interface{}) gopter.Shrink {
 	return Int64Shrinker(int64(v.(int8))).Map(int64To8)
 }

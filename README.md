@@ -15,6 +15,11 @@ Main differences to ScalaCheck:
 * No arbitraries ... yet!
 * No parallel commands ... yet?
 
+Main differences to the already testing/quick package:
+
+* Much tighter control over generators
+* Shrinkers, i.e. automatically find the minimum value falsifying a property
+
 ## License
 
 [MIT Licence](http://opensource.org/licenses/MIT)

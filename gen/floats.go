@@ -7,6 +7,7 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+// Float64Range generates float64 numbers within a given range
 func Float64Range(min, max float64) gopter.Gen {
 	d := max - min
 	if d < 0 || d > math.MaxFloat64 {
@@ -22,6 +23,7 @@ func Float64Range(min, max float64) gopter.Gen {
 	}
 }
 
+// Float64 generates arbitrary float64 numbers that do not contain NaN or Inf
 func Float64() gopter.Gen {
 	return gopter.CombineGens([]gopter.Gen{
 		Int64Range(0, 1),
