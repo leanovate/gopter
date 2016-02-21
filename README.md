@@ -5,6 +5,7 @@
 ## Synopsis
 
 Gopter tries to bring the goodness of [ScalaCheck](https://www.scalacheck.org/) (and impliticly the goodness of [QuickCheck](http://hackage.haskell.org/package/QuickCheck)) to Go.
+It can be also seen as a more sophisticated version of the testing/quick package.
 
 Main differences to ScalaCheck:
 
