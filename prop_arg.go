@@ -14,6 +14,10 @@ type PropArg struct {
 	Shrinks int
 }
 
+func (p *PropArg) String() string {
+	return fmt.Sprintf("%v", p.Arg)
+}
+
 func (p *PropArg) Report(idx int) string {
 	label := p.Label
 	if label == "" {
