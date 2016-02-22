@@ -1,9 +1,6 @@
 package gopter
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 type Properties struct {
 	parameters *TestParameters
@@ -27,17 +24,23 @@ func (p *Properties) Property(name string, prop Prop) {
 	p.props[name] = prop
 }
 
-func (p *Properties) Run(t *testing.T) {
+func (p *Properties) Run(reporter Reporter) bool {
+	success := true
 	for _, propName := range p.propNames {
 		prop := p.props[propName]
 
 		result := prop.Check(p.parameters)
 
-		if result.Passed() {
-			fmt.Println(formatLines(fmt.Sprintf("+ %s: %s", propName, result.Report()), "", "", 75))
-		} else {
-			fmt.Println(formatLines(fmt.Sprintf("! %s: %s", propName, result.Report()), "", "", 75))
-			t.Fail()
+		reporter.ReportTestResult(propName, result)
+		if !result.Passed() {
+			success = false
 		}
+	}
+	return success
+}
+
+func (p *Properties) TestingRun(t *testing.T) {
+	if !p.Run(ConsoleReporter()) {
+		t.Fail()
 	}
 }

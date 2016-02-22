@@ -23,5 +23,5 @@ func TestTimeFormat(t *testing.T) {
 			},
 		))
 
-	properties.Run(t)
+	properties.TestingRun(t)
 }
