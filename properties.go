@@ -40,7 +40,7 @@ func (p *Properties) Run(reporter Reporter) bool {
 }
 
 func (p *Properties) TestingRun(t *testing.T) {
-	if !p.Run(ConsoleReporter()) {
+	if !p.Run(ConsoleReporter(true)) {
 		t.Fail()
 	}
 }

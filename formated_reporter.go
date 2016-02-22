@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 )
 
 // FormatedReporter reports test results in a human readable manager.
@@ -15,9 +16,9 @@ type FormatedReporter struct {
 }
 
 // ConsoleReporter creates a FormatedReporter writing to the console (i.e. stdout)
-func ConsoleReporter() Reporter {
+func ConsoleReporter(verbose bool) Reporter {
 	return &FormatedReporter{
-		verbose: true,
+		verbose: verbose,
 		width:   75,
 		output:  os.Stdout,
 	}
@@ -88,10 +89,20 @@ func (r *FormatedReporter) formatLines(str, lead, trail string) string {
 }
 
 func (r *FormatedReporter) breakLine(str, lead string) string {
+	if len(str) <= r.width {
+		return str
+	}
+
 	result := ""
 	for len(str) > r.width {
-		result += lead + str[0:r.width] + "\n"
-		str = str[r.width:]
+		idx := strings.LastIndexFunc(str[0:r.width], func(ch rune) bool {
+			return unicode.IsSpace(ch)
+		})
+		if idx < 0 {
+			idx = r.width
+		}
+		result += str[0:idx] + "\n" + lead
+		str = str[idx:]
 	}
 	result += str
 	return result
