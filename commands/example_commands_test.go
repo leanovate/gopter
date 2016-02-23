@@ -114,7 +114,7 @@ func (c *buggyCounterCommands) GenCommand(state commands.State) gopter.Gen {
 //  INC INC INC INC DEC GET
 // which is indeed the minimal set of commands one has to perform to find the
 // bug.
-func Example_buggyCounter() {
+func Example() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
 
