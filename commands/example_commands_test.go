@@ -99,9 +99,9 @@ func (c *buggyCounterCommands) GenCommand(state commands.State) gopter.Gen {
 	return gen.OneConstOf(GetBuggyCommand, IncBuggyCommand, DecBuggyCommand, ResetBuggyCommand)
 }
 
-// Example_buggy_counter demonstrates the usage of the commands package to
-// find a bug in a counter implementation that only occures if the counter is
-// above 3.
+// Demonstrates the usage of the commands package to find a bug in a counter
+// implementation that only occures if the counter is above 3.
+//
 // The output of this example will be
 //  ! buggy counter: Falsified after 45 passed tests.
 //  ARG_0: initial=0 sequential=[INC INC INC INC DEC GET]
