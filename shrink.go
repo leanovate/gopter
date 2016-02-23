@@ -63,7 +63,7 @@ type interleaved struct {
 }
 
 func (i *interleaved) Next() (interface{}, bool) {
-	for !i.firstExhausted && !i.secondExhaused {
+	for !i.firstExhausted || !i.secondExhaused {
 		i.state = !i.state
 		if i.state && !i.firstExhausted {
 			value, ok := i.first()
