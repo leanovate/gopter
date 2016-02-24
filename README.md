@@ -1,6 +1,8 @@
 # GOPTER
 
-... the GOlang Property TestER [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
+... the GOlang Property TestER
+[![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
+[![codecov.io](https://codecov.io/github/leanovate/gopter/coverage.svg?branch=master)](https://codecov.io/github/leanovate/gopter?branch=master)
 
 ## Synopsis
 
