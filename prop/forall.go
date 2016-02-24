@@ -16,7 +16,7 @@ func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gop
 			return result.WithArg(gopter.NewPropArg(genResult, 0, value, value))
 		}
 
-		return shrinkValue(genResult, value, result, check)
+		return shrinkValue(genParams.MaxShrinkCount, genResult, value, result, check)
 	})
 }
 
@@ -28,14 +28,14 @@ func ForAll2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{},
 	})
 }
 
-func shrinkValue(genResult *gopter.GenResult, origValue interface{},
+func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue interface{},
 	lastFail *gopter.PropResult, check func(interface{}) (interface{}, error)) *gopter.PropResult {
 	lastValue := origValue
 
 	shrinks := 0
 	shrink := genResult.Shrinker(lastValue).Filter(genResult.Sieve)
 	nextResult, nextValue := firstFailure(shrink, check)
-	for nextResult != nil {
+	for nextResult != nil && shrinks < maxShrinkCount {
 		shrinks++
 		lastValue = nextValue
 		lastFail = nextResult

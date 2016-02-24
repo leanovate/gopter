@@ -31,7 +31,9 @@ func (prop Prop) Check(parameters *TestParameters) *TestResult {
 	sizeStep := float64(parameters.MaxSize-parameters.MinSize) / (iterations * float64(parameters.Workers))
 
 	genParameters := GenParameters{
-		Rng: parameters.Rng,
+		Size:           parameters.MinSize,
+		MaxShrinkCount: parameters.MaxShrinkCount,
+		Rng:            parameters.Rng,
 	}
 	runner := &runner{
 		parameters: parameters,

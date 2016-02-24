@@ -6,8 +6,9 @@ import (
 )
 
 type GenParameters struct {
-	Size int
-	Rng  *rand.Rand
+	Size           int
+	MaxShrinkCount int
+	Rng            *rand.Rand
 }
 
 func (p *GenParameters) WithSize(size int) *GenParameters {
@@ -39,7 +40,8 @@ func DefaultGenParameters() *GenParameters {
 	seed := time.Now().UnixNano()
 
 	return &GenParameters{
-		Size: 100,
-		Rng:  rand.New(rand.NewSource(seed)),
+		Size:           100,
+		MaxShrinkCount: 1000,
+		Rng:            rand.New(rand.NewSource(seed)),
 	}
 }

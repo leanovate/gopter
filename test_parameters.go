@@ -10,6 +10,7 @@ type TestParameters struct {
 	MinSuccessfulTests int
 	MinSize            int
 	MaxSize            int
+	MaxShrinkCount     int
 	Rng                *rand.Rand
 	Workers            int
 	MaxDiscardRatio    float64
@@ -23,6 +24,7 @@ func DefaultTestParameters() *TestParameters {
 		MinSuccessfulTests: 100,
 		MinSize:            0,
 		MaxSize:            100,
+		MaxShrinkCount:     1000,
 		Rng:                rand.New(rand.NewSource(seed)),
 		Workers:            1,
 		MaxDiscardRatio:    5,
