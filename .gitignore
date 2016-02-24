@@ -26,3 +26,5 @@ _testmain.go
 bin/
 *.iml
 .idea/
+coverage.txt
+.coverage

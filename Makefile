@@ -1,3 +1,5 @@
+PACKAGES=$(shell go list ./...)
+
 all: format
 	@go build -v ./...
 
@@ -8,6 +10,15 @@ format:
 test:
 	@echo "--> Running tests"
 	@go test -v ./...
+	@$(MAKE) vet
+
+coverage:
+	@echo "--> Running tests with coverage"
+	@echo "" > coverage.txt
+	for pkg in $(shell go list ./...); do \
+		go test -coverprofile=.coverage -covermode=atomic -v $$pkg ; \
+		cat .coverage >> coverage.txt ; \
+	done
 	@$(MAKE) vet
 
 vet:
