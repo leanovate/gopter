@@ -29,6 +29,18 @@ func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
 	}
 }
 
+// All collects all shrinks as a slice. Use with care as this might create
+// large results depending on the complexity of the shrink
+func (s Shrink) All() []interface{} {
+	result := make([]interface{}, 0)
+	value, ok := s()
+	for ok {
+		result = append(result, value)
+		value, ok = s()
+	}
+	return result
+}
+
 type concatedShrink struct {
 	index   int
 	shrinks []Shrink
@@ -45,7 +57,7 @@ func (c *concatedShrink) Next() (interface{}, bool) {
 	return nil, false
 }
 
-// ConcatShinks concats an array of shrinks to a single shrinks
+// ConcatShrinks concats an array of shrinks to a single shrinks
 func ConcatShrinks(shrinks []Shrink) Shrink {
 	concated := &concatedShrink{
 		index:   0,
