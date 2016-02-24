@@ -27,4 +27,4 @@ bin/
 *.iml
 .idea/
 coverage.txt
-.coverage
+.pkg.coverage

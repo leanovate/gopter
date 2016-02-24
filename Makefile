@@ -16,9 +16,10 @@ coverage:
 	@echo "--> Running tests with coverage"
 	@echo "" > coverage.txt
 	for pkg in $(shell go list ./...); do \
-		go test -coverprofile=.coverage -covermode=atomic -v $$pkg ; \
-		cat .coverage >> coverage.txt ; \
+		go test -coverprofile=.pkg.coverage -covermode=atomic -v $$pkg ; \
+		cat .pkg.coverage >> coverage.txt ; \
 	done
+	@rm .pkg.coverage
 	@$(MAKE) vet
 
 vet:
