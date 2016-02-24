@@ -21,3 +21,18 @@ func TestFloat64(t *testing.T) {
 		}
 	}
 }
+
+func TestFloat32(t *testing.T) {
+	floats := gen.Float32()
+	for i := 0; i < 100; i++ {
+		value, ok := floats.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid floats: %#v", value)
+		}
+		_, ok = value.(float32)
+		if !ok {
+			t.Errorf("Invalid floats: %#v", value)
+		}
+	}
+}

@@ -39,3 +39,9 @@ func Float64Shrinker(v interface{}) gopter.Shrink {
 	}
 	return gopter.Shrink(negShrink.Next).Interleave(gopter.Shrink(posShrink.Next))
 }
+
+func Float32Shrinker(v interface{}) gopter.Shrink {
+	return Float64Shrinker(float64(v.(float32))).Map(func(e interface{}) interface{} {
+		return float32(e.(float64))
+	})
+}
