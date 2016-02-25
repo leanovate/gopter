@@ -122,6 +122,7 @@ func Example_buggyCounter() {
 
 	properties.Property("buggy counter", commands.CommandsProp(&buggyCounterCommands{}))
 
+	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// ! buggy counter: Falsified after 45 passed tests.

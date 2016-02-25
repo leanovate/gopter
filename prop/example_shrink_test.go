@@ -19,6 +19,7 @@ func Example_shrink() {
 		},
 	))
 
+	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// ! fail above 100: Falsified after 0 passed tests.
