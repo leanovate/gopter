@@ -78,7 +78,7 @@ func Identifier() gopter.Gen {
 		first := values[0].(rune)
 		tail := values[1].([]rune)
 		result := make([]rune, 0, len(tail)+1)
-		return append(append(result, first), tail...)
+		return string(append(append(result, first), tail...))
 	}).SuchThat(func(v interface{}) bool {
 		str := v.(string)
 		if len(str) < 1 || !unicode.IsLower(([]rune(str))[0]) {

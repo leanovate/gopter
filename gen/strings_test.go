@@ -86,3 +86,49 @@ func TestAlphaString(t *testing.T) {
 		}
 	}
 }
+
+func TestNumString(t *testing.T) {
+	numStrGen := gen.NumString()
+	for i := 0; i < 100; i++ {
+		value, ok := numStrGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		v, ok := value.(string)
+		if !ok {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		for _, ch := range v {
+			if !unicode.IsDigit(ch) {
+				t.Errorf("Invalid string: %#v", v)
+			}
+		}
+	}
+}
+
+func TestIdentifier(t *testing.T) {
+	identifierGen := gen.Identifier()
+	for i := 0; i < 100; i++ {
+		value, ok := identifierGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		v, ok := value.(string)
+		if !ok {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		if len(v) == 0 {
+			t.Errorf("Invalid string: %#v", v)
+		}
+		if !unicode.IsLower([]rune(v)[0]) {
+			t.Errorf("Invalid string: %#v", v)
+		}
+		for _, ch := range v {
+			if !unicode.IsDigit(ch) && !unicode.IsLetter(ch) {
+				t.Errorf("Invalid string: %#v", v)
+			}
+		}
+	}
+}
