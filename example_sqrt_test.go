@@ -30,6 +30,7 @@ func Example_sqrt() {
 		},
 	))
 
+	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// + greater one of all greater one: OK, passed 100 tests.
