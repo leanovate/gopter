@@ -148,6 +148,20 @@ func UInt8() gopter.Gen {
 	return UInt8Range(0, math.MaxUint8)
 }
 
+// Int generate arbitrary int numbers
+func Int() gopter.Gen {
+	return Int64Range(math.MinInt32, math.MaxInt32).
+		Map(int64ToInt).
+		WithShrinker(IntShrinker)
+}
+
+// UInt generate arbitrary uint numbers
+func UInt() gopter.Gen {
+	return UInt64Range(0, math.MaxUint32).
+		Map(uint64ToUint).
+		WithShrinker(UIntShrinker)
+}
+
 func int64To32(value interface{}) interface{} {
 	return int32(value.(int64))
 }
@@ -170,4 +184,12 @@ func int64To8(value interface{}) interface{} {
 
 func uint64To8(value interface{}) interface{} {
 	return uint8(value.(uint64))
+}
+
+func int64ToInt(value interface{}) interface{} {
+	return int(value.(int64))
+}
+
+func uint64ToUint(value interface{}) interface{} {
+	return uint(value.(uint64))
 }

@@ -11,6 +11,10 @@ func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
 	switch rt.Kind() {
 	case reflect.Bool:
 		return gen.Bool()
+	case reflect.Int:
+		return gen.Int()
+	case reflect.Uint:
+		return gen.UInt()
 	case reflect.Int8:
 		return gen.Int8()
 	case reflect.Uint8:

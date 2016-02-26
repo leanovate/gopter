@@ -81,3 +81,13 @@ func Int8Shrinker(v interface{}) gopter.Shrink {
 func UInt8Shrinker(v interface{}) gopter.Shrink {
 	return UInt64Shrinker(uint64(v.(uint8))).Map(uint64To8)
 }
+
+// IntShrinker is a shrinker for int numbers
+func IntShrinker(v interface{}) gopter.Shrink {
+	return Int64Shrinker(int64(v.(int))).Map(int64ToInt)
+}
+
+// UIntShrinker is a shrinker for uint numbers
+func UIntShrinker(v interface{}) gopter.Shrink {
+	return UInt64Shrinker(uint64(v.(uint))).Map(uint64ToUint)
+}
