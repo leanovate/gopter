@@ -1,20 +1,20 @@
 package gen_test
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
 func TestFloat64Shrinker(t *testing.T) {
-	zeroShrinks := float64Shinks(gen.Float64Shrinker(float64(0)))
-	if !float64SliceEquals(zeroShrinks, []float64{}) {
+	zeroShrinks := gen.Float64Shrinker(float64(0)).All()
+	if !reflect.DeepEqual(zeroShrinks, []interface{}{}) {
 		t.Errorf("Invalid zeroShrinks: %#v", zeroShrinks)
 	}
 
-	oneShrinks := float64Shinks(gen.Float64Shrinker(float64(1)))
-	if !float64SliceEquals(oneShrinks, []float64{
+	oneShrinks := gen.Float64Shrinker(float64(1)).All()
+	if !reflect.DeepEqual(oneShrinks, []interface{}{
 		0.0,
 		0.5,
 		-0.5,
@@ -52,8 +52,8 @@ func TestFloat64Shrinker(t *testing.T) {
 		t.Errorf("Invalid tenShrinks: %#v", oneShrinks)
 	}
 
-	hundretShrinks := float64Shinks(gen.Float64Shrinker(float64(100)))
-	if !float64SliceEquals(hundretShrinks, []float64{
+	hundretShrinks := gen.Float64Shrinker(float64(100)).All()
+	if !reflect.DeepEqual(hundretShrinks, []interface{}{
 		0.0,
 		50.0,
 		-50.0,
@@ -104,27 +104,4 @@ func TestFloat64Shrinker(t *testing.T) {
 	}) {
 		t.Errorf("Invalid hundretShrinks: %#v", hundretShrinks)
 	}
-}
-
-func float64Shinks(shrink gopter.Shrink) []float64 {
-	result := make([]float64, 0)
-
-	value, ok := shrink()
-	for ok {
-		result = append(result, value.(float64))
-		value, ok = shrink()
-	}
-	return result
-}
-
-func float64SliceEquals(a, b []float64) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, e := range a {
-		if e != b[i] {
-			return false
-		}
-	}
-	return true
 }

@@ -61,3 +61,16 @@ func TestShrinkConcat(t *testing.T) {
 		t.Errorf("Invalid all: %#v", all)
 	}
 }
+
+func TestShrinkInterleave(t *testing.T) {
+	counterShrink1 := &counterShrink{n: 5}
+	counterShrink2 := &counterShrink{n: 7}
+
+	shrink1 := gopter.Shrink(counterShrink1.Next)
+	shrink2 := gopter.Shrink(counterShrink2.Next)
+
+	all := shrink1.Interleave(shrink2).All()
+	if !reflect.DeepEqual(all, []interface{}{5, 7, 4, 6, 3, 5, 2, 4, 1, 3, 2, 1}) {
+		t.Errorf("Invalid all: %#v", all)
+	}
+}
