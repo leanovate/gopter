@@ -3,9 +3,25 @@ package gen_test
 import (
 	"testing"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/leanovate/gopter/gen"
 )
+
+func TestRune(t *testing.T) {
+	runeGen := gen.Rune()
+	for i := 0; i < 100; i++ {
+		value, ok := runeGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid char: %#v", value)
+		}
+		v, ok := value.(rune)
+		if !ok || !utf8.ValidRune(v) {
+			t.Errorf("Invalid char: %#v", value)
+		}
+	}
+}
 
 func TestNumChar(t *testing.T) {
 	numCharGen := gen.NumChar()
@@ -63,6 +79,26 @@ func TestAlphaChar(t *testing.T) {
 		v, ok := value.(rune)
 		if !ok || !unicode.IsLetter(v) {
 			t.Errorf("Invalid char: %#v", value)
+		}
+	}
+}
+
+func TestAnyString(t *testing.T) {
+	alphaStrGen := gen.AnyString()
+	for i := 0; i < 100; i++ {
+		value, ok := alphaStrGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		v, ok := value.(string)
+		if !ok {
+			t.Errorf("Invalid string: %#v", value)
+		}
+		for _, ch := range v {
+			if !utf8.ValidRune(ch) {
+				t.Errorf("Invalid string: %#v", v)
+			}
 		}
 	}
 }

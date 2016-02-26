@@ -2,6 +2,7 @@ package gen
 
 import (
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/leanovate/gopter"
 )
@@ -12,6 +13,17 @@ func RuneRange(min, max rune) gopter.Gen {
 		return rune(value.(int64))
 	}).SuchThat(func(v interface{}) bool {
 		return v.(rune) >= min && v.(rune) <= max
+	})
+}
+
+func Rune() gopter.Gen {
+	return Frequency(map[int]gopter.Gen{
+		0xD800:                Int64Range(0, 0xD800),
+		utf8.MaxRune - 0xDFFF: Int64Range(0xDFFF, int64(utf8.MaxRune)),
+	}).Map(func(value interface{}) interface{} {
+		return rune(value.(int64))
+	}).SuchThat(func(v interface{}) bool {
+		return utf8.ValidRune(v.(rune))
 	})
 }
 
@@ -42,6 +54,19 @@ func AlphaNumChar() gopter.Gen {
 		0: NumChar(),
 		9: AlphaChar(),
 	})
+}
+
+func AnyString() gopter.Gen {
+	return SliceOf(Rune()).Map(func(v interface{}) interface{} {
+		return string(v.([]rune))
+	}).SuchThat(func(v interface{}) bool {
+		for _, ch := range v.(string) {
+			if !utf8.ValidRune(ch) {
+				return false
+			}
+		}
+		return true
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
 }
 
 func AlphaString() gopter.Gen {

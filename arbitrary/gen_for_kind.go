@@ -31,6 +31,8 @@ func (a *Arbitrary) genForKind(kind reflect.Kind) gopter.Gen {
 		return gen.Float32()
 	case reflect.Float64:
 		return gen.Float64()
+	case reflect.String:
+		return gen.AnyString()
 	}
 	return nil
 }
