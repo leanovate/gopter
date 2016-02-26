@@ -24,5 +24,5 @@ func (a *Arbitrary) Gen(rt reflect.Type) gopter.Gen {
 	if gen, ok := a.generators[rt]; ok {
 		return gen
 	}
-	return a.genForKind(rt.Kind())
+	return a.genForKind(rt)
 }

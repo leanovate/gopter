@@ -7,8 +7,8 @@ import (
 	"github.com/leanovate/gopter/gen"
 )
 
-func (a *Arbitrary) genForKind(kind reflect.Kind) gopter.Gen {
-	switch kind {
+func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
+	switch rt.Kind() {
 	case reflect.Bool:
 		return gen.Bool()
 	case reflect.Int8:
@@ -33,6 +33,21 @@ func (a *Arbitrary) genForKind(kind reflect.Kind) gopter.Gen {
 		return gen.Float64()
 	case reflect.String:
 		return gen.AnyString()
+	case reflect.Slice:
+		if elementGen := a.Gen(rt.Elem()); elementGen != nil {
+			return gen.SliceOf(elementGen)
+		}
+	case reflect.Ptr:
+		if rt.Elem().Kind() == reflect.Struct {
+			gens := make(map[string]gopter.Gen)
+			for i := 0; i < rt.Elem().NumField(); i++ {
+				field := rt.Elem().Field(i)
+				if gen := a.Gen(field.Type); gen != nil {
+					gens[field.Name] = gen
+				}
+			}
+			return gen.StructPtr(rt, gens)
+		}
 	}
 	return nil
 }
