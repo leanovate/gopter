@@ -1,6 +1,7 @@
 package prop
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -18,42 +19,74 @@ func ForAll(check interface{}, gens ...gopter.Gen) gopter.Prop {
 	if checkType.NumIn() != len(gens) {
 		return ErrorProp(fmt.Errorf("Number of parameters does not match number of generators: %d != %d", checkType.NumIn(), len(gens)))
 	}
-	if checkType.NumOut() > 2 {
+	var callCheck func([]interface{}) *gopter.PropResult
+	if checkType.NumOut() == 0 {
+		return ErrorProp(errors.New("At least one output parameters is required"))
+	} else if checkType.NumOut() > 2 {
 		return ErrorProp(fmt.Errorf("No more than 2 output parameters are allowed: %d", checkType.NumOut()))
 	} else if checkType.NumOut() == 2 && !checkType.Out(1).Implements(typeOfError) {
 		return ErrorProp(fmt.Errorf("No 2 output has to be error: %v", checkType.Out(1).Kind()))
+	} else if checkType.NumOut() == 2 {
+		callCheck = func(values []interface{}) *gopter.PropResult {
+			rvs := make([]reflect.Value, len(values))
+			for i, value := range values {
+				rvs[i] = reflect.ValueOf(value)
+			}
+			results := checkVal.Call(rvs)
+			if results[1].IsNil() {
+				return convertResult(results[0].Interface(), nil)
+			}
+			return convertResult(results[0].Interface(), results[1].Interface().(error))
+		}
+	} else {
+		callCheck = func(values []interface{}) *gopter.PropResult {
+			rvs := make([]reflect.Value, len(values))
+			for i, value := range values {
+				rvs[i] = reflect.ValueOf(value)
+			}
+			results := checkVal.Call(rvs)
+			return convertResult(results[0].Interface(), nil)
+		}
 	}
-	gen := gopter.CombineGens(gens...)
 
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
-		genResult := gen(genParams)
-		value, ok := genResult.Retrieve()
-		if !ok {
-			return &gopter.PropResult{
-				Status: gopter.PropUndecided,
+		genResults := make([]*gopter.GenResult, len(gens))
+		values := make([]interface{}, len(gens))
+		var ok bool
+		for i, gen := range gens {
+			result := gen(genParams)
+			genResults[i] = result
+			values[i], ok = result.Retrieve()
+			if !ok {
+				return &gopter.PropResult{
+					Status: gopter.PropUndecided,
+				}
 			}
 		}
-		values := value.([]interface{})
-		rvs := make([]reflect.Value, len(values))
-		for i, value := range values {
-			rvs[i] = reflect.ValueOf(value)
-		}
-		results := checkVal.Call(rvs)
-		var result *gopter.PropResult
-		if len(results) == 2 {
-			result = convertResult(results[0].Interface(), results[1].Interface().(error))
+		result := callCheck(values)
+		if result.Success() {
+			for i, genResult := range genResults {
+				result = result.WithArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
+			}
 		} else {
-			result = convertResult(results[0].Interface(), nil)
+			for i, genResult := range genResults {
+				result = shrinkValue(genParams.MaxShrinkCount, genResult, values[i], result,
+					func(v interface{}) *gopter.PropResult {
+						shrinkedOne := make([]interface{}, len(values))
+						copy(shrinkedOne, values)
+						shrinkedOne[i] = v
+						return callCheck(shrinkedOne)
+					})
+			}
 		}
-		args := make([]*gopter.PropArg, len(rvs))
-		for i, value := range values {
-			args[i] = gopter.NewPropArg(genResult, 0, value, value)
-		}
-		return result.WithArgs(args...)
+		return result
 	})
 }
 
 func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gopter.Prop {
+	checkFunc := func(v interface{}) *gopter.PropResult {
+		return convertResult(check(v))
+	}
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResult := gen(genParams)
 		value, ok := genResult.Retrieve()
@@ -62,12 +95,12 @@ func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gop
 				Status: gopter.PropUndecided,
 			}
 		}
-		result := convertResult(check(value))
+		result := checkFunc(value)
 		if result.Success() {
 			return result.WithArgs(gopter.NewPropArg(genResult, 0, value, value))
 		}
 
-		return shrinkValue(genParams.MaxShrinkCount, genResult, value, result, check)
+		return shrinkValue(genParams.MaxShrinkCount, genResult, value, result, checkFunc)
 	})
 }
 
@@ -80,7 +113,7 @@ func ForAll2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{},
 }
 
 func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue interface{},
-	lastFail *gopter.PropResult, check func(interface{}) (interface{}, error)) *gopter.PropResult {
+	lastFail *gopter.PropResult, check func(interface{}) *gopter.PropResult) *gopter.PropResult {
 	lastValue := origValue
 
 	shrinks := 0
@@ -98,10 +131,10 @@ func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue inte
 	return lastFail.WithArgs(gopter.NewPropArg(genResult, shrinks, lastValue, origValue))
 }
 
-func firstFailure(shrink gopter.Shrink, check func(interface{}) (interface{}, error)) (*gopter.PropResult, interface{}) {
+func firstFailure(shrink gopter.Shrink, check func(interface{}) *gopter.PropResult) (*gopter.PropResult, interface{}) {
 	value, ok := shrink()
 	for ok {
-		result := convertResult(check(value))
+		result := check(value)
 		if !result.Success() {
 			return result, value
 		}

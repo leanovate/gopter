@@ -15,24 +15,22 @@ func Example_timeGen() {
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("regular time format parsable", prop.ForAll1(
-		gen.TimeRange(time.Now(), time.Duration(100*24*365)*time.Hour),
-		func(arg interface{}) (interface{}, error) {
-			actual := arg.(time.Time)
+	properties.Property("regular time format parsable", prop.ForAll(
+		func(actual time.Time) (bool, error) {
 			str := actual.Format(time.RFC3339Nano)
 			parsed, err := time.Parse(time.RFC3339Nano, str)
 			return actual.Equal(parsed), err
 		},
+		gen.TimeRange(time.Now(), time.Duration(100*24*365)*time.Hour),
 	))
 
-	properties.Property("any time format parsable", prop.ForAll1(
-		gen.Time(),
-		func(arg interface{}) (interface{}, error) {
-			actual := arg.(time.Time)
+	properties.Property("any time format parsable", prop.ForAll(
+		func(actual time.Time) (bool, error) {
 			str := actual.Format(time.RFC3339Nano)
 			parsed, err := time.Parse(time.RFC3339Nano, str)
 			return actual.Equal(parsed), err
 		},
+		gen.Time(),
 	))
 
 	properties.Run(gopter.ConsoleReporter(false))

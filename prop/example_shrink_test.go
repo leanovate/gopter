@@ -12,11 +12,11 @@ func Example_shrink() {
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("fail above 100", prop.ForAll1(
-		gen.Int64(),
-		func(arg interface{}) (interface{}, error) {
-			return arg.(int64) <= 100, nil
+	properties.Property("fail above 100", prop.ForAll(
+		func(arg int64) bool {
+			return arg <= 100
 		},
+		gen.Int64(),
 	))
 
 	// When using testing.T you might just use: properties.TestingRun(t)

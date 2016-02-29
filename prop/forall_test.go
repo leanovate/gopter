@@ -1,18 +1,16 @@
-package gopter_test
+package prop_test
 
 import (
 	"math"
+	"testing"
 
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 	"github.com/leanovate/gopter/prop"
 )
 
-func Example_sqrt() {
-	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
-
-	properties := gopter.NewProperties(parameters)
+func TestSqrt(t *testing.T) {
+	properties := gopter.NewProperties(nil)
 
 	properties.Property("greater one of all greater one", prop.ForAll(
 		func(v float64) bool {
@@ -29,9 +27,5 @@ func Example_sqrt() {
 		gen.Float64Range(0, math.MaxFloat64),
 	))
 
-	// When using testing.T you might just use: properties.TestingRun(t)
-	properties.Run(gopter.ConsoleReporter(false))
-	// Output:
-	// + greater one of all greater one: OK, passed 100 tests.
-	// + squared is equal to value: OK, passed 100 tests.
+	properties.TestingRun(t)
 }
