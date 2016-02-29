@@ -61,8 +61,8 @@ func (r *PropResult) Success() bool {
 }
 
 // WithArgs adds argument descriptors to the PropResult for reporting
-func (r *PropResult) WithArg(args *PropArg) *PropResult {
-	r.Args = append(r.Args, args)
+func (r *PropResult) WithArgs(args ...*PropArg) *PropResult {
+	r.Args = append(r.Args, args...)
 	return r
 }
 

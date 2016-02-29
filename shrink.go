@@ -107,6 +107,26 @@ func (s Shrink) Interleave(other Shrink) Shrink {
 // Shrinker creates a shrink for a given value
 type Shrinker func(value interface{}) Shrink
 
+func CombineShrinker(shrinkers ...Shrinker) Shrinker {
+	return func(v interface{}) Shrink {
+		values := v.([]interface{})
+		shrinks := make([]Shrink, 0, len(values))
+		for i, shrinker := range shrinkers {
+			if i >= len(values) {
+				break
+			}
+			shrink := shrinker(values[i]).Map(func(v interface{}) interface{} {
+				shrinked := make([]interface{}, len(values))
+				copy(shrinked, values)
+				shrinked[i] = v
+				return shrinked
+			})
+			shrinks = append(shrinks, shrink)
+		}
+		return ConcatShrinks(shrinks)
+	}
+}
+
 var NoShrink = Shrink(func() (interface{}, bool) {
 	return nil, false
 })

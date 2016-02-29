@@ -96,10 +96,11 @@ func NumString() gopter.Gen {
 }
 
 func Identifier() gopter.Gen {
-	return gopter.CombineGens([]gopter.Gen{
+	return gopter.CombineGens(
 		AlphaLowerChar(),
 		SliceOf(AlphaNumChar()),
-	}, func(values []interface{}) interface{} {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		first := values[0].(rune)
 		tail := values[1].([]rune)
 		result := make([]rune, 0, len(tail)+1)

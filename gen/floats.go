@@ -25,11 +25,12 @@ func Float64Range(min, max float64) gopter.Gen {
 
 // Float64 generates arbitrary float64 numbers that do not contain NaN or Inf
 func Float64() gopter.Gen {
-	return gopter.CombineGens([]gopter.Gen{
+	return gopter.CombineGens(
 		Int64Range(0, 1),
 		Int64Range(0, 0x7fe),
 		Int64Range(0, 0xfffffffffffff),
-	}, func(values []interface{}) interface{} {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		sign := uint64(values[0].(int64))
 		exponent := uint64(values[1].(int64))
 		mantissa := uint64(values[2].(int64))
@@ -55,11 +56,12 @@ func Float32Range(min, max float32) gopter.Gen {
 
 // Float32 generates arbitrary float32 numbers that do not contain NaN or Inf
 func Float32() gopter.Gen {
-	return gopter.CombineGens([]gopter.Gen{
+	return gopter.CombineGens(
 		Int32Range(0, 1),
 		Int32Range(0, 0xfe),
 		Int32Range(0, 0x7fffff),
-	}, func(values []interface{}) interface{} {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		sign := uint32(values[0].(int32))
 		exponent := uint32(values[1].(int32))
 		mantissa := uint32(values[2].(int32))

@@ -13,7 +13,7 @@ func ForAllNoShrink1(gen gopter.Gen, check func(interface{}) (interface{}, error
 				Status: gopter.PropUndecided,
 			}
 		}
-		return convertResult(check(value)).WithArg(gopter.NewPropArg(genResult, 0, value, value))
+		return convertResult(check(value)).WithArgs(gopter.NewPropArg(genResult, 0, value, value))
 	})
 }
 

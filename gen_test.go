@@ -59,19 +59,13 @@ func TestCombineGens(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		gens = append(gens, constGen(i))
 	}
-	gen := gopter.CombineGens(gens, func(vs []interface{}) interface{} {
-		result := make([]int, len(vs))
-		for i, v := range vs {
-			result[i] = v.(int)
-		}
-		return result
-	})
+	gen := gopter.CombineGens(gens...)
 	raw, ok := gen.Sample()
 	if !ok {
 		t.Errorf("Invalid combined gen: %#v", raw)
 	}
-	values, ok := raw.([]int)
-	if !ok || !reflect.DeepEqual(values, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}) {
+	values, ok := raw.([]interface{})
+	if !ok || !reflect.DeepEqual(values, []interface{}{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}) {
 		t.Errorf("Invalid combined gen: %#v", raw)
 	}
 }
