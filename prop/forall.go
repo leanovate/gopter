@@ -13,6 +13,7 @@ var typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 func ForAll(check interface{}, gens ...gopter.Gen) gopter.Prop {
 	checkVal := reflect.ValueOf(check)
 	checkType := checkVal.Type()
+
 	if checkType.Kind() != reflect.Func {
 		return ErrorProp(fmt.Errorf("First param of ForrAll has to be a func: %v", checkVal.Kind()))
 	}
@@ -70,7 +71,7 @@ func ForAll(check interface{}, gens ...gopter.Gen) gopter.Prop {
 			}
 		} else {
 			for i, genResult := range genResults {
-				result = shrinkValue(genParams.MaxShrinkCount, genResult, values[i], result,
+				result, values[i] = shrinkValue(genParams.MaxShrinkCount, genResult, values[i], result,
 					func(v interface{}) *gopter.PropResult {
 						shrinkedOne := make([]interface{}, len(values))
 						copy(shrinkedOne, values)
@@ -100,7 +101,8 @@ func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gop
 			return result.WithArgs(gopter.NewPropArg(genResult, 0, value, value))
 		}
 
-		return shrinkValue(genParams.MaxShrinkCount, genResult, value, result, checkFunc)
+		result, _ = shrinkValue(genParams.MaxShrinkCount, genResult, value, result, checkFunc)
+		return result
 	})
 }
 
@@ -113,7 +115,8 @@ func ForAll2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{},
 }
 
 func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue interface{},
-	lastFail *gopter.PropResult, check func(interface{}) *gopter.PropResult) *gopter.PropResult {
+	firstFail *gopter.PropResult, check func(interface{}) *gopter.PropResult) (*gopter.PropResult, interface{}) {
+	lastFail := firstFail
 	lastValue := origValue
 
 	shrinks := 0
@@ -128,7 +131,7 @@ func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue inte
 		nextResult, nextValue = firstFailure(shrink, check)
 	}
 
-	return lastFail.WithArgs(gopter.NewPropArg(genResult, shrinks, lastValue, origValue))
+	return lastFail.WithArgs(firstFail.Args...).WithArgs(gopter.NewPropArg(genResult, shrinks, lastValue, origValue)), lastValue
 }
 
 func firstFailure(shrink gopter.Shrink, check func(interface{}) *gopter.PropResult) (*gopter.PropResult, interface{}) {
