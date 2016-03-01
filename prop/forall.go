@@ -1,8 +1,6 @@
 package prop
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 
 	"github.com/leanovate/gopter"
@@ -11,43 +9,9 @@ import (
 var typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 
 func ForAll(check interface{}, gens ...gopter.Gen) gopter.Prop {
-	checkVal := reflect.ValueOf(check)
-	checkType := checkVal.Type()
-
-	if checkType.Kind() != reflect.Func {
-		return ErrorProp(fmt.Errorf("First param of ForrAll has to be a func: %v", checkVal.Kind()))
-	}
-	if checkType.NumIn() != len(gens) {
-		return ErrorProp(fmt.Errorf("Number of parameters does not match number of generators: %d != %d", checkType.NumIn(), len(gens)))
-	}
-	var callCheck func([]interface{}) *gopter.PropResult
-	if checkType.NumOut() == 0 {
-		return ErrorProp(errors.New("At least one output parameters is required"))
-	} else if checkType.NumOut() > 2 {
-		return ErrorProp(fmt.Errorf("No more than 2 output parameters are allowed: %d", checkType.NumOut()))
-	} else if checkType.NumOut() == 2 && !checkType.Out(1).Implements(typeOfError) {
-		return ErrorProp(fmt.Errorf("No 2 output has to be error: %v", checkType.Out(1).Kind()))
-	} else if checkType.NumOut() == 2 {
-		callCheck = func(values []interface{}) *gopter.PropResult {
-			rvs := make([]reflect.Value, len(values))
-			for i, value := range values {
-				rvs[i] = reflect.ValueOf(value)
-			}
-			results := checkVal.Call(rvs)
-			if results[1].IsNil() {
-				return convertResult(results[0].Interface(), nil)
-			}
-			return convertResult(results[0].Interface(), results[1].Interface().(error))
-		}
-	} else {
-		callCheck = func(values []interface{}) *gopter.PropResult {
-			rvs := make([]reflect.Value, len(values))
-			for i, value := range values {
-				rvs[i] = reflect.ValueOf(value)
-			}
-			results := checkVal.Call(rvs)
-			return convertResult(results[0].Interface(), nil)
-		}
+	callCheck, err := checkFunc(check, len(gens))
+	if err != nil {
+		return ErrorProp(err)
 	}
 
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
