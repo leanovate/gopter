@@ -40,6 +40,19 @@ func Example_quadratic() {
 		gen.Float64(),
 	))
 
+	properties.Property("solve quadratic with resonable ranges", prop.ForAll(
+		func(a, b, c float64) bool {
+			x1, x2, err := solveQuadratic(a, b, c)
+			if err != nil {
+				return true
+			}
+			return math.Abs(a*x1*x1+b*x1+c) < 1e-5 && math.Abs(a*x2*x2+b*x2+c) < 1e-5
+		},
+		gen.Float64Range(-1e8, 1e8),
+		gen.Float64Range(-1e8, 1e8),
+		gen.Float64Range(-1e8, 1e8),
+	))
+
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
@@ -50,4 +63,5 @@ func Example_quadratic() {
 	// ARG_1_ORIGINAL (1 shrinks): -1.1203884793568249e+96
 	// ARG_2: 6.481285637227244e+10
 	// ARG_2_ORIGINAL (905 shrinks): 1.512647219322138e+281
+	// + solve quadratic with resonable ranges: OK, passed 100 tests.
 }
