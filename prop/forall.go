@@ -8,8 +8,16 @@ import (
 
 var typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 
-func ForAll(check interface{}, gens ...gopter.Gen) gopter.Prop {
-	callCheck, err := checkFunc(check, len(gens))
+/*
+ForAll creates a property that requires the check condition to be true for all values, if the
+condition falsiies the generated values will be shrinked.
+
+"condition" has to be a function with the same number of parameters as the provided
+generators "gens". The function may return a simple bool, a *PropResult, a boolean with error or
+a *PropResult with error.
+*/
+func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
+	callCheck, err := checkConditionFunc(condition, len(gens))
 	if err != nil {
 		return ErrorProp(err)
 	}

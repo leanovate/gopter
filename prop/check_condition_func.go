@@ -8,7 +8,7 @@ import (
 	"github.com/leanovate/gopter"
 )
 
-func checkFunc(check interface{}, numArgs int) (func([]interface{}) *gopter.PropResult, error) {
+func checkConditionFunc(check interface{}, numArgs int) (func([]interface{}) *gopter.PropResult, error) {
 	checkVal := reflect.ValueOf(check)
 	checkType := checkVal.Type()
 
