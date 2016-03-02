@@ -35,6 +35,10 @@ func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
 		return gen.Float32()
 	case reflect.Float64:
 		return gen.Float64()
+	case reflect.Complex64:
+		return gen.Complex64()
+	case reflect.Complex128:
+		return gen.Complex128()
 	case reflect.String:
 		return gen.AnyString()
 	case reflect.Slice:
