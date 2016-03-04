@@ -56,7 +56,7 @@ func TestShrinkConcat(t *testing.T) {
 	shrink1 := gopter.Shrink(counterShrink1.Next)
 	shrink2 := gopter.Shrink(counterShrink2.Next)
 
-	all := gopter.ConcatShrinks([]gopter.Shrink{shrink1, shrink2}).All()
+	all := gopter.ConcatShrinks(shrink1, shrink2).All()
 	if !reflect.DeepEqual(all, []interface{}{5, 4, 3, 2, 1, 4, 3, 2, 1}) {
 		t.Errorf("Invalid all: %#v", all)
 	}

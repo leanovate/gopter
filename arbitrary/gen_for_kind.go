@@ -56,6 +56,7 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 			}
 			return gen.StructPtr(rt, gens)
 		}
+		return gen.PtrOf(a.GenForType(rt.Elem()))
 	}
 	return nil
 }

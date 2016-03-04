@@ -58,7 +58,7 @@ func (c *concatedShrink) Next() (interface{}, bool) {
 }
 
 // ConcatShrinks concats an array of shrinks to a single shrinks
-func ConcatShrinks(shrinks []Shrink) Shrink {
+func ConcatShrinks(shrinks ...Shrink) Shrink {
 	concated := &concatedShrink{
 		index:   0,
 		shrinks: shrinks,
@@ -123,7 +123,7 @@ func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 			})
 			shrinks = append(shrinks, shrink)
 		}
-		return ConcatShrinks(shrinks)
+		return ConcatShrinks(shrinks...)
 	}
 }
 

@@ -41,7 +41,7 @@ func SliceShrinkerOne(elementShrinker gopter.Shrinker) gopter.Shrinker {
 			}
 			shrinks = append(shrinks, sliceShrinkOne.Next)
 		}
-		return gopter.ConcatShrinks(shrinks)
+		return gopter.ConcatShrinks(shrinks...)
 	}
 }
 
@@ -91,6 +91,6 @@ func SliceShrinker(elementShrinker gopter.Shrinker) gopter.Shrinker {
 			}
 			shrinks = append(shrinks, sliceShrinkOne.Next)
 		}
-		return gopter.ConcatShrinks(shrinks)
+		return gopter.ConcatShrinks(shrinks...)
 	}
 }
