@@ -78,14 +78,6 @@ func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gop
 	})
 }
 
-func ForAll2(gen1, gen2 gopter.Gen, check func(v1, v2 interface{}) (interface{}, error)) gopter.Prop {
-	return ForAll1(gen1, func(v1 interface{}) (interface{}, error) {
-		return ForAll1(gen2, func(v2 interface{}) (interface{}, error) {
-			return check(v1, v2)
-		}), nil
-	})
-}
-
 func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue interface{},
 	firstFail *gopter.PropResult, check func(interface{}) *gopter.PropResult) (*gopter.PropResult, interface{}) {
 	lastFail := firstFail

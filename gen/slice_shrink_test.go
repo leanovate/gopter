@@ -54,3 +54,33 @@ func TestSliceShrink(t *testing.T) {
 		t.Errorf("Invalid fourShrink: %#v", fourShrink)
 	}
 }
+
+func TestSliceShrinkOne(t *testing.T) {
+	oneShrink := gen.SliceShrinkerOne(gen.Int64Shrinker)([]int64{0}).All()
+	if !reflect.DeepEqual(oneShrink, []interface{}{}) {
+		t.Errorf("Invalid oneShrink: %#v", oneShrink)
+	}
+
+	threeShrink := gen.SliceShrinkerOne(gen.Int64Shrinker)([]int64{0, 1, 2}).All()
+	if !reflect.DeepEqual(threeShrink, []interface{}{
+		[]int64{0, 0, 2},
+		[]int64{0, 1, 0},
+		[]int64{0, 1, 1},
+		[]int64{0, 1, -1},
+	}) {
+		t.Errorf("Invalid threeShrink: %#v", threeShrink)
+	}
+
+	fourShrink := gen.SliceShrinkerOne(gen.Int64Shrinker)([]int64{0, 1, 2, 3}).All()
+	if !reflect.DeepEqual(fourShrink, []interface{}{
+		[]int64{0, 0, 2, 3},
+		[]int64{0, 1, 0, 3},
+		[]int64{0, 1, 1, 3},
+		[]int64{0, 1, -1, 3},
+		[]int64{0, 1, 2, 0},
+		[]int64{0, 1, 2, 2},
+		[]int64{0, 1, 2, -2},
+	}) {
+		t.Errorf("Invalid fourShrink: %#v", fourShrink)
+	}
+}

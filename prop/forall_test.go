@@ -19,12 +19,28 @@ func TestSqrt(t *testing.T) {
 		gen.Float64Range(1, math.MaxFloat64),
 	))
 
+	properties.Property("greater one of all greater one alternative", prop.ForAll1(
+		gen.Float64Range(1, math.MaxFloat64),
+		func(v interface{}) (interface{}, error) {
+			return math.Sqrt(v.(float64)) >= 1, nil
+		},
+	))
+
 	properties.Property("squared is equal to value", prop.ForAll(
 		func(v float64) bool {
 			r := math.Sqrt(v)
 			return math.Abs(r*r-v) < 1e-10*v
 		},
 		gen.Float64Range(0, math.MaxFloat64),
+	))
+
+	properties.Property("squared is equal to value alternative", prop.ForAll1(
+		gen.Float64Range(0, math.MaxFloat64),
+		func(v interface{}) (interface{}, error) {
+			s := v.(float64)
+			r := math.Sqrt(s)
+			return math.Abs(r*r-s) < 1e-10*s, nil
+		},
 	))
 
 	properties.TestingRun(t)
