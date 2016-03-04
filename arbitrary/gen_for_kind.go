@@ -7,7 +7,7 @@ import (
 	"github.com/leanovate/gopter/gen"
 )
 
-func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
+func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 	switch rt.Kind() {
 	case reflect.Bool:
 		return gen.Bool()
@@ -42,7 +42,7 @@ func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
 	case reflect.String:
 		return gen.AnyString()
 	case reflect.Slice:
-		if elementGen := a.Gen(rt.Elem()); elementGen != nil {
+		if elementGen := a.GenForType(rt.Elem()); elementGen != nil {
 			return gen.SliceOf(elementGen)
 		}
 	case reflect.Ptr:
@@ -50,7 +50,7 @@ func (a *Arbitrary) genForKind(rt reflect.Type) gopter.Gen {
 			gens := make(map[string]gopter.Gen)
 			for i := 0; i < rt.Elem().NumField(); i++ {
 				field := rt.Elem().Field(i)
-				if gen := a.Gen(field.Type); gen != nil {
+				if gen := a.GenForType(field.Type); gen != nil {
 					gens[field.Name] = gen
 				}
 			}
