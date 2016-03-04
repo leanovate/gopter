@@ -108,3 +108,15 @@ func TestCombineShrinker(t *testing.T) {
 		t.Errorf("Invalid all: %#v", all)
 	}
 }
+
+func TestShrinkMap(t *testing.T) {
+	counter := &counterShrink{n: 10}
+	shrink := gopter.Shrink(counter.Next).Map(func(v interface{}) interface{} {
+		return 10 - v.(int)
+	})
+
+	all := shrink.All()
+	if !reflect.DeepEqual(all, []interface{}{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}) {
+		t.Errorf("Invalid all: %#v", all)
+	}
+}

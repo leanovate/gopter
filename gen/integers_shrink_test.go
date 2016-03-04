@@ -32,3 +32,24 @@ func TestInt64Shrink(t *testing.T) {
 		t.Errorf("Invalid leetShrink: %#v", leetShrink)
 	}
 }
+
+func TestUInt64Shrink(t *testing.T) {
+	zeroShrinks := gen.UInt64Shrinker(uint64(0)).All()
+	if !reflect.DeepEqual(zeroShrinks, []interface{}{}) {
+		t.Errorf("Invalid zeroShrinks: %#v", zeroShrinks)
+	}
+
+	tenShrinks := gen.UInt64Shrinker(uint64(10)).All()
+	if !reflect.DeepEqual(tenShrinks, []interface{}{uint64(0), uint64(5), uint64(8), uint64(9)}) {
+		t.Errorf("Invalid tenShrinks: %#v", tenShrinks)
+	}
+
+	leetShrink := gen.UInt64Shrinker(uint64(1337)).All()
+	if !reflect.DeepEqual(leetShrink, []interface{}{
+		uint64(0), uint64(669), uint64(1003), uint64(1170),
+		uint64(1254), uint64(1296), uint64(1317),
+		uint64(1327), uint64(1332), uint64(1335),
+		uint64(1336)}) {
+		t.Errorf("Invalid leetShrink: %#v", leetShrink)
+	}
+}

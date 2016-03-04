@@ -85,3 +85,21 @@ func TestSuchThat(t *testing.T) {
 		t.Errorf("Invalid sieveArg: %#v", sieveArg)
 	}
 }
+
+func TestWithShrinker(t *testing.T) {
+	var shrinkerArg interface{}
+	shrinker := func(v interface{}) gopter.Shrink {
+		shrinkerArg = v
+		return gopter.NoShrink
+	}
+	gen := constGen("sample").WithShrinker(shrinker)
+	result := gen(gopter.DefaultGenParameters())
+	value, ok := result.Retrieve()
+	if !ok {
+		t.Errorf("Invalid combined value: %#v", value)
+	}
+	result.Shrinker(value)
+	if shrinkerArg != "sample" {
+		t.Errorf("Invalid shrinkerArg: %#v", shrinkerArg)
+	}
+}

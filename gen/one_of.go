@@ -20,6 +20,6 @@ func OneGenOf(first gopter.Gen, other ...gopter.Gen) gopter.Gen {
 		if idx == 0 {
 			return first(genParams)
 		}
-		return other[idx+1](genParams)
+		return other[idx-1](genParams)
 	}
 }
