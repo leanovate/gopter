@@ -69,3 +69,19 @@ func TestCombineGens(t *testing.T) {
 		t.Errorf("Invalid combined gen: %#v", raw)
 	}
 }
+
+func TestSuchThat(t *testing.T) {
+	var sieveArg interface{}
+	sieve := func(v interface{}) bool {
+		sieveArg = v
+		return false
+	}
+	gen := constGen("sample").SuchThat(sieve)
+	_, ok := gen.Sample()
+	if ok {
+		t.Error("Did not expect a result")
+	}
+	if sieveArg != "sample" {
+		t.Errorf("Invalid sieveArg: %#v", sieveArg)
+	}
+}

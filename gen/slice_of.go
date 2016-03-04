@@ -20,7 +20,11 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 			value, ok := element.Retrieve()
 
 			if ok {
-				result = reflect.Append(result, reflect.ValueOf(value))
+				if value == nil {
+					result = reflect.Append(result, reflect.Zero(element.ResultType))
+				} else {
+					result = reflect.Append(result, reflect.ValueOf(value))
+				}
 			}
 			element = elementGen(genParams)
 		}
@@ -45,7 +49,11 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 			value, ok := element.Retrieve()
 
 			if ok {
-				result = reflect.Append(result, reflect.ValueOf(value))
+				if value == nil {
+					result = reflect.Append(result, reflect.Zero(element.ResultType))
+				} else {
+					result = reflect.Append(result, reflect.ValueOf(value))
+				}
 			}
 			element = elementGen(genParams)
 		}

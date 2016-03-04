@@ -74,3 +74,37 @@ func TestShrinkInterleave(t *testing.T) {
 		t.Errorf("Invalid all: %#v", all)
 	}
 }
+
+func TestCombineShrinker(t *testing.T) {
+	var shrinker1Arg, shrinker2Arg interface{}
+	shrinker1 := func(v interface{}) gopter.Shrink {
+		shrinker1Arg = v
+		shrink := &counterShrink{n: 5}
+		return shrink.Next
+	}
+	shrinker2 := func(v interface{}) gopter.Shrink {
+		shrinker2Arg = v
+		shrink := &counterShrink{n: 3}
+		return shrink.Next
+	}
+	shrinker := gopter.CombineShrinker(shrinker1, shrinker2)
+	all := shrinker([]interface{}{123, 456}).All()
+	if shrinker1Arg != 123 {
+		t.Errorf("Invalid shrinker1Arg: %#v", shrinker1Arg)
+	}
+	if shrinker2Arg != 456 {
+		t.Errorf("Invalid shrinker1Arg: %#v", shrinker1Arg)
+	}
+	if !reflect.DeepEqual(all, []interface{}{
+		[]interface{}{5, 456},
+		[]interface{}{4, 456},
+		[]interface{}{3, 456},
+		[]interface{}{2, 456},
+		[]interface{}{1, 456},
+		[]interface{}{123, 3},
+		[]interface{}{123, 2},
+		[]interface{}{123, 1},
+	}) {
+		t.Errorf("Invalid all: %#v", all)
+	}
+}

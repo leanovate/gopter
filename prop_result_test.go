@@ -63,3 +63,14 @@ func TestPropResult(t *testing.T) {
 		t.Errorf("Invalid combined state: %#v", other.And(result))
 	}
 }
+
+func TestNewPropResult(t *testing.T) {
+	trueResult := gopter.NewPropResult(true, "label")
+	if trueResult.Status != gopter.PropTrue || trueResult.Labels[0] != "label" {
+		t.Errorf("Invalid trueResult: %#v", trueResult)
+	}
+	falseResult := gopter.NewPropResult(false, "label")
+	if falseResult.Status != gopter.PropFalse || falseResult.Labels[0] != "label" {
+		t.Errorf("Invalid falseResult: %#v", falseResult)
+	}
+}

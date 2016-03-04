@@ -26,7 +26,7 @@ func NewEmptyResult(resultType reflect.Type) *GenResult {
 }
 
 func (r *GenResult) Retrieve() (interface{}, bool) {
-	if r.result != nil || (r.Sieve != nil && r.Sieve(r.result)) {
+	if (r.Sieve == nil && r.result != nil) || (r.Sieve != nil && r.Sieve(r.result)) {
 		return r.result, true
 	}
 	return nil, false

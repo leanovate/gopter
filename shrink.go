@@ -107,6 +107,24 @@ func (s Shrink) Interleave(other Shrink) Shrink {
 // Shrinker creates a shrink for a given value
 type Shrinker func(value interface{}) Shrink
 
+type elementShrink struct {
+	original      []interface{}
+	index         int
+	elementShrink Shrink
+}
+
+func (e *elementShrink) Next() (interface{}, bool) {
+	element, ok := e.elementShrink()
+	if !ok {
+		return nil, false
+	}
+	shrinked := make([]interface{}, len(e.original))
+	copy(shrinked, e.original)
+	shrinked[e.index] = element
+
+	return shrinked, true
+}
+
 func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 	return func(v interface{}) Shrink {
 		values := v.([]interface{})
@@ -115,13 +133,12 @@ func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 			if i >= len(values) {
 				break
 			}
-			shrink := shrinker(values[i]).Map(func(v interface{}) interface{} {
-				shrinked := make([]interface{}, len(values))
-				copy(shrinked, values)
-				shrinked[i] = v
-				return shrinked
-			})
-			shrinks = append(shrinks, shrink)
+			shrink := &elementShrink{
+				original:      values,
+				index:         i,
+				elementShrink: shrinker(values[i]),
+			}
+			shrinks = append(shrinks, shrink.Next)
 		}
 		return ConcatShrinks(shrinks...)
 	}
