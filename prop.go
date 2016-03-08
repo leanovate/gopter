@@ -43,7 +43,7 @@ func (prop Prop) Check(parameters *TestParameters) *TestResult {
 
 			isExhaused := func() bool {
 				return n+d > parameters.MinSuccessfulTests &&
-					float64(1+parameters.Workers*n)*parameters.MaxDiscardRatio < float64(d)
+					1.0+float64(parameters.Workers*n)*parameters.MaxDiscardRatio < float64(d)
 			}
 
 			for !shouldStop() && n < int(iterations) {

@@ -36,6 +36,14 @@ func TestGenMap(t *testing.T) {
 	if mappedWith.(string) != "sample" {
 		t.Errorf("Invalid mapped with: %#v", mappedWith)
 	}
+
+	gen = gen.SuchThat(func(interface{}) bool {
+		return false
+	})
+	value, ok = gen.Map(mapper).Sample()
+	if ok {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
 }
 
 func TestGenFlatMap(t *testing.T) {
@@ -51,6 +59,14 @@ func TestGenFlatMap(t *testing.T) {
 	}
 	if mappedWith.(string) != "sample" {
 		t.Errorf("Invalid mapped with: %#v", mappedWith)
+	}
+
+	gen = gen.SuchThat(func(interface{}) bool {
+		return false
+	})
+	value, ok = gen.FlatMap(mapper).Sample()
+	if ok {
+		t.Errorf("Invalid gen sample: %#v", value)
 	}
 }
 
@@ -68,21 +84,48 @@ func TestCombineGens(t *testing.T) {
 	if !ok || !reflect.DeepEqual(values, []interface{}{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}) {
 		t.Errorf("Invalid combined gen: %#v", raw)
 	}
+
+	gens[0] = gens[0].SuchThat(func(interface{}) bool {
+		return false
+	})
+	gen = gopter.CombineGens(gens...)
+	raw, ok = gen.Sample()
+	if ok {
+		t.Errorf("Invalid combined gen: %#v", raw)
+	}
 }
 
 func TestSuchThat(t *testing.T) {
 	var sieveArg interface{}
 	sieve := func(v interface{}) bool {
 		sieveArg = v
-		return false
+		return true
 	}
 	gen := constGen("sample").SuchThat(sieve)
-	_, ok := gen.Sample()
+	value, ok := gen.Sample()
+	if !ok || value != "sample" {
+		t.Errorf("Invalid result: %#v", value)
+	}
+	if sieveArg != "sample" {
+		t.Errorf("Invalid sieveArg: %#v", sieveArg)
+	}
+
+	sieveArg = nil
+	var sieve2Arg interface{}
+	sieve2 := func(v interface{}) bool {
+		sieve2Arg = v
+		return false
+	}
+	gen = gen.SuchThat(sieve2)
+	_, ok = gen.Sample()
 	if ok {
 		t.Error("Did not expect a result")
 	}
 	if sieveArg != "sample" {
 		t.Errorf("Invalid sieveArg: %#v", sieveArg)
+	}
+	if sieve2Arg != "sample" {
+		t.Errorf("Invalid sieve2Arg: %#v", sieve2Arg)
 	}
 }
 
