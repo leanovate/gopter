@@ -105,3 +105,50 @@ func TestFloat64Shrinker(t *testing.T) {
 		t.Errorf("Invalid hundretShrinks: %#v", hundretShrinks)
 	}
 }
+
+func TestFloat32Shrinker(t *testing.T) {
+	zeroShrinks := gen.Float32Shrinker(float32(0)).All()
+	if !reflect.DeepEqual(zeroShrinks, []interface{}{}) {
+		t.Errorf("Invalid zeroShrinks: %#v", zeroShrinks)
+	}
+
+	oneShrinks := gen.Float32Shrinker(float32(1)).All()
+	if !reflect.DeepEqual(oneShrinks, []interface{}{
+		float32(0),
+		float32(0.5),
+		float32(-0.5),
+		float32(0.75),
+		float32(-0.75),
+		float32(0.875),
+		float32(-0.875),
+		float32(0.9375),
+		float32(-0.9375),
+		float32(0.96875),
+		float32(-0.96875),
+		float32(0.984375),
+		float32(-0.984375),
+		float32(0.9921875),
+		float32(-0.9921875),
+		float32(0.99609375),
+		float32(-0.99609375),
+		float32(0.9980469),
+		float32(-0.9980469),
+		float32(0.99902344),
+		float32(-0.99902344),
+		float32(0.9995117),
+		float32(-0.9995117),
+		float32(0.99975586),
+		float32(-0.99975586),
+		float32(0.9998779),
+		float32(-0.9998779),
+		float32(0.99993896),
+		float32(-0.99993896),
+		float32(0.9999695),
+		float32(-0.9999695),
+		float32(0.99998474),
+		float32(-0.99998474),
+	}) {
+		t.Errorf("Invalid tenShrinks: %#v", oneShrinks)
+	}
+
+}
