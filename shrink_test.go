@@ -120,3 +120,14 @@ func TestShrinkMap(t *testing.T) {
 		t.Errorf("Invalid all: %#v", all)
 	}
 }
+
+func TestNoShrinker(t *testing.T) {
+	shrink := gopter.NoShrinker(123)
+	if shrink == nil {
+		t.Error("Shrink has to be != nil")
+	}
+	value, ok := shrink()
+	if ok || value != nil {
+		t.Errorf("Invalid shrink: %#v", value)
+	}
+}

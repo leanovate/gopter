@@ -60,3 +60,32 @@ func TestSliceOfN(t *testing.T) {
 		}
 	}
 }
+
+func TestSliceOfNSieve(t *testing.T) {
+	var called int
+	elementSieve := func(v interface{}) bool {
+		called++
+		return v == "element"
+	}
+	elementGen := gen.Const("element").SuchThat(elementSieve)
+	sliceGen := gen.SliceOfN(10, elementGen)
+	result := sliceGen(gopter.DefaultGenParameters())
+	value, ok := result.Retrieve()
+	if !ok || value == nil {
+		t.Errorf("Invalid value: %#v", value)
+	}
+	strs, ok := value.([]string)
+	if !ok || len(strs) != 10 {
+		t.Errorf("Invalid value: %#v", value)
+	}
+	if called != 20 {
+		t.Errorf("Invalid called: %d", called)
+	}
+	if result.Sieve(strs[0:9]) {
+		t.Error("Sieve must not allow array len < 10")
+	}
+	strs[0] = "bla"
+	if result.Sieve(strs) {
+		t.Error("Sieve must not allow array with invalid element")
+	}
+}
