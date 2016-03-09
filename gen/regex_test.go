@@ -14,6 +14,7 @@ func TestRegexMatch(t *testing.T) {
 		"1?(zero|one)0",
 		"ABCD.+1234",
 		"^[0-9]{3}[A-Z]{5,}[a-z]{10,20}$",
+		"(?s)[^0-9]*ABCD.*1234",
 	}
 	for _, regex := range regexs {
 		pattern, err := regexp.Compile(regex)
@@ -32,5 +33,11 @@ func TestRegexMatch(t *testing.T) {
 				t.Errorf("Invalid value: %#v", value)
 			}
 		}
+	}
+
+	gen := gen.RegexMatch("]]}})Invalid{]]]")
+	value, ok := gen.Sample()
+	if ok || value != nil {
+		t.Errorf("Invalid value: %#v", value)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
@@ -106,7 +107,8 @@ func TestAnyString(t *testing.T) {
 func TestAlphaString(t *testing.T) {
 	alphaStrGen := gen.AlphaString()
 	for i := 0; i < 100; i++ {
-		value, ok := alphaStrGen.Sample()
+		result := alphaStrGen(gopter.DefaultGenParameters())
+		value, ok := result.Retrieve()
 
 		if !ok || value == nil {
 			t.Errorf("Invalid string: %#v", value)
@@ -120,13 +122,17 @@ func TestAlphaString(t *testing.T) {
 				t.Errorf("Invalid string: %#v", v)
 			}
 		}
+		if result.Sieve == nil || result.Sieve("01") {
+			t.Error("Invalid sieve")
+		}
 	}
 }
 
 func TestNumString(t *testing.T) {
 	numStrGen := gen.NumString()
 	for i := 0; i < 100; i++ {
-		value, ok := numStrGen.Sample()
+		result := numStrGen(gopter.DefaultGenParameters())
+		value, ok := result.Retrieve()
 
 		if !ok || value == nil {
 			t.Errorf("Invalid string: %#v", value)
@@ -140,13 +146,17 @@ func TestNumString(t *testing.T) {
 				t.Errorf("Invalid string: %#v", v)
 			}
 		}
+		if result.Sieve == nil || result.Sieve("abc") {
+			t.Error("Invalid sieve")
+		}
 	}
 }
 
 func TestIdentifier(t *testing.T) {
 	identifierGen := gen.Identifier()
 	for i := 0; i < 100; i++ {
-		value, ok := identifierGen.Sample()
+		result := identifierGen(gopter.DefaultGenParameters())
+		value, ok := result.Retrieve()
 
 		if !ok || value == nil {
 			t.Errorf("Invalid string: %#v", value)
@@ -165,6 +175,9 @@ func TestIdentifier(t *testing.T) {
 			if !unicode.IsDigit(ch) && !unicode.IsLetter(ch) {
 				t.Errorf("Invalid string: %#v", v)
 			}
+		}
+		if result.Sieve == nil || result.Sieve("0ab") || result.Sieve("ab\n") {
+			t.Error("Invalid sieve")
 		}
 	}
 }

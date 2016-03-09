@@ -44,4 +44,20 @@ func TestSqrt(t *testing.T) {
 	))
 
 	properties.TestingRun(t)
+
+	fail := prop.ForAll(0)
+	result := fail(gopter.DefaultGenParameters())
+	if result.Status != gopter.PropError {
+		t.Errorf("Invalid result: %#v", result)
+	}
+
+	undecided := prop.ForAll(func(a int) bool {
+		return true
+	}, gen.Int().SuchThat(func(interface{}) bool {
+		return false
+	}))
+	result = undecided(gopter.DefaultGenParameters())
+	if result.Status != gopter.PropUndecided {
+		t.Errorf("Invalid result: %#v", result)
+	}
 }

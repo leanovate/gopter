@@ -10,12 +10,9 @@ import (
 )
 
 func RegexMatch(regexStr string) gopter.Gen {
-	regexSyntax, err := syntax.Parse(regexStr, syntax.Perl)
-	if err != nil {
-		return Fail(reflect.TypeOf(""))
-	}
-	regex, err := regexp.Compile(regexStr)
-	if err != nil {
+	regexSyntax, err1 := syntax.Parse(regexStr, syntax.Perl)
+	regex, err2 := regexp.Compile(regexStr)
+	if err1 != nil || err2 != nil {
 		return Fail(reflect.TypeOf(""))
 	}
 	return regexMatchGen(regexSyntax.Simplify()).SuchThat(func(v interface{}) bool {

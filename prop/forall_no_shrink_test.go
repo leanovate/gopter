@@ -35,4 +35,20 @@ func TestForAllNoShrink(t *testing.T) {
 	if simpleResultFail.Status != gopter.TestFailed || simpleResultFail.Succeeded != 0 {
 		t.Errorf("Invalid simpleResultFail: %#v", simpleResultFail)
 	}
+
+	fail := prop.ForAllNoShrink(0)
+	result := fail(gopter.DefaultGenParameters())
+	if result.Status != gopter.PropError {
+		t.Errorf("Invalid result: %#v", result)
+	}
+
+	undecided := prop.ForAllNoShrink(func(a int) bool {
+		return true
+	}, gen.Int().SuchThat(func(interface{}) bool {
+		return false
+	}))
+	result = undecided(gopter.DefaultGenParameters())
+	if result.Status != gopter.PropUndecided {
+		t.Errorf("Invalid result: %#v", result)
+	}
 }
