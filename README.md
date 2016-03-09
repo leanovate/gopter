@@ -15,12 +15,14 @@ Main differences to ScalaCheck:
 * ... nevertheless: Do not expect the same typesafety and elegance as in ScalaCheck.
 * For simplicity [Shrink](https://www.scalacheck.org/files/scalacheck_2.11-1.12.5-api/index.html#org.scalacheck.Shrink) has become part of the generators. They can be still easily changed if necessary.
 * There is no [Pretty](https://www.scalacheck.org/files/scalacheck_2.11-1.12.5-api/index.html#org.scalacheck.util.Pretty) ... so far gopter feels quiet comfortable being ugly.
+* A generator for regex matches
 * No parallel commands ... yet?
 
 Main differences to the already testing/quick package:
 
 * Much tighter control over generators
 * Shrinkers, i.e. automatically find the minimum value falsifying a property
+* A generator for regex matches (already mentioned that ... but it's cool)
 
 ## License
 

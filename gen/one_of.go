@@ -1,25 +1,29 @@
 package gen
 
-import "github.com/leanovate/gopter"
+import (
+	"reflect"
+
+	"github.com/leanovate/gopter"
+)
 
 // OneConstOf generate one of a list of constant values
-func OneConstOf(first interface{}, other ...interface{}) gopter.Gen {
+func OneConstOf(consts ...interface{}) gopter.Gen {
+	if len(consts) == 0 {
+		return Fail(reflect.TypeOf(nil))
+	}
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		idx := genParams.Rng.Intn(len(other) + 1)
-		if idx == 0 {
-			return gopter.NewGenResult(first, gopter.NoShrinker)
-		}
-		return gopter.NewGenResult(other[idx-1], gopter.NoShrinker)
+		idx := genParams.Rng.Intn(len(consts))
+		return gopter.NewGenResult(consts[idx], gopter.NoShrinker)
 	}
 }
 
 // OneGenOf generate one value from a a list of generators
-func OneGenOf(first gopter.Gen, other ...gopter.Gen) gopter.Gen {
+func OneGenOf(gens ...gopter.Gen) gopter.Gen {
+	if len(gens) == 0 {
+		return Fail(reflect.TypeOf(nil))
+	}
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		idx := genParams.Rng.Intn(len(other) + 1)
-		if idx == 0 {
-			return first(genParams)
-		}
-		return other[idx-1](genParams)
+		idx := genParams.Rng.Intn(len(gens))
+		return gens[idx](genParams)
 	}
 }
