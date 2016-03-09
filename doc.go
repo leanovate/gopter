@@ -23,5 +23,13 @@ A simple property test might look like this:
 
     	properties.TestingRun(t)
     }
+
+Generally a property is just a function that takes GenParameters and produces
+a PropResult:
+
+    type Prop func(*GenParameters) *PropResult
+
+but usually you will use prop.ForAll, prop.ForAllNoShrink or arbitrary.ForAll.
+There is also the commands package, which can be helpful for stateful testing.
 */
 package gopter
