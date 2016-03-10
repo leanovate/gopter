@@ -3,7 +3,7 @@
 ... the GOlang Property TestER
 [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
 [![codecov.io](https://codecov.io/github/leanovate/gopter/coverage.svg?branch=master)](https://codecov.io/github/leanovate/gopter?branch=master)
-[![GoDoc](https://godoc.org/github.com/leanovate/gopter?status.png)](http://godoc.org/github.com/leanovate/gopter)
+[![GoDoc](https://godoc.org/github.com/leanovate/gopter?status.png)](https://godoc.org/github.com/leanovate/gopter)
 
 ## Synopsis
 
@@ -24,6 +24,16 @@ Main differences to the already testing/quick package:
 * Much tighter control over generators
 * Shrinkers, i.e. automatically find the minimum value falsifying a property
 * A generator for regex matches (already mentioned that ... but it's cool)
+
+## Documentation
+
+Current godocs:
+
+* [gopter](https://godoc.org/github.com/leanovate/gopter):  Main interfaces
+* [gopter/gen](https://godoc.org/github.com/leanovate/gopter/gen): All commonly used generators
+* [gopter/prop](https://godoc.org/github.com/leanovate/gopter/prop): Common helpers to create properties from a condition function and an specific generators
+* [gopter/arbitrary](https://godoc.org/github.com/leanovate/gopter/arbitrary): Helpers automatically combine generators for arbitrary types
+* [gopter/convey](https://godoc.org/github.com/leanovate/gopter/convey): Helpers to used gopter from goconvey
 
 ## License
 
