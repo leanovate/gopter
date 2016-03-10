@@ -36,5 +36,5 @@ vet:
 refreshGodoc:
 	@echo "--> Refreshing godoc.org"
 	for pkg in $(shell go list ./...); do \
-	  curl -d "path=$$pkg" http://godoc.org/-/refresh ; \
+		curl -d "path=$$pkg" https://godoc.org/-/refresh ; \
 	done
