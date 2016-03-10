@@ -3,7 +3,7 @@ language: go
 go:
 - 1.5
 - 1.6
-script: make all coverage
+script: make all coverage refreshGodoc
 before_install:
   - pip install --user codecov
 after_success:

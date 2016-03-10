@@ -32,3 +32,9 @@ vet:
 		echo "Vet found suspicious constructs. Please check the reported constructs"; \
 		echo "and fix them if necessary before submitting the code for reviewal."; \
 	fi
+
+refreshGodoc:
+	@echo "--> Refreshing godoc.org"
+	for pkg in $(shell go list ./...); do \
+	  curl -d "path=$$pkg" http://godoc.org/-/refresh ; \
+	done
