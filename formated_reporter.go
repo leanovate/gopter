@@ -15,13 +15,17 @@ type FormatedReporter struct {
 	output  io.Writer
 }
 
-// ConsoleReporter creates a FormatedReporter writing to the console (i.e. stdout)
-func ConsoleReporter(verbose bool) Reporter {
+func NewFormatedReporter(verbose bool, width int, output io.Writer) Reporter {
 	return &FormatedReporter{
 		verbose: verbose,
-		width:   75,
-		output:  os.Stdout,
+		width:   width,
+		output:  output,
 	}
+}
+
+// ConsoleReporter creates a FormatedReporter writing to the console (i.e. stdout)
+func ConsoleReporter(verbose bool) Reporter {
+	return NewFormatedReporter(verbose, 75, os.Stdout)
 }
 
 func (r *FormatedReporter) ReportTestResult(propName string, result *TestResult) {

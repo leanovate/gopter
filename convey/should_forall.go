@@ -1,28 +1,42 @@
 package convey
 
 import (
-	"fmt"
+	"bytes"
 
 	"github.com/leanovate/gopter"
+	"github.com/leanovate/gopter/arbitrary"
 	"github.com/leanovate/gopter/prop"
 )
 
-func ShouldSucceedForAll(condition interface{}, generators ...interface{}) string {
+func ShouldSucceedForAll(condition interface{}, params ...interface{}) string {
+	var arbitraries *arbitrary.Arbitraries
 	parameters := gopter.DefaultTestParameters()
-	gens := make([]gopter.Gen, len(generators))
-	for i, generator := range generators {
-		gen, ok := generator.(gopter.Gen)
-		if !ok {
-			return fmt.Sprintf("Expceted %#v to be a gropter.Gen", generator)
+	gens := make([]gopter.Gen, 0)
+	for _, param := range params {
+		switch param.(type) {
+		case *arbitrary.Arbitraries:
+			arbitraries = param.(*arbitrary.Arbitraries)
+		case *gopter.TestParameters:
+			parameters = param.(*gopter.TestParameters)
+		case gopter.Gen:
+			gens = append(gens, param.(gopter.Gen))
 		}
-		gens[i] = gen
 	}
 
-	property := prop.ForAll(condition, gens...)
+	var property gopter.Prop
+	if arbitraries != nil {
+		property = arbitraries.ForAll(condition)
+	} else {
+		property = prop.ForAll(condition, gens...)
+	}
 	result := property.Check(parameters)
 
 	if !result.Passed() {
-		return fmt.Sprint(result)
+		buffer := bytes.NewBufferString("")
+		reporter := gopter.NewFormatedReporter(true, 75, buffer)
+		reporter.ReportTestResult("", result)
+
+		return buffer.String()
 	}
 	return ""
 }

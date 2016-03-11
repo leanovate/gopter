@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/leanovate/gopter"
+	"github.com/leanovate/gopter/arbitrary"
 	. "github.com/leanovate/gopter/convey"
 	"github.com/leanovate/gopter/gen"
 	. "github.com/smartystreets/goconvey/convey"
@@ -33,7 +34,7 @@ func (q *QudraticEquation) Solve() (float64, float64, error) {
 }
 
 func TestShouldSucceedForAll(t *testing.T) {
-	Convey("Quadratic equations should be solvable", t, func() {
+	Convey("Given a check for quadratic equations", t, func() {
 		checkSolve := func(quadratic *QudraticEquation) bool {
 			x1, x2, err := quadratic.Solve()
 			if err != nil {
@@ -42,12 +43,29 @@ func TestShouldSucceedForAll(t *testing.T) {
 
 			return math.Abs(quadratic.Eval(x1)) < 1e-5 && math.Abs(quadratic.Eval(x2)) < 1e-5
 		}
-		anyQudraticEquation := gen.StructPtr(reflect.TypeOf(QudraticEquation{}), map[string]gopter.Gen{
-			"A": gen.Float64Range(-1e8, 1e8),
-			"B": gen.Float64Range(-1e8, 1e8),
-			"C": gen.Float64Range(-1e8, 1e8),
+
+		Convey("Then check with arbitraries succeeds", func() {
+			arbitraries := arbitrary.DefaultArbitraries()
+			arbitraries.RegisterGen(gen.Float64Range(-1e8, 1e8))
+
+			So(checkSolve, ShouldSucceedForAll, arbitraries)
+
+			Convey("And test parameters may be modified", func() {
+				parameters := gopter.DefaultTestParameters()
+				parameters.MinSuccessfulTests = 200
+
+				So(checkSolve, ShouldSucceedForAll, arbitraries, parameters)
+			})
 		})
 
-		So(checkSolve, ShouldSucceedForAll, anyQudraticEquation)
+		Convey("Then check with explicit generator succeeds", func() {
+			anyQudraticEquation := gen.StructPtr(reflect.TypeOf(QudraticEquation{}), map[string]gopter.Gen{
+				"A": gen.Float64Range(-1e8, 1e8),
+				"B": gen.Float64Range(-1e8, 1e8),
+				"C": gen.Float64Range(-1e8, 1e8),
+			})
+
+			So(checkSolve, ShouldSucceedForAll, anyQudraticEquation)
+		})
 	})
 }
