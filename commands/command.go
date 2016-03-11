@@ -2,20 +2,31 @@ package commands
 
 import "github.com/leanovate/gopter"
 
-type State interface{}
-
-type Result interface{}
-
+// SystemUnderTest resembles the system under test, which may be any kind
+// of stateful unit of code
 type SystemUnderTest interface{}
 
+// State resembles the state the system under test is expected to be in
+type State interface{}
+
+// Result resembles the result of a command that may or may not be checked
+type Result interface{}
+
+// Command is any kind of command that may be applied to the system under test
 type Command interface {
+	// Run applies the command to the system under test
 	Run(systemUnderTest SystemUnderTest) Result
+	// NextState calculates the next expected state if the command is applied
 	NextState(state State) State
+	// PreCondition checks if the state is valid before the command is applied
 	PreCondition(state State) bool
+	// PostCondition checks if the state is valid after the command is applied
 	PostCondition(state State, result Result) *gopter.PropResult
+	// String gets a (short) string representation of the command
 	String() string
 }
 
+// ProtoCommand is a prototype implementation of the Command interface
 type ProtoCommand struct {
 	Name              string
 	RunFunc           func(systemUnderTest SystemUnderTest) Result

@@ -33,6 +33,7 @@ Current godocs:
 * [gopter/gen](https://godoc.org/github.com/leanovate/gopter/gen): All commonly used generators
 * [gopter/prop](https://godoc.org/github.com/leanovate/gopter/prop): Common helpers to create properties from a condition function and an specific generators
 * [gopter/arbitrary](https://godoc.org/github.com/leanovate/gopter/arbitrary): Helpers automatically combine generators for arbitrary types
+* [gopter/commands](https://godoc.org/github.com/leanovate/gopter/commands): Helpers to create stateful tests based on arbirtrary commands
 * [gopter/convey](https://godoc.org/github.com/leanovate/gopter/convey): Helpers to used gopter from goconvey
 
 ## License

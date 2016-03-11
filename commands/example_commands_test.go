@@ -77,26 +77,17 @@ var ResetBuggyCommand = &commands.ProtoCommand{
 	},
 }
 
-type buggyCounterCommands struct {
-}
-
-func (c *buggyCounterCommands) NewSystemUnderTest() commands.SystemUnderTest {
-	return &BuggyCounter{}
-}
-
-func (c *buggyCounterCommands) DestroySystemUnderTest(commands.SystemUnderTest) {
-}
-
-func (c *buggyCounterCommands) GenInitialState() gopter.Gen {
-	return gen.Const(0)
-}
-
-func (c *buggyCounterCommands) InitialPreCondition(state commands.State) bool {
-	return state.(int) == 0
-}
-
-func (c *buggyCounterCommands) GenCommand(state commands.State) gopter.Gen {
-	return gen.OneConstOf(GetBuggyCommand, IncBuggyCommand, DecBuggyCommand, ResetBuggyCommand)
+var buggyCounterCommands = &commands.ProtoCommands{
+	NewSystemUnderTestFunc: func() commands.SystemUnderTest {
+		return &BuggyCounter{}
+	},
+	InitialStateGen: gen.Const(0),
+	InitialPreConditionFunc: func(state commands.State) bool {
+		return state.(int) == 0
+	},
+	GenCommandFunc: func(state commands.State) gopter.Gen {
+		return gen.OneConstOf(GetBuggyCommand, IncBuggyCommand, DecBuggyCommand, ResetBuggyCommand)
+	},
 }
 
 // Demonstrates the usage of the commands package to find a bug in a counter
@@ -120,7 +111,7 @@ func Example_buggyCounter() {
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("buggy counter", commands.CommandsProp(&buggyCounterCommands{}))
+	properties.Property("buggy counter", commands.Prop(buggyCounterCommands))
 
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
