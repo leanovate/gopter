@@ -6,6 +6,10 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+// StructPtr generates pointers to a given struct type.
+// rt has to be the reflect type of the struct, gens contains a map of field generators.
+// Note that the result types of the generators in gen have to match the type of the correspoinding
+// field in the struct. Also note that only public fields of a struct can be generated
 func StructPtr(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() == reflect.Ptr {
 		rt = rt.Elem()

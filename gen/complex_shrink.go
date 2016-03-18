@@ -2,6 +2,7 @@ package gen
 
 import "github.com/leanovate/gopter"
 
+// Complex128Shrinker is a shrinker for complex128 numbers
 func Complex128Shrinker(v interface{}) gopter.Shrink {
 	c := v.(complex128)
 	realShrink := Float64Shrinker(real(c)).Map(func(r interface{}) interface{} {
@@ -13,6 +14,7 @@ func Complex128Shrinker(v interface{}) gopter.Shrink {
 	return realShrink.Interleave(imagShrink)
 }
 
+// Complex64Shrinker is a shrinker for complex64 numbers
 func Complex64Shrinker(v interface{}) gopter.Shrink {
 	c := v.(complex64)
 	realShrink := Float64Shrinker(float64(real(c))).Map(func(r interface{}) interface{} {

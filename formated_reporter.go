@@ -8,6 +8,8 @@ import (
 	"unicode"
 )
 
+const newLine = "\n"
+
 // FormatedReporter reports test results in a human readable manager.
 type FormatedReporter struct {
 	verbose bool
@@ -15,6 +17,10 @@ type FormatedReporter struct {
 	output  io.Writer
 }
 
+// NewFormatedReporter create a new formated reporter
+// verbose toggles verbose output of the property results
+// width is the maximal width per line
+// output is the writer were the report will be written to
 func NewFormatedReporter(verbose bool, width int, output io.Writer) Reporter {
 	return &FormatedReporter{
 		verbose: verbose,
@@ -28,6 +34,7 @@ func ConsoleReporter(verbose bool) Reporter {
 	return NewFormatedReporter(verbose, 75, os.Stdout)
 }
 
+// ReportTestResult reports a single property result
 func (r *FormatedReporter) ReportTestResult(propName string, result *TestResult) {
 	if result.Passed() {
 		fmt.Fprintln(r.output, r.formatLines(fmt.Sprintf("+ %s: %s", propName, r.reportResult(result)), "", ""))
@@ -61,7 +68,7 @@ func (r *FormatedReporter) reportPropArgs(p PropArgs) string {
 	result := ""
 	for i, arg := range p {
 		if result != "" {
-			result += "\n"
+			result += newLine
 		}
 		result += r.reportPropArg(i, arg)
 	}
@@ -85,7 +92,7 @@ func (r *FormatedReporter) formatLines(str, lead, trail string) string {
 	result := ""
 	for _, line := range strings.Split(str, "\n") {
 		if result != "" {
-			result += "\n"
+			result += newLine
 		}
 		result += r.breakLine(lead+line+trail, "  ")
 	}

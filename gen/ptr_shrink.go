@@ -18,6 +18,7 @@ func (s *nilShrink) Next() (interface{}, bool) {
 	return nil, false
 }
 
+// PtrShrinker convert a value shrinker to a pointer to value shrinker
 func PtrShrinker(elementShrinker gopter.Shrinker) gopter.Shrinker {
 	return func(v interface{}) gopter.Shrink {
 		if v == nil {

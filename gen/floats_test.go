@@ -17,7 +17,7 @@ func TestFloat64(t *testing.T) {
 		}
 		v, ok := value.(float64)
 		if !ok || math.IsNaN(v) || math.IsInf(v, 0) {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float64: %#v", value)
 		}
 	}
 }
@@ -34,11 +34,11 @@ func TestFloat64Range(t *testing.T) {
 		value, ok := floats.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float64 range: %#v", value)
 		}
 		v, ok := value.(float64)
 		if !ok || math.IsNaN(v) || math.IsInf(v, 0) || v < -1234.5 || v > 56789.123 {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float64 range: %#v", value)
 		}
 	}
 }
@@ -49,11 +49,11 @@ func TestFloat32(t *testing.T) {
 		value, ok := floats.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float32: %#v", value)
 		}
 		_, ok = value.(float32)
 		if !ok {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float32: %#v", value)
 		}
 	}
 }
@@ -70,11 +70,11 @@ func TestFloat32Range(t *testing.T) {
 		value, ok := floats.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float32 range: %#v", value)
 		}
 		v, ok := value.(float32)
 		if !ok || v < -1234.5 || v > 56789.123 {
-			t.Errorf("Invalid floats: %#v", value)
+			t.Errorf("Invalid float32 range: %#v", value)
 		}
 	}
 }

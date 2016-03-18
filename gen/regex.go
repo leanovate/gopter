@@ -9,6 +9,8 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+// RegexMatch generates matches for a given regular expression
+// regexStr is supposed to conform to the perl regular expression syntax
 func RegexMatch(regexStr string) gopter.Gen {
 	regexSyntax, err1 := syntax.Parse(regexStr, syntax.Perl)
 	regex, err2 := regexp.Compile(regexStr)

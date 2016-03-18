@@ -12,6 +12,10 @@ func (g Gen) Sample() (interface{}, bool) {
 	return g(DefaultGenParameters()).Retrieve()
 }
 
+// SuchThat creates a derived generator by adding a sieve, i.e. all generated values must have
+// f(value) == true.
+// Use this care, if the sieve to to fine the generator will have many misses which results
+// in an undecided property.
 func (g Gen) SuchThat(f func(interface{}) bool) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
@@ -27,6 +31,7 @@ func (g Gen) SuchThat(f func(interface{}) bool) Gen {
 	}
 }
 
+// WithShrinker creates a derived generator with a specific shrinker
 func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
@@ -39,6 +44,8 @@ func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 	}
 }
 
+// Map creates a derived generators by mapping all generatored values with a given function.
+// Note: The derived generator will not have a sieve or shrinker.
 func (g Gen) Map(f func(interface{}) interface{}) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
@@ -61,6 +68,8 @@ func (g Gen) Map(f func(interface{}) interface{}) Gen {
 	}
 }
 
+// FlatMap creates a derived generator by passing a generated value to a function which itself
+// creates a generator.
 func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
@@ -77,6 +86,10 @@ func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
 	}
 }
 
+// CombineGens creates a generators from a list of generators.
+// The result type will be a []interface{} containing the generated values of each generators in
+// the list.
+// Note: The combined generator will not have a sieve or shrinker.
 func CombineGens(gens ...Gen) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		values := make([]interface{}, len(gens))

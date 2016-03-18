@@ -2,12 +2,15 @@ package gopter
 
 import "testing"
 
+// Properties is a collection of properties that should be checked in a test
 type Properties struct {
 	parameters *TestParameters
 	props      map[string]Prop
 	propNames  []string
 }
 
+// NewProperties create new Properties with given test parameters.
+// If parameters is nil default test parameters will be used
 func NewProperties(parameters *TestParameters) *Properties {
 	if parameters == nil {
 		parameters = DefaultTestParameters()

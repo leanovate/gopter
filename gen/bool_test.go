@@ -19,5 +19,4 @@ func TestBool(t *testing.T) {
 			t.Errorf("Invalid bool: %#v", value)
 		}
 	}
-
 }

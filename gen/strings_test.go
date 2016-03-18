@@ -15,11 +15,11 @@ func TestRune(t *testing.T) {
 		value, ok := runeGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid rune: %#v", value)
 		}
 		v, ok := value.(rune)
 		if !ok || !utf8.ValidRune(v) {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid rune: %#v", value)
 		}
 	}
 }
@@ -30,11 +30,11 @@ func TestNumChar(t *testing.T) {
 		value, ok := numCharGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid numchar: %#v", value)
 		}
 		v, ok := value.(rune)
 		if !ok || !unicode.IsNumber(v) {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid numchar: %#v", value)
 		}
 	}
 }
@@ -45,11 +45,11 @@ func TestAlphaUpper(t *testing.T) {
 		value, ok := alphaCharGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphaupper: %#v", value)
 		}
 		v, ok := value.(rune)
 		if !ok || !unicode.IsUpper(v) {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphaupper: %#v", value)
 		}
 	}
 }
@@ -60,11 +60,11 @@ func TestAlphaLower(t *testing.T) {
 		value, ok := alphaCharGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphalower: %#v", value)
 		}
 		v, ok := value.(rune)
 		if !ok || !unicode.IsLower(v) {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphalower: %#v", value)
 		}
 	}
 }
@@ -75,11 +75,11 @@ func TestAlphaChar(t *testing.T) {
 		value, ok := alphaCharGen.Sample()
 
 		if !ok || value == nil {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphachar: %#v", value)
 		}
 		v, ok := value.(rune)
 		if !ok || !unicode.IsLetter(v) {
-			t.Errorf("Invalid char: %#v", value)
+			t.Errorf("Invalid alphachar: %#v", value)
 		}
 	}
 }

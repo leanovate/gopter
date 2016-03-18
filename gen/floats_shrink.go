@@ -28,6 +28,7 @@ func (s *float64Shrink) Next() (interface{}, bool) {
 	return value, true
 }
 
+// Float64Shrinker is a shrinker for float64 numbers
 func Float64Shrinker(v interface{}) gopter.Shrink {
 	negShrink := float64Shrink{
 		original: -v.(float64),
@@ -40,6 +41,7 @@ func Float64Shrinker(v interface{}) gopter.Shrink {
 	return gopter.Shrink(negShrink.Next).Interleave(gopter.Shrink(posShrink.Next))
 }
 
+// Float32Shrinker is a shrinker for float32 numbers
 func Float32Shrinker(v interface{}) gopter.Shrink {
 	return Float64Shrinker(float64(v.(float32))).Map(func(e interface{}) interface{} {
 		return float32(e.(float64))
