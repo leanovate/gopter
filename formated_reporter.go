@@ -102,7 +102,7 @@ func (r *FormatedReporter) breakLine(str, lead string) string {
 		idx := strings.LastIndexFunc(str[0:r.width], func(ch rune) bool {
 			return unicode.IsSpace(ch)
 		})
-		if idx < 0 {
+		if idx <= 0 {
 			idx = r.width
 		}
 		result += str[0:idx] + "\n" + lead

@@ -9,7 +9,10 @@ import (
 // SliceOf generates an arbitrary slice of generated elements
 func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		len := genParams.Rng.Intn(genParams.Size)
+		len := 0
+		if genParams.Size > 0 {
+			len = genParams.Rng.Intn(genParams.Size)
+		}
 		element := elementGen(genParams)
 		elementSieve := element.Sieve
 		elementShrinker := element.Shrinker

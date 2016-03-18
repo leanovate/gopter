@@ -33,6 +33,24 @@ func TestSliceOf(t *testing.T) {
 			}
 		}
 	}
+
+	genParams.Size = 0
+
+	for i := 0; i < 100; i++ {
+		sample, ok := sliceGen(genParams).Retrieve()
+
+		if !ok {
+			t.Error("Sample was not ok")
+		}
+		strings, ok := sample.([]string)
+		if !ok {
+			t.Errorf("Sample not slice of string: %#v", sample)
+		} else {
+			if len(strings) != 0 {
+				t.Errorf("Sample has invalid length: %#v", len(strings))
+			}
+		}
+	}
 }
 
 func TestSliceOfN(t *testing.T) {
