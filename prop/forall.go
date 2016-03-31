@@ -39,7 +39,7 @@ func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 		result := callCheck(values)
 		if result.Success() {
 			for i, genResult := range genResults {
-				result = result.WithArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
+				result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
 			}
 		} else {
 			for i, genResult := range genResults {
@@ -70,7 +70,7 @@ func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gop
 		}
 		result := checkFunc(value)
 		if result.Success() {
-			return result.WithArgs(gopter.NewPropArg(genResult, 0, value, value))
+			return result.AddArgs(gopter.NewPropArg(genResult, 0, value, value))
 		}
 
 		result, _ = shrinkValue(genParams.MaxShrinkCount, genResult, value, result, checkFunc)
@@ -95,7 +95,7 @@ func shrinkValue(maxShrinkCount int, genResult *gopter.GenResult, origValue inte
 		nextResult, nextValue = firstFailure(shrink, check)
 	}
 
-	return lastFail.WithArgs(firstFail.Args...).WithArgs(gopter.NewPropArg(genResult, shrinks, lastValue, origValue)), lastValue
+	return lastFail.WithArgs(firstFail.Args).AddArgs(gopter.NewPropArg(genResult, shrinks, lastValue, origValue)), lastValue
 }
 
 func firstFailure(shrink gopter.Shrink, check func(interface{}) *gopter.PropResult) (*gopter.PropResult, interface{}) {

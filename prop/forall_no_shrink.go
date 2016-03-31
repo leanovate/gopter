@@ -32,7 +32,7 @@ func ForAllNoShrink(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 		}
 		result := callCheck(values)
 		for i, genResult := range genResults {
-			result = result.WithArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
+			result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
 		}
 		return result
 	})
@@ -49,6 +49,6 @@ func ForAllNoShrink1(gen gopter.Gen, check func(interface{}) (interface{}, error
 				Status: gopter.PropUndecided,
 			}
 		}
-		return convertResult(check(value)).WithArgs(gopter.NewPropArg(genResult, 0, value, value))
+		return convertResult(check(value)).AddArgs(gopter.NewPropArg(genResult, 0, value, value))
 	})
 }
