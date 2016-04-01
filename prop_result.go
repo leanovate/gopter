@@ -60,8 +60,14 @@ func (r *PropResult) Success() bool {
 	return r.Status == PropTrue || r.Status == PropProof
 }
 
-// WithArgs adds argument descriptors to the PropResult for reporting
-func (r *PropResult) WithArgs(args ...*PropArg) *PropResult {
+// WithArgs sets argument descriptors to the PropResult for reporting
+func (r *PropResult) WithArgs(args []*PropArg) *PropResult {
+	r.Args = args
+	return r
+}
+
+// AddArgs add argument descriptors to the PropResult for reporting
+func (r *PropResult) AddArgs(args ...*PropArg) *PropResult {
 	r.Args = append(r.Args, args...)
 	return r
 }
