@@ -7,16 +7,8 @@ import (
 )
 
 func TestBool(t *testing.T) {
-	b := gen.Bool()
-	for i := 0; i < 100; i++ {
-		value, ok := b.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid bool: %#v", value)
-		}
-		_, ok = value.(bool)
-		if !ok {
-			t.Errorf("Invalid bool: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "bool", gen.Bool(), func(value interface{}) bool {
+		_, ok := value.(bool)
+		return ok
+	})
 }

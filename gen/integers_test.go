@@ -14,44 +14,20 @@ func TestInt64Range(t *testing.T) {
 		t.Fail()
 	}
 
-	limited := gen.Int64Range(-123456, 234567)
-	for i := 0; i < 100; i++ {
-		value, ok := limited.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
+	commonGeneratorTest(t, "int 64 range", gen.Int64Range(-123456, 234567), func(value interface{}) bool {
 		v, ok := value.(int64)
-		if !ok || v < -123456 || v > 234567 {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+		return ok && v >= -123456 || v <= 234567
+	})
 
-	pos := gen.Int64Range(1, math.MaxInt64)
-	for i := 0; i < 100; i++ {
-		value, ok := pos.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid pos: %#v", value)
-		}
+	commonGeneratorTest(t, "int 64 positive", gen.Int64Range(1, math.MaxInt64), func(value interface{}) bool {
 		v, ok := value.(int64)
-		if !ok || v <= 0 {
-			t.Errorf("Invalid pos: %#v", value)
-		}
-	}
+		return ok && v > 0
+	})
 
-	neg := gen.Int64Range(math.MinInt64, -1)
-	for i := 0; i < 100; i++ {
-		value, ok := neg.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid neg: %#v", value)
-		}
+	commonGeneratorTest(t, "int 64 positive", gen.Int64Range(math.MinInt64, -1), func(value interface{}) bool {
 		v, ok := value.(int64)
-		if !ok || v >= 0 {
-			t.Errorf("Invalid neg: %#v", value)
-		}
-	}
+		return ok && v < 0
+	})
 }
 
 func TestUInt64Range(t *testing.T) {
@@ -61,160 +37,68 @@ func TestUInt64Range(t *testing.T) {
 		t.Fail()
 	}
 
-	limited := gen.UInt64Range(0, 234567)
-	for i := 0; i < 100; i++ {
-		value, ok := limited.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
+	commonGeneratorTest(t, "uint 64 range", gen.UInt64Range(0, 234567), func(value interface{}) bool {
 		v, ok := value.(uint64)
-		if !ok || v > 234567 {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+		return ok && v <= 234567
+	})
 }
 
 func TestInt64(t *testing.T) {
-	ints := gen.Int64()
-	for i := 0; i < 100; i++ {
-		value, ok := ints.Sample()
+	commonGeneratorTest(t, "int 64", gen.Int64(), func(value interface{}) bool {
+		_, ok := value.(int64)
+		return ok
+	})
 
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(int64)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
-
-	uints := gen.UInt64()
-	for i := 0; i < 100; i++ {
-		value, ok := uints.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(uint64)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "uint 64", gen.UInt64(), func(value interface{}) bool {
+		_, ok := value.(uint64)
+		return ok
+	})
 }
 
 func TestInt32(t *testing.T) {
-	ints := gen.Int32()
-	for i := 0; i < 100; i++ {
-		value, ok := ints.Sample()
+	commonGeneratorTest(t, "int 32", gen.Int32(), func(value interface{}) bool {
+		_, ok := value.(int32)
+		return ok
+	})
 
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(int32)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
-
-	uints := gen.UInt32()
-	for i := 0; i < 100; i++ {
-		value, ok := uints.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(uint32)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "uint 32", gen.UInt32(), func(value interface{}) bool {
+		_, ok := value.(uint32)
+		return ok
+	})
 }
 
 func TestInt16(t *testing.T) {
-	ints := gen.Int16()
-	for i := 0; i < 100; i++ {
-		value, ok := ints.Sample()
+	commonGeneratorTest(t, "int 16", gen.Int16(), func(value interface{}) bool {
+		_, ok := value.(int16)
+		return ok
+	})
 
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(int16)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
-
-	uints := gen.UInt16()
-	for i := 0; i < 100; i++ {
-		value, ok := uints.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(uint16)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "uint 16", gen.UInt16(), func(value interface{}) bool {
+		_, ok := value.(uint16)
+		return ok
+	})
 }
 
 func TestInt8(t *testing.T) {
-	ints := gen.Int8()
-	for i := 0; i < 100; i++ {
-		value, ok := ints.Sample()
+	commonGeneratorTest(t, "int 8", gen.Int8(), func(value interface{}) bool {
+		_, ok := value.(int8)
+		return ok
+	})
 
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(int8)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
-
-	uints := gen.UInt8()
-	for i := 0; i < 100; i++ {
-		value, ok := uints.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(uint8)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(byte)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "uint 8", gen.UInt8(), func(value interface{}) bool {
+		_, ok := value.(uint8)
+		return ok
+	})
 }
 
 func TestInt(t *testing.T) {
-	ints := gen.Int()
-	for i := 0; i < 100; i++ {
-		value, ok := ints.Sample()
+	commonGeneratorTest(t, "int 8", gen.Int(), func(value interface{}) bool {
+		_, ok := value.(int)
+		return ok
+	})
 
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(int)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
-
-	uints := gen.UInt()
-	for i := 0; i < 100; i++ {
-		value, ok := uints.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-		_, ok = value.(uint)
-		if !ok {
-			t.Errorf("Invalid limited: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "uint 8", gen.UInt(), func(value interface{}) bool {
+		_, ok := value.(uint)
+		return ok
+	})
 }

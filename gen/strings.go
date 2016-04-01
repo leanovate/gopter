@@ -9,31 +9,27 @@ import (
 
 // RuneRange generates runes within a given range
 func RuneRange(min, max rune) gopter.Gen {
-	return Int64Range(int64(min), int64(max)).Map(func(value interface{}) interface{} {
-		return rune(value.(int64))
-	}).SuchThat(func(v interface{}) bool {
-		return v.(rune) >= min && v.(rune) <= max
-	})
+	return genRune(Int64Range(int64(min), int64(max)))
 }
 
 // Rune generates an arbitrary character rune
 func Rune() gopter.Gen {
-	return Frequency(map[int]gopter.Gen{
+	return genRune(Frequency(map[int]gopter.Gen{
 		0xD800:                Int64Range(0, 0xD800),
 		utf8.MaxRune - 0xDFFF: Int64Range(0xDFFF, int64(utf8.MaxRune)),
-	}).Map(func(value interface{}) interface{} {
-		return rune(value.(int64))
-	}).SuchThat(func(v interface{}) bool {
-		return utf8.ValidRune(v.(rune))
-	})
+	}))
 }
 
 // RuneNoControl generates an arbitrary character rune that is not a control character
 func RuneNoControl() gopter.Gen {
-	return Frequency(map[int]gopter.Gen{
+	return genRune(Frequency(map[int]gopter.Gen{
 		0xD800:                Int64Range(32, 0xD800),
 		utf8.MaxRune - 0xDFFF: Int64Range(0xDFFF, int64(utf8.MaxRune)),
-	}).Map(func(value interface{}) interface{} {
+	}))
+}
+
+func genRune(int64Gen gopter.Gen) gopter.Gen {
+	return int64Gen.Map(func(value interface{}) interface{} {
 		return rune(value.(int64))
 	}).SuchThat(func(v interface{}) bool {
 		return utf8.ValidRune(v.(rune))
@@ -73,44 +69,17 @@ func AlphaNumChar() gopter.Gen {
 
 // AnyString generates an arbitrary string
 func AnyString() gopter.Gen {
-	return SliceOf(Rune()).Map(func(v interface{}) interface{} {
-		return string(v.([]rune))
-	}).SuchThat(func(v interface{}) bool {
-		for _, ch := range v.(string) {
-			if !utf8.ValidRune(ch) {
-				return false
-			}
-		}
-		return true
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	return genString(Rune(), utf8.ValidRune)
 }
 
 // AlphaString generates an arbitrary string with letters
 func AlphaString() gopter.Gen {
-	return SliceOf(AlphaChar()).Map(func(v interface{}) interface{} {
-		return string(v.([]rune))
-	}).SuchThat(func(v interface{}) bool {
-		for _, ch := range v.(string) {
-			if !unicode.IsLetter(ch) {
-				return false
-			}
-		}
-		return true
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	return genString(AlphaChar(), unicode.IsLetter)
 }
 
 // NumString generates an arbitrary string with digits
 func NumString() gopter.Gen {
-	return SliceOf(NumChar()).Map(func(v interface{}) interface{} {
-		return string(v.([]rune))
-	}).SuchThat(func(v interface{}) bool {
-		for _, ch := range v.(string) {
-			if !unicode.IsDigit(ch) {
-				return false
-			}
-		}
-		return true
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	return genString(NumChar(), unicode.IsDigit)
 }
 
 // Identifier generates an arbitrary identifier string
@@ -133,6 +102,19 @@ func Identifier() gopter.Gen {
 		}
 		for _, ch := range str {
 			if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) {
+				return false
+			}
+		}
+		return true
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+}
+
+func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
+	return SliceOf(runeGen).Map(func(v interface{}) interface{} {
+		return string(v.([]rune))
+	}).SuchThat(func(v interface{}) bool {
+		for _, ch := range v.(string) {
+			if !runeSieve(ch) {
 				return false
 			}
 		}

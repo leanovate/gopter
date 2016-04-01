@@ -8,18 +8,10 @@ import (
 )
 
 func TestFloat64(t *testing.T) {
-	floats := gen.Float64()
-	for i := 0; i < 100; i++ {
-		value, ok := floats.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid floats: %#v", value)
-		}
+	commonGeneratorTest(t, "float 64", gen.Float64(), func(value interface{}) bool {
 		v, ok := value.(float64)
-		if !ok || math.IsNaN(v) || math.IsInf(v, 0) {
-			t.Errorf("Invalid float64: %#v", value)
-		}
-	}
+		return ok && !math.IsNaN(v) && !math.IsInf(v, 0)
+	})
 }
 
 func TestFloat64Range(t *testing.T) {
@@ -29,33 +21,17 @@ func TestFloat64Range(t *testing.T) {
 		t.Fail()
 	}
 
-	floats := gen.Float64Range(-1234.5, 56789.123)
-	for i := 0; i < 100; i++ {
-		value, ok := floats.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid float64 range: %#v", value)
-		}
+	commonGeneratorTest(t, "float 64 range", gen.Float64Range(-1234.5, 56789.123), func(value interface{}) bool {
 		v, ok := value.(float64)
-		if !ok || math.IsNaN(v) || math.IsInf(v, 0) || v < -1234.5 || v > 56789.123 {
-			t.Errorf("Invalid float64 range: %#v", value)
-		}
-	}
+		return ok && !math.IsNaN(v) && !math.IsInf(v, 0) && v >= -1234.5 && v <= 56789.123
+	})
 }
 
 func TestFloat32(t *testing.T) {
-	floats := gen.Float32()
-	for i := 0; i < 100; i++ {
-		value, ok := floats.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid float32: %#v", value)
-		}
-		_, ok = value.(float32)
-		if !ok {
-			t.Errorf("Invalid float32: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "float 32", gen.Float32(), func(value interface{}) bool {
+		_, ok := value.(float32)
+		return ok
+	})
 }
 
 func TestFloat32Range(t *testing.T) {
@@ -65,16 +41,8 @@ func TestFloat32Range(t *testing.T) {
 		t.Fail()
 	}
 
-	floats := gen.Float32Range(-1234.5, 56789.123)
-	for i := 0; i < 100; i++ {
-		value, ok := floats.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid float32 range: %#v", value)
-		}
+	commonGeneratorTest(t, "float 32 range", gen.Float32Range(-1234.5, 56789.123), func(value interface{}) bool {
 		v, ok := value.(float32)
-		if !ok || v < -1234.5 || v > 56789.123 {
-			t.Errorf("Invalid float32 range: %#v", value)
-		}
-	}
+		return ok && v >= -1234.5 && v <= 56789.123
+	})
 }

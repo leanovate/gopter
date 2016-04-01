@@ -10,78 +10,38 @@ import (
 )
 
 func TestRune(t *testing.T) {
-	runeGen := gen.Rune()
-	for i := 0; i < 100; i++ {
-		value, ok := runeGen.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid rune: %#v", value)
-		}
+	commonGeneratorTest(t, "rune", gen.Rune(), func(value interface{}) bool {
 		v, ok := value.(rune)
-		if !ok || !utf8.ValidRune(v) {
-			t.Errorf("Invalid rune: %#v", value)
-		}
-	}
+		return ok && utf8.ValidRune(v)
+	})
 }
 
 func TestNumChar(t *testing.T) {
-	numCharGen := gen.NumChar()
-	for i := 0; i < 100; i++ {
-		value, ok := numCharGen.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid numchar: %#v", value)
-		}
+	commonGeneratorTest(t, "num char", gen.NumChar(), func(value interface{}) bool {
 		v, ok := value.(rune)
-		if !ok || !unicode.IsNumber(v) {
-			t.Errorf("Invalid numchar: %#v", value)
-		}
-	}
+		return ok && unicode.IsNumber(v)
+	})
 }
 
 func TestAlphaUpper(t *testing.T) {
-	alphaCharGen := gen.AlphaUpperChar()
-	for i := 0; i < 100; i++ {
-		value, ok := alphaCharGen.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid alphaupper: %#v", value)
-		}
+	commonGeneratorTest(t, "alpha upper char", gen.AlphaUpperChar(), func(value interface{}) bool {
 		v, ok := value.(rune)
-		if !ok || !unicode.IsUpper(v) {
-			t.Errorf("Invalid alphaupper: %#v", value)
-		}
-	}
+		return ok && unicode.IsUpper(v) && unicode.IsLetter(v)
+	})
 }
 
 func TestAlphaLower(t *testing.T) {
-	alphaCharGen := gen.AlphaLowerChar()
-	for i := 0; i < 100; i++ {
-		value, ok := alphaCharGen.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid alphalower: %#v", value)
-		}
+	commonGeneratorTest(t, "alpha lower char", gen.AlphaLowerChar(), func(value interface{}) bool {
 		v, ok := value.(rune)
-		if !ok || !unicode.IsLower(v) {
-			t.Errorf("Invalid alphalower: %#v", value)
-		}
-	}
+		return ok && unicode.IsLower(v) && unicode.IsLetter(v)
+	})
 }
 
 func TestAlphaChar(t *testing.T) {
-	alphaCharGen := gen.AlphaChar()
-	for i := 0; i < 100; i++ {
-		value, ok := alphaCharGen.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid alphachar: %#v", value)
-		}
+	commonGeneratorTest(t, "alpha char", gen.AlphaChar(), func(value interface{}) bool {
 		v, ok := value.(rune)
-		if !ok || !unicode.IsLetter(v) {
-			t.Errorf("Invalid alphachar: %#v", value)
-		}
-	}
+		return ok && unicode.IsLetter(v)
+	})
 }
 
 func TestAnyString(t *testing.T) {

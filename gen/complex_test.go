@@ -13,32 +13,17 @@ func TestComplex128Box(t *testing.T) {
 	minImag := -5432.8
 	maxImag := 8764.6
 	complexs := gen.Complex128Box(complex(minReal, minImag), complex(maxReal, maxImag))
-	for i := 0; i < 100; i++ {
-		value, ok := complexs.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
+	commonGeneratorTest(t, "complex 128 box", complexs, func(value interface{}) bool {
 		v, ok := value.(complex128)
-		if !ok || real(v) < minReal || real(v) > maxReal || imag(v) < minImag || imag(v) > maxImag {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
-	}
+		return ok && real(v) >= minReal && real(v) < maxReal && imag(v) >= minImag && imag(v) < maxImag
+	})
 }
 
 func TestComplex128(t *testing.T) {
-	complexs := gen.Complex128()
-	for i := 0; i < 100; i++ {
-		value, ok := complexs.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
+	commonGeneratorTest(t, "complex 128", gen.Complex128(), func(value interface{}) bool {
 		v, ok := value.(complex128)
-		if !ok || math.IsNaN(real(v)) || math.IsNaN(imag(v)) || math.IsInf(real(v), 0) || math.IsInf(imag(v), 0) {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
-	}
+		return ok && !math.IsNaN(real(v)) && !math.IsNaN(imag(v)) && !math.IsInf(real(v), 0) && !math.IsInf(imag(v), 0)
+	})
 }
 
 func TestComplex64Box(t *testing.T) {
@@ -47,30 +32,15 @@ func TestComplex64Box(t *testing.T) {
 	minImag := float32(-5432.8)
 	maxImag := float32(8764.6)
 	complexs := gen.Complex64Box(complex(minReal, minImag), complex(maxReal, maxImag))
-	for i := 0; i < 100; i++ {
-		value, ok := complexs.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
+	commonGeneratorTest(t, "complex 64 box", complexs, func(value interface{}) bool {
 		v, ok := value.(complex64)
-		if !ok || real(v) < minReal || real(v) > maxReal || imag(v) < minImag || imag(v) > maxImag {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
-	}
+		return ok && real(v) >= minReal && real(v) < maxReal && imag(v) >= minImag && imag(v) < maxImag
+	})
 }
 
 func TestComplex64(t *testing.T) {
-	complexs := gen.Complex64()
-	for i := 0; i < 100; i++ {
-		value, ok := complexs.Sample()
-
-		if !ok || value == nil {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
-		_, ok = value.(complex64)
-		if !ok {
-			t.Errorf("Invalid complexs: %#v", value)
-		}
-	}
+	commonGeneratorTest(t, "complex 64", gen.Complex64(), func(value interface{}) bool {
+		_, ok := value.(complex64)
+		return ok
+	})
 }
