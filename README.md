@@ -19,7 +19,7 @@ Main differences to ScalaCheck:
 * A generator for regex matches
 * No parallel commands ... yet?
 
-Main differences to the already testing/quick package:
+Main differences to the testing/quick package:
 
 * Much tighter control over generators
 * Shrinkers, i.e. automatically find the minimum value falsifying a property
@@ -34,7 +34,7 @@ Current godocs:
 * [gopter/prop](https://godoc.org/github.com/leanovate/gopter/prop): Common helpers to create properties from a condition function and an specific generators
 * [gopter/arbitrary](https://godoc.org/github.com/leanovate/gopter/arbitrary): Helpers automatically combine generators for arbitrary types
 * [gopter/commands](https://godoc.org/github.com/leanovate/gopter/commands): Helpers to create stateful tests based on arbirtrary commands
-* [gopter/convey](https://godoc.org/github.com/leanovate/gopter/convey): Helpers to used gopter from goconvey
+* [gopter/convey](https://godoc.org/github.com/leanovate/gopter/convey): Helpers to used gopter inside goconvey tests
 
 ## License
 
