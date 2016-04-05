@@ -65,8 +65,8 @@ func Int32Range(min, max int32) gopter.Gen {
 		Map(int64To32).
 		WithShrinker(Int32Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(int32) >= min && v.(int32) <= max
-		})
+		return v.(int32) >= min && v.(int32) <= max
+	})
 }
 
 // UInt32Range generates uint32 numbers within a given range
@@ -75,8 +75,8 @@ func UInt32Range(min, max uint32) gopter.Gen {
 		Map(uint64To32).
 		WithShrinker(UInt32Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(uint32) >= min && v.(uint32) <= max
-		})
+		return v.(uint32) >= min && v.(uint32) <= max
+	})
 }
 
 // Int32 generate arbitrary int32 numbers
@@ -95,8 +95,8 @@ func Int16Range(min, max int16) gopter.Gen {
 		Map(int64To16).
 		WithShrinker(Int16Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(int16) >= min && v.(int16) <= max
-		})
+		return v.(int16) >= min && v.(int16) <= max
+	})
 }
 
 // UInt16Range generates uint16 numbers within a given range
@@ -105,8 +105,8 @@ func UInt16Range(min, max uint16) gopter.Gen {
 		Map(uint64To16).
 		WithShrinker(UInt16Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(uint16) >= min && v.(uint16) <= max
-		})
+		return v.(uint16) >= min && v.(uint16) <= max
+	})
 }
 
 // Int16 generate arbitrary int16 numbers
@@ -125,8 +125,8 @@ func Int8Range(min, max int8) gopter.Gen {
 		Map(int64To8).
 		WithShrinker(Int8Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(int8) >= min && v.(int8) <= max
-		})
+		return v.(int8) >= min && v.(int8) <= max
+	})
 }
 
 // UInt8Range generates uint8 numbers within a given range
@@ -135,8 +135,8 @@ func UInt8Range(min, max uint8) gopter.Gen {
 		Map(uint64To8).
 		WithShrinker(UInt8Shrinker).
 		SuchThat(func(v interface{}) bool {
-			return v.(uint8) >= min && v.(uint8) <= max
-		})
+		return v.(uint8) >= min && v.(uint8) <= max
+	})
 }
 
 // Int8 generate arbitrary int16 numbers
