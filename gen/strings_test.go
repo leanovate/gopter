@@ -82,7 +82,7 @@ func TestAlphaString(t *testing.T) {
 				t.Errorf("Invalid string: %#v", v)
 			}
 		}
-		if result.Sieve == nil || result.Sieve("01") {
+		if result.Sieve != nil && result.Sieve("01") {
 			t.Error("Invalid sieve")
 		}
 	}
@@ -106,7 +106,7 @@ func TestNumString(t *testing.T) {
 				t.Errorf("Invalid string: %#v", v)
 			}
 		}
-		if result.Sieve == nil || result.Sieve("abc") {
+		if result.Sieve != nil && result.Sieve("abc") {
 			t.Error("Invalid sieve")
 		}
 	}
@@ -136,7 +136,7 @@ func TestIdentifier(t *testing.T) {
 				t.Errorf("Invalid string: %#v", v)
 			}
 		}
-		if result.Sieve == nil || result.Sieve("0ab") || result.Sieve("ab\n") {
+		if result.Sieve != nil && (result.Sieve("0ab") || result.Sieve("ab\n")) {
 			t.Error("Invalid sieve")
 		}
 	}
