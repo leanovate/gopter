@@ -18,7 +18,7 @@ func (s Shrink) Filter(condition func(interface{}) bool) Shrink {
 	}
 }
 
-// Map creates a shrink by a appling a converter to each element of a shrink
+// Map creates a shrink by applying a converter to each element of a shrink
 func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
 	return func() (interface{}, bool) {
 		value, ok := s()
