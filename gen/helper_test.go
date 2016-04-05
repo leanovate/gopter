@@ -22,10 +22,10 @@ func commonGeneratorTest(t *testing.T, name string, gen gopter.Gen, valueCheck f
 			if !ok || value == nil {
 				t.Errorf("Invalid generator result (%s): %#v", name, value)
 			} else {
-				shrink := genResult.Shrinker(value)
+				shrink := genResult.Shrinker(value).Filter(genResult.Sieve)
 				shrunkValue, ok := shrink()
 				if ok && !valueCheck(shrunkValue) {
-					t.Errorf("Invalid shrunk value (%s): %#v", name, shrunkValue)
+					t.Errorf("Invalid shrunk value (%s): %#v -> %#v", name, value, shrunkValue)
 				}
 			}
 		}
