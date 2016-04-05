@@ -9,22 +9,6 @@ import (
 	"github.com/leanovate/gopter/prop"
 )
 
-func MisimplementedConcat(a, b string) string {
-	return b
-}
-
-func TestMisimplementedConcat(t *testing.T) {
-	properties := gopter.NewProperties(nil)
-
-	properties.Property("length is sum of lengths", prop.ForAll(
-		func(a, b string) bool {
-			return MisimplementedConcat(a, b) == a+b
-		},
-		gen.AnyString(), gen.AnyString(),
-	))
-	properties.TestingRun(t)
-}
-
 func TestSqrt(t *testing.T) {
 	properties := gopter.NewProperties(nil)
 
