@@ -24,7 +24,7 @@ func TestInt64Range(t *testing.T) {
 		return ok && v > 0
 	})
 
-	commonGeneratorTest(t, "int 64 positive", gen.Int64Range(math.MinInt64, -1), func(value interface{}) bool {
+	commonGeneratorTest(t, "int 64 negative", gen.Int64Range(math.MinInt64, -1), func(value interface{}) bool {
 		v, ok := value.(int64)
 		return ok && v < 0
 	})
