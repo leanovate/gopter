@@ -12,15 +12,16 @@ func Int64Range(min, max int64) gopter.Gen {
 	if max < min {
 		return Fail(reflect.TypeOf(int64(0)))
 	}
-	d := uint64(max - min + 1)
+	rangeSize := uint64(max - min + 1)
 
-	if d == 0 { // Check overflow (i.e. max = MaxInt64, min = MinInt64)
+	if max == math.MaxInt64 && min == math.MinInt64 { // Check overflow (i.e. max = MaxInt64, min = MinInt64)
 		return func(genParams *gopter.GenParameters) *gopter.GenResult {
 			return gopter.NewGenResult(genParams.NextInt64(), Int64Shrinker)
 		}
 	}
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		genResult := gopter.NewGenResult(min+int64(genParams.NextUint64()%d), Int64Shrinker)
+		var nextResult uint64 = uint64(min) + (genParams.NextUint64() % rangeSize)
+		genResult := gopter.NewGenResult(int64(nextResult), Int64Shrinker)
 		genResult.Sieve = func(v interface{}) bool {
 			return v.(int64) >= min && v.(int64) <= max
 		}
@@ -31,12 +32,12 @@ func Int64Range(min, max int64) gopter.Gen {
 // UInt64Range generates uint64 numbers within a given range
 func UInt64Range(min, max uint64) gopter.Gen {
 	if max < min {
-		return Fail(reflect.TypeOf(int64(0)))
+		return Fail(reflect.TypeOf(uint64(0)))
 	}
 	d := max - min + 1
 	if d == 0 { // Check overflow (i.e. max = MaxInt64, min = MinInt64)
 		return func(genParams *gopter.GenParameters) *gopter.GenResult {
-			return gopter.NewGenResult(genParams.NextUint64(), Int64Shrinker)
+			return gopter.NewGenResult(genParams.NextUint64(), UInt64Shrinker)
 		}
 	}
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
