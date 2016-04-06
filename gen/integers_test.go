@@ -28,6 +28,11 @@ func TestInt64Range(t *testing.T) {
 		v, ok := value.(int64)
 		return ok && v < 0
 	})
+
+	commonGeneratorTest(t, "full int 64 range", gen.Int64Range(math.MinInt64, math.MaxInt64), func(value interface{}) bool {
+		_, ok := value.(int64)
+		return ok
+	})
 }
 
 func TestUInt64Range(t *testing.T) {
