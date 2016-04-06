@@ -12,13 +12,13 @@ func Int64Range(min, max int64) gopter.Gen {
 	if max < min {
 		return Fail(reflect.TypeOf(int64(0)))
 	}
-	rangeSize := uint64(max - min + 1)
-
-	if max == math.MaxInt64 && min == math.MinInt64 { // Check overflow (i.e. max = MaxInt64, min = MinInt64)
+	if max == math.MaxInt64 && min == math.MinInt64 { // Check for range overflow
 		return func(genParams *gopter.GenParameters) *gopter.GenResult {
 			return gopter.NewGenResult(genParams.NextInt64(), Int64Shrinker)
 		}
 	}
+
+	rangeSize := uint64(max - min + 1)
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		var nextResult uint64 = uint64(min) + (genParams.NextUint64() % rangeSize)
 		genResult := gopter.NewGenResult(int64(nextResult), Int64Shrinker)
