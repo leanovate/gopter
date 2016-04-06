@@ -51,5 +51,5 @@ func Complex64() gopter.Gen {
 	).Map(func(v interface{}) interface{} {
 		values := v.([]interface{})
 		return complex(values[0].(float32), values[1].(float32))
-	}).WithShrinker(Complex128Shrinker)
+	}).WithShrinker(Complex64Shrinker)
 }

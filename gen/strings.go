@@ -119,5 +119,9 @@ func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
 			}
 		}
 		return true
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	}).Map(func(v interface{}) interface{} {
+		return []rune(v.(string))
+	}).WithShrinker(SliceShrinker(gopter.NoShrinker)).Map(func(v interface{}) interface{} {
+		return string(v.([]rune))
+	})
 }
