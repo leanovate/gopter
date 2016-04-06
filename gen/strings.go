@@ -106,22 +106,20 @@ func Identifier() gopter.Gen {
 			}
 		}
 		return true
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	}).WithShrinker(StringShrinker)
 }
 
 func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
-	return SliceOf(runeGen).Map(func(v interface{}) interface{} {
-		return string(v.([]rune))
-	}).SuchThat(func(v interface{}) bool {
+	return SliceOf(runeGen).Map(runesToString).SuchThat(func(v interface{}) bool {
 		for _, ch := range v.(string) {
 			if !runeSieve(ch) {
 				return false
 			}
 		}
 		return true
-	}).Map(func(v interface{}) interface{} {
-		return []rune(v.(string))
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker)).Map(func(v interface{}) interface{} {
-		return string(v.([]rune))
-	})
+	}).WithShrinker(StringShrinker)
+}
+
+func runesToString(v interface{}) interface{} {
+	return string(v.([]rune))
 }
