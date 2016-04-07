@@ -29,6 +29,10 @@ var GetCommand = &commands.ProtoCommand{
 	RunFunc: func(systemUnderTest commands.SystemUnderTest) commands.Result {
 		return systemUnderTest.(*counter).Get()
 	},
+	PreConditionFunc: func(state commands.State) bool {
+		_, ok := state.(int)
+		return ok
+	},
 	PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
 		if state.(int) != result.(int) {
 			return &gopter.PropResult{Status: gopter.PropFalse}

@@ -52,7 +52,9 @@ func (p *ProtoCommands) GenCommand(state State) gopter.Gen {
 }
 
 func (p *ProtoCommands) GenInitialState() gopter.Gen {
-	return p.InitialStateGen
+	return p.InitialStateGen.SuchThat(func(state interface{}) bool {
+		return p.InitialPreCondition(state)
+	})
 }
 
 func (p *ProtoCommands) InitialPreCondition(state State) bool {
