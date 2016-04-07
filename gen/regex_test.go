@@ -17,7 +17,6 @@ func TestRegexMatch(t *testing.T) {
 		"^[0-9]{3}[A-Z]{5,}[a-z]{10,20}$",
 		"(?s)[^0-9]*ABCD.*1234",
 	}
-	t.Fail()
 	for _, regex := range regexs {
 		pattern, err := regexp.Compile(regex)
 		if err != nil {
