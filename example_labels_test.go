@@ -18,6 +18,13 @@ func spookyCalculation(a, b int) int {
 
 // Example_labels demonstrates how labels may help, in case of more complex
 // conditions.
+// The output will be:
+//  ! Check spooky: Falsified after 0 passed tests.
+//  > Labels of failing property: even result
+//  a: 3
+//  a_ORIGINAL (44 shrinks): 861384713
+//  b: 0
+//  b_ORIGINAL (1 shrinks): -642623569
 func Example_labels() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
