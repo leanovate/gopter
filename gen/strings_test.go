@@ -5,6 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
@@ -60,7 +61,8 @@ func TestAnyString(t *testing.T) {
 }
 
 func TestAlphaString(t *testing.T) {
-	commonGeneratorTest(t, "alpha string", gen.AlphaString(), func(value interface{}) bool {
+	alphaString := gen.AlphaString()
+	commonGeneratorTest(t, "alpha string", alphaString, func(value interface{}) bool {
 		str, ok := value.(string)
 
 		if !ok {
@@ -73,10 +75,18 @@ func TestAlphaString(t *testing.T) {
 		}
 		return true
 	})
+	sieve := alphaString(gopter.DefaultGenParameters()).Sieve
+	if sieve == nil {
+		t.Error("No sieve")
+	}
+	if !sieve("abcdABCD") || sieve("abc12") {
+		t.Error("Invalid sieve")
+	}
 }
 
 func TestNumString(t *testing.T) {
-	commonGeneratorTest(t, "num string", gen.NumString(), func(value interface{}) bool {
+	numString := gen.NumString()
+	commonGeneratorTest(t, "num string", numString, func(value interface{}) bool {
 		str, ok := value.(string)
 
 		if !ok {
@@ -89,10 +99,18 @@ func TestNumString(t *testing.T) {
 		}
 		return true
 	})
+	sieve := numString(gopter.DefaultGenParameters()).Sieve
+	if sieve == nil {
+		t.Error("No sieve")
+	}
+	if !sieve("123456789") || sieve("123abcd") {
+		t.Error("Invalid sieve")
+	}
 }
 
 func TestIdentifier(t *testing.T) {
-	commonGeneratorTest(t, "identifiers", gen.Identifier(), func(value interface{}) bool {
+	identifiers := gen.Identifier()
+	commonGeneratorTest(t, "identifiers", identifiers, func(value interface{}) bool {
 		str, ok := value.(string)
 
 		if !ok {
@@ -108,4 +126,11 @@ func TestIdentifier(t *testing.T) {
 		}
 		return true
 	})
+	sieve := identifiers(gopter.DefaultGenParameters()).Sieve
+	if sieve == nil {
+		t.Error("No sieve")
+	}
+	if !sieve("abc123") || sieve("123abc") || sieve("abcd123-") {
+		t.Error("Invalid sieve")
+	}
 }
