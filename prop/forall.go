@@ -13,8 +13,9 @@ ForAll creates a property that requires the check condition to be true for all v
 condition falsiies the generated values will be shrinked.
 
 "condition" has to be a function with the same number of parameters as the provided
-generators "gens". The function may return a simple bool, a *PropResult, a boolean with error or
-a *PropResult with error.
+generators "gens". The function may return a simple bool (true means that the
+condition has passed), a string (empty string means that condition has passed),
+a *PropResult, or one of former combined with an error.
 */
 func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 	callCheck, err := checkConditionFunc(condition, len(gens))

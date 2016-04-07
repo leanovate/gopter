@@ -19,6 +19,14 @@ func convertResult(result interface{}, err error) *gopter.PropResult {
 			return &gopter.PropResult{Status: gopter.PropTrue}
 		}
 		return &gopter.PropResult{Status: gopter.PropFalse}
+	case string:
+		if result.(string) == "" {
+			return &gopter.PropResult{Status: gopter.PropTrue}
+		}
+		return &gopter.PropResult{
+			Status: gopter.PropFalse,
+			Labels: []string{result.(string)},
+		}
 	case *gopter.PropResult:
 		return result.(*gopter.PropResult)
 	}

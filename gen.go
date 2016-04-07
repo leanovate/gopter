@@ -2,14 +2,24 @@ package gopter
 
 import "reflect"
 
-// Gen generator of arbitrary values
+// Gen generator of arbitrary values.
 // Usually properties are checked by verifing a condition holds true for arbitrary input parameters
 type Gen func(*GenParameters) *GenResult
 
-// Sample generate a sample value
+// Sample generate a sample value.
 // Depending on the state of the RNG the generate might fail to provide a sample
 func (g Gen) Sample() (interface{}, bool) {
 	return g(DefaultGenParameters()).Retrieve()
+}
+
+// WithLabel adds a label to a generated value.
+// Labels are usually used for reporting for the arguments of a property check.
+func (g Gen) WithLabel(label string) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		result := g(genParams)
+		result.Labels = append(result.Labels, label)
+		return result
+	}
 }
 
 // SuchThat creates a derived generator by adding a sieve, i.e. all generated values must have

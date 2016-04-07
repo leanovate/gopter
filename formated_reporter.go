@@ -51,7 +51,7 @@ func (r *FormatedReporter) reportResult(result *TestResult) string {
 	case TestPassed:
 		status = fmt.Sprintf("OK, passed %d tests.", result.Succeeded)
 	case TestFailed:
-		status = fmt.Sprintf("Falsified after %d passed tests.\n%s", result.Succeeded, r.reportPropArgs(result.Args))
+		status = fmt.Sprintf("Falsified after %d passed tests.\n%s%s", result.Succeeded, r.reportLabels(result.Labels), r.reportPropArgs(result.Args))
 	case TestExhausted:
 		status = fmt.Sprintf("Gave up after only %d passed tests. %d tests were discarded.", result.Succeeded, result.Discarded)
 	case TestError:
@@ -62,6 +62,13 @@ func (r *FormatedReporter) reportResult(result *TestResult) string {
 		return concatLines(status, fmt.Sprintf("Elapsed time: %s", result.Time.String()))
 	}
 	return status
+}
+
+func (r *FormatedReporter) reportLabels(labels []string) string {
+	if labels != nil && len(labels) > 0 {
+		return fmt.Sprintf("> Labels of failing property: %s\n", strings.Join(labels, newLine))
+	}
+	return ""
 }
 
 func (r *FormatedReporter) reportPropArgs(p PropArgs) string {

@@ -32,6 +32,7 @@ type TestResult struct {
 	Status    testStatus
 	Succeeded int
 	Discarded int
+	Labels    []string
 	Error     error
 	Args      PropArgs
 	Time      time.Duration

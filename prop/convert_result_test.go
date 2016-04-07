@@ -2,6 +2,7 @@ package prop
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/leanovate/gopter"
@@ -16,6 +17,19 @@ func TestConvertResult(t *testing.T) {
 	falseResult := convertResult(false, nil)
 	if falseResult.Status != gopter.PropFalse || falseResult.Error != nil {
 		t.Errorf("Invalid false result: %#v", falseResult)
+	}
+
+	stringTrueResult := convertResult("", nil)
+	if stringTrueResult.Status != gopter.PropTrue ||
+		stringTrueResult.Error != nil {
+		t.Errorf("Invalid string true result: %#v", stringTrueResult)
+	}
+
+	stringFalseResult := convertResult("Something is wrong", nil)
+	if stringFalseResult.Status != gopter.PropFalse ||
+		stringFalseResult.Error != nil ||
+		!reflect.DeepEqual(stringFalseResult.Labels, []string{"Something is wrong"}) {
+		t.Errorf("Invalid string false result: %#v", stringFalseResult)
 	}
 
 	errorResult := convertResult("Anthing", errors.New("Booom"))
