@@ -153,7 +153,10 @@ func UInt8() gopter.Gen {
 func IntRange(min, max int) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64ToInt).
-		WithShrinker(IntShrinker)
+		WithShrinker(IntShrinker).
+		SuchThat(func(v interface{}) bool {
+			return v.(int) >= min && v.(int) <= max
+		})
 }
 
 // Int generate arbitrary int numbers
@@ -164,10 +167,13 @@ func Int() gopter.Gen {
 }
 
 // UIntRange generates uint numbers within a given range
-func UIntRange(min, max int) gopter.Gen {
+func UIntRange(min, max uint) gopter.Gen {
 	return UInt64Range(uint64(min), uint64(max)).
 		Map(uint64ToUint).
-		WithShrinker(UIntShrinker)
+		WithShrinker(UIntShrinker).
+		SuchThat(func(v interface{}) bool {
+			return v.(uint) >= min && v.(uint) <= max
+		})
 }
 
 // UInt generate arbitrary uint numbers

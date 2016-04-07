@@ -97,13 +97,21 @@ func TestInt8(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
-	commonGeneratorTest(t, "int 8", gen.Int(), func(value interface{}) bool {
+	commonGeneratorTest(t, "int", gen.Int(), func(value interface{}) bool {
 		_, ok := value.(int)
 		return ok
 	})
+	commonGeneratorTest(t, "intrange", gen.IntRange(-1234, 5678), func(value interface{}) bool {
+		v, ok := value.(int)
+		return ok && v >= -1234 && v <= 5678
+	})
 
-	commonGeneratorTest(t, "uint 8", gen.UInt(), func(value interface{}) bool {
+	commonGeneratorTest(t, "uint", gen.UInt(), func(value interface{}) bool {
 		_, ok := value.(uint)
 		return ok
+	})
+	commonGeneratorTest(t, "uintrange", gen.UIntRange(1234, 5678), func(value interface{}) bool {
+		v, ok := value.(uint)
+		return ok && v >= 1234 && v <= 5678
 	})
 }

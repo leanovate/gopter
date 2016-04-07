@@ -31,6 +31,7 @@ type ProtoCommands struct {
 	InitialPreConditionFunc    func(State) bool
 }
 
+// NewSystemUnderTest should create a new/isolated system under test
 func (p *ProtoCommands) NewSystemUnderTest() SystemUnderTest {
 	if p.NewSystemUnderTestFunc != nil {
 		return p.NewSystemUnderTestFunc()
@@ -38,12 +39,14 @@ func (p *ProtoCommands) NewSystemUnderTest() SystemUnderTest {
 	return nil
 }
 
+// DestroySystemUnderTest may perform any cleanup tasks to destroy a system
 func (p *ProtoCommands) DestroySystemUnderTest(systemUnderTest SystemUnderTest) {
 	if p.DestroySystemUnderTestFunc != nil {
 		p.DestroySystemUnderTestFunc(systemUnderTest)
 	}
 }
 
+// GenCommand provides a generator for applicable commands to for a state
 func (p *ProtoCommands) GenCommand(state State) gopter.Gen {
 	if p.GenCommandFunc != nil {
 		return p.GenCommandFunc(state)
@@ -51,12 +54,14 @@ func (p *ProtoCommands) GenCommand(state State) gopter.Gen {
 	return gen.Fail(reflect.TypeOf((*Command)(nil)).Elem())
 }
 
+// GenInitialState provides a generator for the initial State
 func (p *ProtoCommands) GenInitialState() gopter.Gen {
 	return p.InitialStateGen.SuchThat(func(state interface{}) bool {
 		return p.InitialPreCondition(state)
 	})
 }
 
+// InitialPreCondition checks if the initial state is valid
 func (p *ProtoCommands) InitialPreCondition(state State) bool {
 	if p.InitialPreConditionFunc != nil {
 		return p.InitialPreConditionFunc(state)

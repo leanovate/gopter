@@ -13,24 +13,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 		if genParams.Size > 0 {
 			len = genParams.Rng.Intn(genParams.Size)
 		}
-		element := elementGen(genParams)
-		elementSieve := element.Sieve
-		elementShrinker := element.Shrinker
-
-		result := reflect.MakeSlice(reflect.SliceOf(element.ResultType), 0, len)
-
-		for i := 0; i < len; i++ {
-			value, ok := element.Retrieve()
-
-			if ok {
-				if value == nil {
-					result = reflect.Append(result, reflect.Zero(element.ResultType))
-				} else {
-					result = reflect.Append(result, reflect.ValueOf(value))
-				}
-			}
-			element = elementGen(genParams)
-		}
+		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, len)
 
 		genResult := gopter.NewGenResult(result.Interface(), SliceShrinker(elementShrinker))
 		if elementSieve != nil {
@@ -43,23 +26,7 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 // SliceOfN generates a slice of generated elements with definied length
 func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		element := elementGen(genParams)
-		elementSieve := element.Sieve
-		elementShrinker := element.Shrinker
-
-		result := reflect.MakeSlice(reflect.SliceOf(element.ResultType), 0, len)
-		for i := 0; i < len; i++ {
-			value, ok := element.Retrieve()
-
-			if ok {
-				if value == nil {
-					result = reflect.Append(result, reflect.Zero(element.ResultType))
-				} else {
-					result = reflect.Append(result, reflect.ValueOf(value))
-				}
-			}
-			element = elementGen(genParams)
-		}
+		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, len)
 
 		genResult := gopter.NewGenResult(result.Interface(), SliceShrinkerOne(elementShrinker))
 		if elementSieve != nil {
@@ -74,6 +41,29 @@ func SliceOfN(len int, elementGen gopter.Gen) gopter.Gen {
 		}
 		return genResult
 	}
+}
+
+func genSlice(elementGen gopter.Gen, genParams *gopter.GenParameters, len int) (reflect.Value, func(interface{}) bool, gopter.Shrinker) {
+	element := elementGen(genParams)
+	elementSieve := element.Sieve
+	elementShrinker := element.Shrinker
+
+	result := reflect.MakeSlice(reflect.SliceOf(element.ResultType), 0, len)
+
+	for i := 0; i < len; i++ {
+		value, ok := element.Retrieve()
+
+		if ok {
+			if value == nil {
+				result = reflect.Append(result, reflect.Zero(element.ResultType))
+			} else {
+				result = reflect.Append(result, reflect.ValueOf(value))
+			}
+		}
+		element = elementGen(genParams)
+	}
+
+	return result, elementSieve, elementShrinker
 }
 
 func forAllSieve(elementSieve func(interface{}) bool) func(interface{}) bool {

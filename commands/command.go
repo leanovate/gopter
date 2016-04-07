@@ -35,6 +35,7 @@ type ProtoCommand struct {
 	PostConditionFunc func(state State, result Result) *gopter.PropResult
 }
 
+// Run applies the command to the system under test
 func (p *ProtoCommand) Run(systemUnderTest SystemUnderTest) Result {
 	if p.RunFunc != nil {
 		return p.RunFunc(systemUnderTest)
@@ -42,6 +43,7 @@ func (p *ProtoCommand) Run(systemUnderTest SystemUnderTest) Result {
 	return nil
 }
 
+// NextState calculates the next expected state if the command is applied
 func (p *ProtoCommand) NextState(state State) State {
 	if p.NextStateFunc != nil {
 		return p.NextStateFunc(state)
@@ -49,6 +51,7 @@ func (p *ProtoCommand) NextState(state State) State {
 	return state
 }
 
+// PreCondition checks if the state is valid before the command is applied
 func (p *ProtoCommand) PreCondition(state State) bool {
 	if p.PreConditionFunc != nil {
 		return p.PreConditionFunc(state)
@@ -56,6 +59,7 @@ func (p *ProtoCommand) PreCondition(state State) bool {
 	return true
 }
 
+// PostCondition checks if the state is valid after the command is applied
 func (p *ProtoCommand) PostCondition(state State, result Result) *gopter.PropResult {
 	if p.PostConditionFunc != nil {
 		return p.PostConditionFunc(state, result)

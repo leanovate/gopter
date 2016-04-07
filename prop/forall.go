@@ -57,6 +57,7 @@ func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 	})
 }
 
+// ForAll1 legacy interface to be removed in the future
 func ForAll1(gen gopter.Gen, check func(v interface{}) (interface{}, error)) gopter.Prop {
 	checkFunc := func(v interface{}) *gopter.PropResult {
 		return convertResult(check(v))
