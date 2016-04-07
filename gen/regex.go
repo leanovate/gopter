@@ -19,7 +19,7 @@ func RegexMatch(regexStr string) gopter.Gen {
 	}
 	return regexMatchGen(regexSyntax.Simplify()).SuchThat(func(v interface{}) bool {
 		return regex.MatchString(v.(string))
-	}).WithShrinker(SliceShrinker(gopter.NoShrinker))
+	}).WithShrinker(StringShrinker)
 }
 
 func regexMatchGen(regex *syntax.Regexp) gopter.Gen {

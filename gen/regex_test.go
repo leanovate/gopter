@@ -1,6 +1,7 @@
 package gen_test
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -21,18 +22,10 @@ func TestRegexMatch(t *testing.T) {
 		if err != nil {
 			t.Error("Invalid regex", err)
 		}
-		gen := gen.RegexMatch(regex)
-		for i := 0; i < 100; i++ {
-			value, ok := gen.Sample()
-
-			if !ok || value == nil {
-				t.Errorf("Invalid value: %#v", value)
-			}
+		commonGeneratorTest(t, fmt.Sprintf("matches for %s", regex), gen.RegexMatch(regex), func(value interface{}) bool {
 			str, ok := value.(string)
-			if !ok || !pattern.MatchString(str) {
-				t.Errorf("Invalid value: %#v", value)
-			}
-		}
+			return ok && pattern.MatchString(str)
+		})
 	}
 
 	gen := gen.RegexMatch("]]}})Invalid{]]]")
