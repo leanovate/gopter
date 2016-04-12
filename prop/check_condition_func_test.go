@@ -44,7 +44,10 @@ func TestCheckCondition(t *testing.T) {
 	if err != nil || call == nil {
 		t.Error("Should work")
 	}
-	result := call([]interface{}{123, 456})
+	result := call([]typedValue{
+		typedValue{value: 123},
+		typedValue{value: 456},
+	})
 	if calledA != 123 || calledB != 456 {
 		t.Errorf("Invalid parameters: %d, %d", calledA, calledB)
 	}

@@ -25,32 +25,37 @@ func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResults := make([]*gopter.GenResult, len(gens))
-		values := make([]interface{}, len(gens))
-		var ok bool
+		values := make([]typedValue, len(gens))
 		for i, gen := range gens {
 			result := gen(genParams)
 			genResults[i] = result
-			values[i], ok = result.Retrieve()
+			value, ok := result.Retrieve()
 			if !ok {
 				return &gopter.PropResult{
 					Status: gopter.PropUndecided,
 				}
 			}
+			values[i] = typedValue{
+				value:       value,
+				reflectType: result.ResultType,
+			}
 		}
 		result := callCheck(values)
 		if result.Success() {
 			for i, genResult := range genResults {
-				result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i], values[i]))
+				result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i].value, values[i].value))
 			}
 		} else {
 			for i, genResult := range genResults {
-				result, values[i] = shrinkValue(genParams.MaxShrinkCount, genResult, values[i], result,
+				nextResult, nextValue := shrinkValue(genParams.MaxShrinkCount, genResult, values[i].value, result,
 					func(v interface{}) *gopter.PropResult {
-						shrinkedOne := make([]interface{}, len(values))
+						shrinkedOne := make([]typedValue, len(values))
 						copy(shrinkedOne, values)
-						shrinkedOne[i] = v
+						shrinkedOne[i].value = v
 						return callCheck(shrinkedOne)
 					})
+				result = nextResult
+				values[i].value = nextValue
 			}
 		}
 		return result
