@@ -25,37 +25,42 @@ func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResults := make([]*gopter.GenResult, len(gens))
-		values := make([]typedValue, len(gens))
+		values := make([]reflect.Value, len(gens))
+		var ok bool
 		for i, gen := range gens {
 			result := gen(genParams)
 			genResults[i] = result
-			value, ok := result.Retrieve()
+			values[i], ok = result.RetrieveAsValue()
 			if !ok {
 				return &gopter.PropResult{
 					Status: gopter.PropUndecided,
 				}
 			}
-			values[i] = typedValue{
-				value:       value,
-				reflectType: result.ResultType,
-			}
 		}
 		result := callCheck(values)
 		if result.Success() {
 			for i, genResult := range genResults {
-				result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i].value, values[i].value))
+				result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i].Interface(), values[i].Interface()))
 			}
 		} else {
 			for i, genResult := range genResults {
-				nextResult, nextValue := shrinkValue(genParams.MaxShrinkCount, genResult, values[i].value, result,
+				nextResult, nextValue := shrinkValue(genParams.MaxShrinkCount, genResult, values[i].Interface(), result,
 					func(v interface{}) *gopter.PropResult {
-						shrinkedOne := make([]typedValue, len(values))
+						shrinkedOne := make([]reflect.Value, len(values))
 						copy(shrinkedOne, values)
-						shrinkedOne[i].value = v
+						if v == nil {
+							shrinkedOne[i] = reflect.Zero(values[i].Type())
+						} else {
+							shrinkedOne[i] = reflect.ValueOf(v)
+						}
 						return callCheck(shrinkedOne)
 					})
 				result = nextResult
-				values[i].value = nextValue
+				if nextValue == nil {
+					values[i] = reflect.Zero(values[i].Type())
+				} else {
+					values[i] = reflect.ValueOf(nextValue)
+				}
 			}
 		}
 		return result

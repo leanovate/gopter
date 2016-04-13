@@ -1,6 +1,9 @@
 package prop
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestCheckCondition(t *testing.T) {
 	call, err := checkConditionFunc(0, 0)
@@ -44,9 +47,9 @@ func TestCheckCondition(t *testing.T) {
 	if err != nil || call == nil {
 		t.Error("Should work")
 	}
-	result := call([]typedValue{
-		typedValue{value: 123},
-		typedValue{value: 456},
+	result := call([]reflect.Value{
+		reflect.ValueOf(123),
+		reflect.ValueOf(456),
 	})
 	if calledA != 123 || calledB != 456 {
 		t.Errorf("Invalid parameters: %d, %d", calledA, calledB)

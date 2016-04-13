@@ -8,19 +8,7 @@ import (
 	"github.com/leanovate/gopter"
 )
 
-type typedValue struct {
-	value       interface{}
-	reflectType reflect.Type
-}
-
-func (t typedValue) ValueOf() reflect.Value {
-	if t.value == nil {
-		return reflect.Zero(t.reflectType)
-	}
-	return reflect.ValueOf(t.value)
-}
-
-func checkConditionFunc(check interface{}, numArgs int) (func([]typedValue) *gopter.PropResult, error) {
+func checkConditionFunc(check interface{}, numArgs int) (func([]reflect.Value) *gopter.PropResult, error) {
 	checkVal := reflect.ValueOf(check)
 	checkType := checkVal.Type()
 
@@ -37,24 +25,16 @@ func checkConditionFunc(check interface{}, numArgs int) (func([]typedValue) *gop
 	} else if checkType.NumOut() == 2 && !checkType.Out(1).Implements(typeOfError) {
 		return nil, fmt.Errorf("No 2 output has to be error: %v", checkType.Out(1).Kind())
 	} else if checkType.NumOut() == 2 {
-		return func(values []typedValue) *gopter.PropResult {
-			rvs := make([]reflect.Value, len(values))
-			for i, value := range values {
-				rvs[i] = value.ValueOf()
-			}
-			results := checkVal.Call(rvs)
+		return func(values []reflect.Value) *gopter.PropResult {
+			results := checkVal.Call(values)
 			if results[1].IsNil() {
 				return convertResult(results[0].Interface(), nil)
 			}
 			return convertResult(results[0].Interface(), results[1].Interface().(error))
 		}, nil
 	}
-	return func(values []typedValue) *gopter.PropResult {
-		rvs := make([]reflect.Value, len(values))
-		for i, value := range values {
-			rvs[i] = value.ValueOf()
-		}
-		results := checkVal.Call(rvs)
+	return func(values []reflect.Value) *gopter.PropResult {
+		results := checkVal.Call(values)
 		return convertResult(results[0].Interface(), nil)
 	}, nil
 }

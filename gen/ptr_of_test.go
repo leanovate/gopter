@@ -1,7 +1,6 @@
 package gen_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/leanovate/gopter"
@@ -54,7 +53,6 @@ func GenFoo() gopter.Gen {
 		if !ok {
 			panic("Oh craps")
 		}
-		fmt.Println(asRunes, Foo(asRunes))
 		return Foo(asRunes)
 	})
 }
