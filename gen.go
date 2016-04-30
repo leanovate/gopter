@@ -69,12 +69,12 @@ func (g Gen) Map(f func(interface{}) interface{}) Gen {
 				ResultType: reflect.TypeOf(mapped),
 			}
 		}
-		//		mappedZero := f(reflect.Zero(result.ResultType).Interface())
+		mappedZero := f(reflect.Zero(result.ResultType).Interface())
 		return &GenResult{
 			Shrinker:   NoShrinker,
 			result:     nil,
 			Labels:     result.Labels,
-			ResultType: reflect.TypeOf(struct{}{}),
+			ResultType: reflect.TypeOf(mappedZero),
 		}
 	}
 }
@@ -88,12 +88,12 @@ func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
 		if ok {
 			return f(value)(genParams)
 		}
-		//		mappedZero := f(reflect.Zero(result.ResultType).Interface())(genParams)
+		mappedZero := f(reflect.Zero(result.ResultType).Interface())(genParams)
 		return &GenResult{
 			Shrinker:   NoShrinker,
 			result:     nil,
 			Labels:     result.Labels,
-			ResultType: reflect.TypeOf(struct{}{}),
+			ResultType: mappedZero.ResultType,
 		}
 	}
 }
