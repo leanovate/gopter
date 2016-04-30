@@ -17,8 +17,8 @@ func RegexMatch(regexStr string) gopter.Gen {
 	if err1 != nil || err2 != nil {
 		return Fail(reflect.TypeOf(""))
 	}
-	return regexMatchGen(regexSyntax.Simplify()).SuchThat(func(v interface{}) bool {
-		return regex.MatchString(v.(string))
+	return regexMatchGen(regexSyntax.Simplify()).SuchThat(func(v string) bool {
+		return regex.MatchString(v)
 	}).WithShrinker(StringShrinker)
 }
 

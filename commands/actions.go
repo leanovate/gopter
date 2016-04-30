@@ -67,8 +67,8 @@ func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
 		for i := 0; i < genParams.Size; i++ {
 			gen = gen.FlatMap(func(v interface{}) gopter.Gen {
 				prev := v.(sizedCommands)
-				return commands.GenCommand(prev.state).SuchThat(func(command interface{}) bool {
-					return command.(Command).PreCondition(prev.state)
+				return commands.GenCommand(prev.state).SuchThat(func(command Command) bool {
+					return command.PreCondition(prev.state)
 				}).Map(func(command Command) sizedCommands {
 					return sizedCommands{
 						state:    command.NextState(prev.state),

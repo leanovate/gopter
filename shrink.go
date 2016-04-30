@@ -23,7 +23,8 @@ func (s Shrink) Filter(condition func(interface{}) bool) Shrink {
 	}
 }
 
-// Map creates a shrink by applying a converter to each element of a shrink
+// Map creates a shrink by applying a converter to each element of a shrink.
+// f: has to be a function with one parameter (matching the generated value) and a single return.
 func (s Shrink) Map(f interface{}) Shrink {
 	mapperVal := reflect.ValueOf(f)
 	mapperType := mapperVal.Type()

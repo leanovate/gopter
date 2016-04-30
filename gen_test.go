@@ -59,7 +59,7 @@ func TestGenMapTooManyParams(t *testing.T) {
 }
 
 func TestGenMapToInvalidParamtype(t *testing.T) {
-	defer expectPanic(t, "Param of has to be a func with one param assignable to string, but is int")
+	defer expectPanic(t, "Param of Map has to be a func with one param assignable to string, but is int")
 	constGen("sample").Map(func(a int) string {
 		return ""
 	})
@@ -122,8 +122,8 @@ func TestCombineGens(t *testing.T) {
 }
 
 func TestSuchThat(t *testing.T) {
-	var sieveArg interface{}
-	sieve := func(v interface{}) bool {
+	var sieveArg string
+	sieve := func(v string) bool {
 		sieveArg = v
 		return true
 	}
@@ -136,9 +136,9 @@ func TestSuchThat(t *testing.T) {
 		t.Errorf("Invalid sieveArg: %#v", sieveArg)
 	}
 
-	sieveArg = nil
-	var sieve2Arg interface{}
-	sieve2 := func(v interface{}) bool {
+	sieveArg = ""
+	var sieve2Arg string
+	sieve2 := func(v string) bool {
 		sieve2Arg = v
 		return false
 	}
@@ -153,6 +153,39 @@ func TestSuchThat(t *testing.T) {
 	if sieve2Arg != "sample" {
 		t.Errorf("Invalid sieve2Arg: %#v", sieve2Arg)
 	}
+}
+
+func TestGenSuchThatNoFunc(t *testing.T) {
+	defer expectPanic(t, "Param of SuchThat has to be a func, but is string")
+	constGen("sample").SuchThat("not a function")
+}
+
+func TestGenSuchTooManyParams(t *testing.T) {
+	defer expectPanic(t, "Param of SuchThat has to be a func with one param, but is 2")
+	constGen("sample").SuchThat(func(a, b string) bool {
+		return false
+	})
+}
+
+func TestGenSuchThatToInvalidParamtype(t *testing.T) {
+	defer expectPanic(t, "Param of SuchThat has to be a func with one param assignable to string, but is int")
+	constGen("sample").SuchThat(func(a int) bool {
+		return false
+	})
+}
+
+func TestGenSuchToManyReturns(t *testing.T) {
+	defer expectPanic(t, "Param of SuchThat has to be a func with one return value, but is 2")
+	constGen("sample").SuchThat(func(a string) (string, bool) {
+		return "", false
+	})
+}
+
+func TestGenSuchToInvalidReturns(t *testing.T) {
+	defer expectPanic(t, "Param of SuchThat has to be a func with one return value of bool, but is string")
+	constGen("sample").SuchThat(func(a string) string {
+		return ""
+	})
 }
 
 func TestWithShrinker(t *testing.T) {

@@ -25,19 +25,44 @@ func (g Gen) WithLabel(label string) Gen {
 	}
 }
 
-// SuchThat creates a derived generator by adding a sieve, i.e. all generated values must have
-// f(value) == true.
+// SuchThat creates a derived generator by adding a sieve.
+// f: has to be a function with one parameter (matching the generated value) returning a bool.
+// All generated values are expected to satisfy
+//  f(value) == true.
 // Use this care, if the sieve to to fine the generator will have many misses which results
 // in an undecided property.
-func (g Gen) SuchThat(f func(interface{}) bool) Gen {
+func (g Gen) SuchThat(f interface{}) Gen {
+	checkVal := reflect.ValueOf(f)
+	checkType := checkVal.Type()
+
+	if checkVal.Kind() != reflect.Func {
+		panic(fmt.Sprintf("Param of SuchThat has to be a func, but is %v", checkType.Kind()))
+	}
+	if checkType.NumIn() != 1 {
+		panic(fmt.Sprintf("Param of SuchThat has to be a func with one param, but is %v", checkType.NumIn()))
+	} else {
+		genResultType := g(DefaultGenParameters()).ResultType
+		if !genResultType.AssignableTo(checkType.In(0)) {
+			panic(fmt.Sprintf("Param of SuchThat has to be a func with one param assignable to %v, but is %v", genResultType, checkType.In(0)))
+		}
+	}
+	if checkType.NumOut() != 1 {
+		panic(fmt.Sprintf("Param of SuchThat has to be a func with one return value, but is %v", checkType.NumOut()))
+	} else if checkType.Out(0).Kind() != reflect.Bool {
+		panic(fmt.Sprintf("Param of SuchThat has to be a func with one return value of bool, but is %v", checkType.Out(0).Kind()))
+	}
+	sieve := func(v interface{}) bool {
+		return checkVal.Call([]reflect.Value{reflect.ValueOf(v)})[0].Bool()
+	}
+
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
 		prevSieve := result.Sieve
 		if prevSieve == nil {
-			result.Sieve = f
+			result.Sieve = sieve
 		} else {
 			result.Sieve = func(value interface{}) bool {
-				return prevSieve(value) && f(value)
+				return prevSieve(value) && sieve(value)
 			}
 		}
 		return result
@@ -58,6 +83,7 @@ func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 }
 
 // Map creates a derived generators by mapping all generatored values with a given function.
+// f: has to be a function with one parameter (matching the generated value) and a single return.
 // Note: The derived generator will not have a sieve or shrinker.
 func (g Gen) Map(f interface{}) Gen {
 	mapperVal := reflect.ValueOf(f)
@@ -71,7 +97,7 @@ func (g Gen) Map(f interface{}) Gen {
 	} else {
 		genResultType := g(DefaultGenParameters()).ResultType
 		if !genResultType.AssignableTo(mapperType.In(0)) {
-			panic(fmt.Sprintf("Param of has to be a func with one param assignable to %v, but is %v", genResultType, mapperType.In(0)))
+			panic(fmt.Sprintf("Param of Map has to be a func with one param assignable to %v, but is %v", genResultType, mapperType.In(0)))
 		}
 	}
 	if mapperType.NumOut() != 1 {

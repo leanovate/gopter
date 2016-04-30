@@ -9,10 +9,9 @@ func Complex128Box(min, max complex128) gopter.Gen {
 		Float64Range(imag(min), imag(max)),
 	).Map(func(values []interface{}) complex128 {
 		return complex(values[0].(float64), values[1].(float64))
-	}).SuchThat(func(v interface{}) bool {
-		c := v.(complex128)
-		return real(c) >= real(min) && real(c) <= real(max) &&
-			imag(c) >= imag(min) && imag(c) <= imag(max)
+	}).SuchThat(func(v complex128) bool {
+		return real(v) >= real(min) && real(v) <= real(max) &&
+			imag(v) >= imag(min) && imag(v) <= imag(max)
 	}).WithShrinker(Complex128Shrinker)
 }
 
@@ -33,10 +32,9 @@ func Complex64Box(min, max complex64) gopter.Gen {
 		Float32Range(imag(min), imag(max)),
 	).Map(func(values []interface{}) complex64 {
 		return complex(values[0].(float32), values[1].(float32))
-	}).SuchThat(func(v interface{}) bool {
-		c := v.(complex64)
-		return real(c) >= real(min) && real(c) <= real(max) &&
-			imag(c) >= imag(min) && imag(c) <= imag(max)
+	}).SuchThat(func(v complex64) bool {
+		return real(v) >= real(min) && real(v) <= real(max) &&
+			imag(v) >= imag(min) && imag(v) <= imag(max)
 	}).WithShrinker(Complex64Shrinker)
 }
 
