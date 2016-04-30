@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
@@ -54,7 +55,7 @@ func genActions(commands Commands) gopter.Gen {
 				sequentialCommands: v.(sizedCommands).commands,
 			}
 		}).WithShrinker(actionsShrinker)
-	})
+	}, reflect.TypeOf((*actions)(nil)))
 }
 
 func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
@@ -68,13 +69,13 @@ func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
 				prev := v.(sizedCommands)
 				return commands.GenCommand(prev.state).SuchThat(func(command interface{}) bool {
 					return command.(Command).PreCondition(prev.state)
-				}).Map(func(command interface{}) interface{} {
+				}).Map(func(command Command) sizedCommands {
 					return sizedCommands{
-						state:    command.(Command).NextState(prev.state),
-						commands: append(prev.commands, command.(Command)),
+						state:    command.NextState(prev.state),
+						commands: append(prev.commands, command),
 					}
 				})
-			})
+			}, reflect.TypeOf(sizedCommands{}))
 		}
 		return gen(genParams)
 	}

@@ -183,34 +183,34 @@ func UInt() gopter.Gen {
 		WithShrinker(UIntShrinker)
 }
 
-func int64To32(value interface{}) interface{} {
-	return int32(value.(int64))
+func int64To32(value int64) int32 {
+	return int32(value)
 }
 
-func uint64To32(value interface{}) interface{} {
-	return uint32(value.(uint64))
+func uint64To32(value uint64) uint32 {
+	return uint32(value)
 }
 
-func int64To16(value interface{}) interface{} {
-	return int16(value.(int64))
+func int64To16(value int64) int16 {
+	return int16(value)
 }
 
-func uint64To16(value interface{}) interface{} {
-	return uint16(value.(uint64))
+func uint64To16(value uint64) uint16 {
+	return uint16(value)
 }
 
-func int64To8(value interface{}) interface{} {
-	return int8(value.(int64))
+func int64To8(value int64) int8 {
+	return int8(value)
 }
 
-func uint64To8(value interface{}) interface{} {
-	return uint8(value.(uint64))
+func uint64To8(value uint64) uint8 {
+	return uint8(value)
 }
 
-func int64ToInt(value interface{}) interface{} {
-	return int(value.(int64))
+func int64ToInt(value int64) int {
+	return int(value)
 }
 
-func uint64ToUint(value interface{}) interface{} {
-	return uint(value.(uint64))
+func uint64ToUint(value uint64) uint {
+	return uint(value)
 }

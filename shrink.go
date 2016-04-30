@@ -1,5 +1,10 @@
 package gopter
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // Shrink is a stream of shrinked down values
 // Once the result of a shrink is false, it is considered to be exhausted
 type Shrink func() (interface{}, bool)
@@ -19,11 +24,24 @@ func (s Shrink) Filter(condition func(interface{}) bool) Shrink {
 }
 
 // Map creates a shrink by applying a converter to each element of a shrink
-func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
+func (s Shrink) Map(f interface{}) Shrink {
+	mapperVal := reflect.ValueOf(f)
+	mapperType := mapperVal.Type()
+
+	if mapperVal.Kind() != reflect.Func {
+		panic(fmt.Sprintf("Param of Map has to be a func: %v", mapperType.Kind()))
+	}
+	if mapperType.NumIn() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one param: %v", mapperType.NumIn()))
+	}
+	if mapperType.NumOut() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one return value: %v", mapperType.NumOut()))
+	}
+
 	return func() (interface{}, bool) {
 		value, ok := s()
 		if ok {
-			return f(value), ok
+			return mapperVal.Call([]reflect.Value{reflect.ValueOf(value)})[0].Interface(), ok
 		}
 		return nil, false
 	}

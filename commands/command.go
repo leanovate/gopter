@@ -45,7 +45,7 @@ func (p *ProtoCommand) Run(systemUnderTest SystemUnderTest) Result {
 
 // NextState calculates the next expected state if the command is applied
 func (p *ProtoCommand) NextState(state State) State {
-	if p != nil && state != nil && p.NextStateFunc != nil {
+	if p.NextStateFunc != nil {
 		return p.NextStateFunc(state)
 	}
 	return state
@@ -53,7 +53,7 @@ func (p *ProtoCommand) NextState(state State) State {
 
 // PreCondition checks if the state is valid before the command is applied
 func (p *ProtoCommand) PreCondition(state State) bool {
-	if p != nil && state != nil && p.PreConditionFunc != nil {
+	if p.PreConditionFunc != nil {
 		return p.PreConditionFunc(state)
 	}
 	return true

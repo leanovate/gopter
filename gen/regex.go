@@ -29,29 +29,29 @@ func regexMatchGen(regex *syntax.Regexp) gopter.Gen {
 	case syntax.OpCharClass:
 		gens := make([]gopter.Gen, 0, len(regex.Rune)/2)
 		for i := 0; i+1 < len(regex.Rune); i += 2 {
-			gens = append(gens, RuneRange(regex.Rune[i], regex.Rune[i+1]).Map(func(v interface{}) interface{} {
+			gens = append(gens, RuneRange(regex.Rune[i], regex.Rune[i+1]).Map(func(v interface{}) string {
 				return string(v.(rune))
 			}))
 		}
 		return OneGenOf(gens...)
 	case syntax.OpAnyChar:
-		return Rune().Map(func(v interface{}) interface{} {
+		return Rune().Map(func(v interface{}) string {
 			return string(v.(rune))
 		})
 	case syntax.OpAnyCharNotNL:
-		return RuneNoControl().Map(func(v interface{}) interface{} {
+		return RuneNoControl().Map(func(v interface{}) string {
 			return string(v.(rune))
 		})
 	case syntax.OpCapture:
 		return regexMatchGen(regex.Sub[0])
 	case syntax.OpStar:
 		elementGen := regexMatchGen(regex.Sub[0])
-		return SliceOf(elementGen).Map(func(v interface{}) interface{} {
+		return SliceOf(elementGen).Map(func(v interface{}) string {
 			return strings.Join(v.([]string), "")
 		})
 	case syntax.OpPlus:
 		elementGen := regexMatchGen(regex.Sub[0])
-		return gopter.CombineGens(elementGen, SliceOf(elementGen)).Map(func(v interface{}) interface{} {
+		return gopter.CombineGens(elementGen, SliceOf(elementGen)).Map(func(v interface{}) string {
 			vs := v.([]interface{})
 			return vs[0].(string) + strings.Join(vs[1].([]string), "")
 		})
@@ -63,7 +63,7 @@ func regexMatchGen(regex *syntax.Regexp) gopter.Gen {
 		for i, sub := range regex.Sub {
 			gens[i] = regexMatchGen(sub)
 		}
-		return gopter.CombineGens(gens...).Map(func(v interface{}) interface{} {
+		return gopter.CombineGens(gens...).Map(func(v interface{}) string {
 			result := ""
 			for _, str := range v.([]interface{}) {
 				result += str.(string)

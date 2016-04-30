@@ -29,8 +29,8 @@ func RuneNoControl() gopter.Gen {
 }
 
 func genRune(int64Gen gopter.Gen) gopter.Gen {
-	return int64Gen.Map(func(value interface{}) interface{} {
-		return rune(value.(int64))
+	return int64Gen.Map(func(value int64) rune {
+		return rune(value)
 	}).SuchThat(func(v interface{}) bool {
 		return utf8.ValidRune(v.(rune))
 	})
@@ -120,6 +120,6 @@ func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
 	}).WithShrinker(StringShrinker)
 }
 
-func runesToString(v interface{}) interface{} {
-	return string(v.([]rune))
+func runesToString(v []rune) string {
+	return string(v)
 }

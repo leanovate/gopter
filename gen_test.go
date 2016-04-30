@@ -53,7 +53,7 @@ func TestGenFlatMap(t *testing.T) {
 		mappedWith = v
 		return constGen("other")
 	}
-	value, ok := gen.FlatMap(mapper).Sample()
+	value, ok := gen.FlatMap(mapper, reflect.TypeOf("")).Sample()
 	if !ok || value != "other" {
 		t.Errorf("Invalid gen sample: %#v", value)
 	}
@@ -64,7 +64,7 @@ func TestGenFlatMap(t *testing.T) {
 	gen = gen.SuchThat(func(interface{}) bool {
 		return false
 	})
-	value, ok = gen.FlatMap(mapper).Sample()
+	value, ok = gen.FlatMap(mapper, reflect.TypeOf("")).Sample()
 	if ok {
 		t.Errorf("Invalid gen sample: %#v", value)
 	}

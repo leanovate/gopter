@@ -1,6 +1,9 @@
 package gopter
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // Gen generator of arbitrary values.
 // Usually properties are checked by verifing a condition holds true for arbitrary input parameters
@@ -56,44 +59,55 @@ func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 
 // Map creates a derived generators by mapping all generatored values with a given function.
 // Note: The derived generator will not have a sieve or shrinker.
-func (g Gen) Map(f func(interface{}) interface{}) Gen {
+func (g Gen) Map(f interface{}) Gen {
+	mapperVal := reflect.ValueOf(f)
+	mapperType := mapperVal.Type()
+
+	if mapperVal.Kind() != reflect.Func {
+		panic(fmt.Sprintf("Param of Map has to be a func: %v", mapperType.Kind()))
+	}
+	if mapperType.NumIn() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one param: %v", mapperType.NumIn()))
+	}
+	if mapperType.NumOut() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one return value: %v", mapperType.NumOut()))
+	}
+
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
-		value, ok := result.Retrieve()
+		value, ok := result.RetrieveAsValue()
 		if ok {
-			mapped := f(value)
+			mapped := mapperVal.Call([]reflect.Value{value})[0]
 			return &GenResult{
 				Shrinker:   NoShrinker,
-				result:     mapped,
+				result:     mapped.Interface(),
 				Labels:     result.Labels,
-				ResultType: reflect.TypeOf(mapped),
+				ResultType: mapperType.Out(0),
 			}
 		}
-		mappedZero := f(reflect.Zero(result.ResultType).Interface())
 		return &GenResult{
 			Shrinker:   NoShrinker,
 			result:     nil,
 			Labels:     result.Labels,
-			ResultType: reflect.TypeOf(mappedZero),
+			ResultType: mapperType.Out(0),
 		}
 	}
 }
 
 // FlatMap creates a derived generator by passing a generated value to a function which itself
 // creates a generator.
-func (g Gen) FlatMap(f func(interface{}) Gen) Gen {
+func (g Gen) FlatMap(f func(interface{}) Gen, resultType reflect.Type) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
 		value, ok := result.Retrieve()
 		if ok {
 			return f(value)(genParams)
 		}
-		mappedZero := f(reflect.Zero(result.ResultType).Interface())(genParams)
 		return &GenResult{
 			Shrinker:   NoShrinker,
 			result:     nil,
 			Labels:     result.Labels,
-			ResultType: mappedZero.ResultType,
+			ResultType: resultType,
 		}
 	}
 }

@@ -29,8 +29,7 @@ func Float64() gopter.Gen {
 		Int64Range(0, 1),
 		Int64Range(0, 0x7fe),
 		Int64Range(0, 0xfffffffffffff),
-	).Map(func(v interface{}) interface{} {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) float64 {
 		sign := uint64(values[0].(int64))
 		exponent := uint64(values[1].(int64))
 		mantissa := uint64(values[2].(int64))
@@ -60,8 +59,7 @@ func Float32() gopter.Gen {
 		Int32Range(0, 1),
 		Int32Range(0, 0xfe),
 		Int32Range(0, 0x7fffff),
-	).Map(func(v interface{}) interface{} {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) float32 {
 		sign := uint32(values[0].(int32))
 		exponent := uint32(values[1].(int32))
 		mantissa := uint32(values[2].(int32))
