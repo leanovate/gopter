@@ -1,6 +1,10 @@
 package prop
 
-import "github.com/leanovate/gopter"
+import (
+	"reflect"
+
+	"github.com/leanovate/gopter"
+)
 
 /*
 ForAllNoShrink creates a property that requires the check condition to be true for all values.
@@ -19,24 +23,21 @@ func ForAllNoShrink(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 
 	return gopter.SaveProp(func(genParams *gopter.GenParameters) *gopter.PropResult {
 		genResults := make([]*gopter.GenResult, len(gens))
-		values := make([]typedValue, len(gens))
+		values := make([]reflect.Value, len(gens))
+		var ok bool
 		for i, gen := range gens {
 			result := gen(genParams)
 			genResults[i] = result
-			value, ok := result.Retrieve()
+			values[i], ok = result.RetrieveAsValue()
 			if !ok {
 				return &gopter.PropResult{
 					Status: gopter.PropUndecided,
 				}
 			}
-			values[i] = typedValue{
-				value:       value,
-				reflectType: result.ResultType,
-			}
 		}
 		result := callCheck(values)
 		for i, genResult := range genResults {
-			result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i].value, values[i].value))
+			result = result.AddArgs(gopter.NewPropArg(genResult, 0, values[i].Interface(), values[i].Interface()))
 		}
 		return result
 	})
