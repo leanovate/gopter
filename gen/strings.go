@@ -29,10 +29,10 @@ func RuneNoControl() gopter.Gen {
 }
 
 func genRune(int64Gen gopter.Gen) gopter.Gen {
-	return int64Gen.Map(func(value interface{}) interface{} {
-		return rune(value.(int64))
-	}).SuchThat(func(v interface{}) bool {
-		return utf8.ValidRune(v.(rune))
+	return int64Gen.Map(func(value int64) rune {
+		return rune(value)
+	}).SuchThat(func(v rune) bool {
+		return utf8.ValidRune(v)
 	})
 }
 
@@ -89,14 +89,12 @@ func Identifier() gopter.Gen {
 	return gopter.CombineGens(
 		AlphaLowerChar(),
 		SliceOf(AlphaNumChar()),
-	).Map(func(v interface{}) interface{} {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) string {
 		first := values[0].(rune)
 		tail := values[1].([]rune)
 		result := make([]rune, 0, len(tail)+1)
 		return string(append(append(result, first), tail...))
-	}).SuchThat(func(v interface{}) bool {
-		str := v.(string)
+	}).SuchThat(func(str string) bool {
 		if len(str) < 1 || !unicode.IsLower(([]rune(str))[0]) {
 			return false
 		}
@@ -110,8 +108,8 @@ func Identifier() gopter.Gen {
 }
 
 func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
-	return SliceOf(runeGen).Map(runesToString).SuchThat(func(v interface{}) bool {
-		for _, ch := range v.(string) {
+	return SliceOf(runeGen).Map(runesToString).SuchThat(func(v string) bool {
+		for _, ch := range v {
 			if !runeSieve(ch) {
 				return false
 			}
@@ -120,6 +118,6 @@ func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
 	}).WithShrinker(StringShrinker)
 }
 
-func runesToString(v interface{}) interface{} {
-	return string(v.([]rune))
+func runesToString(v []rune) string {
+	return string(v)
 }

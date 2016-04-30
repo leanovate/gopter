@@ -43,7 +43,7 @@ func Float64Shrinker(v interface{}) gopter.Shrink {
 
 // Float32Shrinker is a shrinker for float32 numbers
 func Float32Shrinker(v interface{}) gopter.Shrink {
-	return Float64Shrinker(float64(v.(float32))).Map(func(e interface{}) interface{} {
-		return float32(e.(float64))
+	return Float64Shrinker(float64(v.(float32))).Map(func(e float64) float32 {
+		return float32(e)
 	})
 }

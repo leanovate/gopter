@@ -111,14 +111,36 @@ func TestCombineShrinker(t *testing.T) {
 
 func TestShrinkMap(t *testing.T) {
 	counter := &counterShrink{n: 10}
-	shrink := gopter.Shrink(counter.Next).Map(func(v interface{}) interface{} {
-		return 10 - v.(int)
+	shrink := gopter.Shrink(counter.Next).Map(func(v int) int {
+		return 10 - v
 	})
 
 	all := shrink.All()
 	if !reflect.DeepEqual(all, []interface{}{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}) {
 		t.Errorf("Invalid all: %#v", all)
 	}
+}
+
+func TestShrinkMapNoFunc(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func, but is string")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map("not a function")
+}
+
+func TestShrinkMapTooManyParams(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one param, but is 2")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map(func(a, b string) string {
+		return ""
+	})
+}
+
+func TestShrinkMapToManyReturns(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one return value, but is 2")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map(func(a string) (string, bool) {
+		return "", false
+	})
 }
 
 func TestNoShrinker(t *testing.T) {

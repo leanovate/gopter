@@ -56,7 +56,7 @@ func (p *ProtoCommands) GenCommand(state State) gopter.Gen {
 
 // GenInitialState provides a generator for the initial State
 func (p *ProtoCommands) GenInitialState() gopter.Gen {
-	return p.InitialStateGen.SuchThat(func(state interface{}) bool {
+	return p.InitialStateGen.SuchThat(func(state State) bool {
 		return p.InitialPreCondition(state)
 	})
 }

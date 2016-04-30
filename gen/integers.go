@@ -64,8 +64,8 @@ func Int32Range(min, max int32) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To32).
 		WithShrinker(Int32Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(int32) >= min && v.(int32) <= max
+		SuchThat(func(v int32) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -74,8 +74,8 @@ func UInt32Range(min, max uint32) gopter.Gen {
 	return UInt64Range(uint64(min), uint64(max)).
 		Map(uint64To32).
 		WithShrinker(UInt32Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(uint32) >= min && v.(uint32) <= max
+		SuchThat(func(v uint32) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -94,8 +94,8 @@ func Int16Range(min, max int16) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To16).
 		WithShrinker(Int16Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(int16) >= min && v.(int16) <= max
+		SuchThat(func(v int16) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -104,8 +104,8 @@ func UInt16Range(min, max uint16) gopter.Gen {
 	return UInt64Range(uint64(min), uint64(max)).
 		Map(uint64To16).
 		WithShrinker(UInt16Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(uint16) >= min && v.(uint16) <= max
+		SuchThat(func(v uint16) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -124,8 +124,8 @@ func Int8Range(min, max int8) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64To8).
 		WithShrinker(Int8Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(int8) >= min && v.(int8) <= max
+		SuchThat(func(v int8) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -134,8 +134,8 @@ func UInt8Range(min, max uint8) gopter.Gen {
 	return UInt64Range(uint64(min), uint64(max)).
 		Map(uint64To8).
 		WithShrinker(UInt8Shrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(uint8) >= min && v.(uint8) <= max
+		SuchThat(func(v uint8) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -154,8 +154,8 @@ func IntRange(min, max int) gopter.Gen {
 	return Int64Range(int64(min), int64(max)).
 		Map(int64ToInt).
 		WithShrinker(IntShrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(int) >= min && v.(int) <= max
+		SuchThat(func(v int) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -171,8 +171,8 @@ func UIntRange(min, max uint) gopter.Gen {
 	return UInt64Range(uint64(min), uint64(max)).
 		Map(uint64ToUint).
 		WithShrinker(UIntShrinker).
-		SuchThat(func(v interface{}) bool {
-			return v.(uint) >= min && v.(uint) <= max
+		SuchThat(func(v uint) bool {
+			return v >= min && v <= max
 		})
 }
 
@@ -183,34 +183,34 @@ func UInt() gopter.Gen {
 		WithShrinker(UIntShrinker)
 }
 
-func int64To32(value interface{}) interface{} {
-	return int32(value.(int64))
+func int64To32(value int64) int32 {
+	return int32(value)
 }
 
-func uint64To32(value interface{}) interface{} {
-	return uint32(value.(uint64))
+func uint64To32(value uint64) uint32 {
+	return uint32(value)
 }
 
-func int64To16(value interface{}) interface{} {
-	return int16(value.(int64))
+func int64To16(value int64) int16 {
+	return int16(value)
 }
 
-func uint64To16(value interface{}) interface{} {
-	return uint16(value.(uint64))
+func uint64To16(value uint64) uint16 {
+	return uint16(value)
 }
 
-func int64To8(value interface{}) interface{} {
-	return int8(value.(int64))
+func int64To8(value int64) int8 {
+	return int8(value)
 }
 
-func uint64To8(value interface{}) interface{} {
-	return uint8(value.(uint64))
+func uint64To8(value uint64) uint8 {
+	return uint8(value)
 }
 
-func int64ToInt(value interface{}) interface{} {
-	return int(value.(int64))
+func int64ToInt(value int64) int {
+	return int(value)
 }
 
-func uint64ToUint(value interface{}) interface{} {
-	return uint(value.(uint64))
+func uint64ToUint(value uint64) uint {
+	return uint(value)
 }

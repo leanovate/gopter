@@ -19,9 +19,9 @@ func TimeShrinker(v interface{}) gopter.Shrink {
 		original: nsec,
 		half:     nsec,
 	}
-	return gopter.Shrink(secShrink.Next).Map(func(v interface{}) interface{} {
-		return time.Unix(v.(int64), nsec)
-	}).Interleave(gopter.Shrink(nsecShrink.Next).Map(func(v interface{}) interface{} {
-		return time.Unix(sec, v.(int64))
+	return gopter.Shrink(secShrink.Next).Map(func(v int64) time.Time {
+		return time.Unix(v, nsec)
+	}).Interleave(gopter.Shrink(nsecShrink.Next).Map(func(v int64) time.Time {
+		return time.Unix(sec, v)
 	}))
 }
