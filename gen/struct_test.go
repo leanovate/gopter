@@ -17,9 +17,10 @@ type testStruct struct {
 
 func TestStructPtr(t *testing.T) {
 	structGen := gen.StructPtr(reflect.TypeOf(&testStruct{}), map[string]gopter.Gen{
-		"Value1": gen.Identifier(),
-		"Value2": gen.Int64(),
-		"Value3": gen.SliceOf(gen.Int8()),
+		"Value1":   gen.Identifier(),
+		"Value2":   gen.Int64(),
+		"Value3":   gen.SliceOf(gen.Int8()),
+		"NotThere": gen.AnyString(),
 	})
 	for i := 0; i < 100; i++ {
 		value, ok := structGen.Sample()
@@ -31,5 +32,25 @@ func TestStructPtr(t *testing.T) {
 		if !ok || v.Value1 == "" || v.Value3 == nil || v.Value4 != "" {
 			t.Errorf("Invalid value: %#v", value)
 		}
+	}
+}
+
+func TestStructPtrPropageEmpty(t *testing.T) {
+	fail := gen.StructPtr(reflect.TypeOf(&testStruct{}), map[string]gopter.Gen{
+		"Value1": gen.Identifier().SuchThat(func(str string) bool {
+			return false
+		}),
+	})
+
+	if _, ok := fail.Sample(); ok {
+		t.Errorf("Failing field generator in StructPtr generated a value")
+	}
+}
+
+func TestStructPtrNoStruct(t *testing.T) {
+	fail := gen.StructPtr(reflect.TypeOf(""), map[string]gopter.Gen{})
+
+	if _, ok := fail.Sample(); ok {
+		t.Errorf("Invalid StructPtr generated a value")
 	}
 }

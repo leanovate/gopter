@@ -149,8 +149,8 @@ func (g Gen) FlatMap(f func(interface{}) Gen, resultType reflect.Type) Gen {
 // Note: The combined generator will not have a sieve or shrinker.
 func CombineGens(gens ...Gen) Gen {
 	return func(genParams *GenParameters) *GenResult {
+		labels := []string{}
 		values := make([]interface{}, len(gens))
-		labels := make([]string, 0)
 		shrinkers := make([]Shrinker, len(gens))
 		sieves := make([]func(v interface{}) bool, len(gens))
 

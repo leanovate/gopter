@@ -51,7 +51,7 @@ func (s Shrink) Map(f interface{}) Shrink {
 // All collects all shrinks as a slice. Use with care as this might create
 // large results depending on the complexity of the shrink
 func (s Shrink) All() []interface{} {
-	result := make([]interface{}, 0)
+	result := []interface{}{}
 	value, ok := s()
 	for ok {
 		result = append(result, value)
@@ -144,6 +144,10 @@ func (e *elementShrink) Next() (interface{}, bool) {
 	return shrinked, true
 }
 
+// CombineShrinker create a shrinker by combining a list of shrinkers.
+// The resulting shrinker will shrink an []interface{} where each element will be shrinked by
+// the corresonding shrinker in 'shrinkers'.
+// This method is implicitly used by CombineGens.
 func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 	return func(v interface{}) Shrink {
 		values := v.([]interface{})
@@ -163,10 +167,13 @@ func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 	}
 }
 
+// NoShrink is an empty shrink.
 var NoShrink = Shrink(func() (interface{}, bool) {
 	return nil, false
 })
 
+// NoShrinker is a shrinker for NoShrink, i.e. a Shrinker that will not shrink any values.
+// This is the default Shrinker if none is provided.
 var NoShrinker = Shrinker(func(value interface{}) Shrink {
 	return NoShrink
 })
