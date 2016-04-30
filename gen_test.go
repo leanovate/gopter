@@ -46,6 +46,32 @@ func TestGenMap(t *testing.T) {
 	}
 }
 
+func TestGenMapNoFunc(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func, but is string")
+	constGen("sample").Map("not a function")
+}
+
+func TestGenMapTooManyParams(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one param, but is 2")
+	constGen("sample").Map(func(a, b string) string {
+		return ""
+	})
+}
+
+func TestGenMapToInvalidParamtype(t *testing.T) {
+	defer expectPanic(t, "Param of has to be a func with one param assignable to string, but is int")
+	constGen("sample").Map(func(a int) string {
+		return ""
+	})
+}
+
+func TestGenMapToManyReturns(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one return value, but is 2")
+	constGen("sample").Map(func(a string) (string, bool) {
+		return "", false
+	})
+}
+
 func TestGenFlatMap(t *testing.T) {
 	gen := constGen("sample")
 	var mappedWith interface{}
@@ -144,5 +170,14 @@ func TestWithShrinker(t *testing.T) {
 	result.Shrinker(value)
 	if shrinkerArg != "sample" {
 		t.Errorf("Invalid shrinkerArg: %#v", shrinkerArg)
+	}
+}
+
+func expectPanic(t *testing.T, expected string) {
+	r := recover()
+	if r == nil {
+		t.Errorf("The code did not panic")
+	} else if r.(string) != expected {
+		t.Errorf("Panic does not match: '%#v' != '%#v'", r, expected)
 	}
 }

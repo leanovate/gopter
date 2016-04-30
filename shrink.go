@@ -29,13 +29,13 @@ func (s Shrink) Map(f interface{}) Shrink {
 	mapperType := mapperVal.Type()
 
 	if mapperVal.Kind() != reflect.Func {
-		panic(fmt.Sprintf("Param of Map has to be a func: %v", mapperType.Kind()))
+		panic(fmt.Sprintf("Param of Map has to be a func, but is %v", mapperType.Kind()))
 	}
 	if mapperType.NumIn() != 1 {
-		panic(fmt.Sprintf("Param of Map has to be a func with one param: %v", mapperType.NumIn()))
+		panic(fmt.Sprintf("Param of Map has to be a func with one param, but is %v", mapperType.NumIn()))
 	}
 	if mapperType.NumOut() != 1 {
-		panic(fmt.Sprintf("Param of Map has to be a func with one return value: %v", mapperType.NumOut()))
+		panic(fmt.Sprintf("Param of Map has to be a func with one return value, but is %v", mapperType.NumOut()))
 	}
 
 	return func() (interface{}, bool) {

@@ -121,6 +121,28 @@ func TestShrinkMap(t *testing.T) {
 	}
 }
 
+func TestShrinkMapNoFunc(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func, but is string")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map("not a function")
+}
+
+func TestShrinkMapTooManyParams(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one param, but is 2")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map(func(a, b string) string {
+		return ""
+	})
+}
+
+func TestShrinkMapToManyReturns(t *testing.T) {
+	defer expectPanic(t, "Param of Map has to be a func with one return value, but is 2")
+	counter := &counterShrink{n: 10}
+	gopter.Shrink(counter.Next).Map(func(a string) (string, bool) {
+		return "", false
+	})
+}
+
 func TestNoShrinker(t *testing.T) {
 	shrink := gopter.NoShrinker(123)
 	if shrink == nil {

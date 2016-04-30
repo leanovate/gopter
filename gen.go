@@ -64,13 +64,18 @@ func (g Gen) Map(f interface{}) Gen {
 	mapperType := mapperVal.Type()
 
 	if mapperVal.Kind() != reflect.Func {
-		panic(fmt.Sprintf("Param of Map has to be a func: %v", mapperType.Kind()))
+		panic(fmt.Sprintf("Param of Map has to be a func, but is %v", mapperType.Kind()))
 	}
 	if mapperType.NumIn() != 1 {
-		panic(fmt.Sprintf("Param of Map has to be a func with one param: %v", mapperType.NumIn()))
+		panic(fmt.Sprintf("Param of Map has to be a func with one param, but is %v", mapperType.NumIn()))
+	} else {
+		genResultType := g(DefaultGenParameters()).ResultType
+		if !genResultType.AssignableTo(mapperType.In(0)) {
+			panic(fmt.Sprintf("Param of has to be a func with one param assignable to %v, but is %v", genResultType, mapperType.In(0)))
+		}
 	}
 	if mapperType.NumOut() != 1 {
-		panic(fmt.Sprintf("Param of Map has to be a func with one return value: %v", mapperType.NumOut()))
+		panic(fmt.Sprintf("Param of Map has to be a func with one return value, but is %v", mapperType.NumOut()))
 	}
 
 	return func(genParams *GenParameters) *GenResult {
