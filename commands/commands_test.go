@@ -90,7 +90,6 @@ func (c *counterCommands) GenCommand(state commands.State) gopter.Gen {
 
 func TestCommands(t *testing.T) {
 	parameters := gopter.DefaultTestParameters()
-	parameters.MaxDiscardRatio = 100
 
 	prop := commands.Prop(&counterCommands{})
 

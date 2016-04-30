@@ -60,16 +60,16 @@ func genActions(commands Commands) gopter.Gen {
 
 func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		gen := gen.Const(sizedCommands{
+		sizedCommandsGen := gen.Const(sizedCommands{
 			state:    inistialState,
 			commands: make([]Command, 0, genParams.Size),
 		})
 		for i := 0; i < genParams.Size; i++ {
-			gen = gen.FlatMap(func(v interface{}) gopter.Gen {
+			sizedCommandsGen = sizedCommandsGen.FlatMap(func(v interface{}) gopter.Gen {
 				prev := v.(sizedCommands)
-				return commands.GenCommand(prev.state).SuchThat(func(command Command) bool {
+				return gen.RetryUntil(commands.GenCommand(prev.state), func(command Command) bool {
 					return command.PreCondition(prev.state)
-				}).Map(func(command Command) sizedCommands {
+				}, 100).Map(func(command Command) sizedCommands {
 					return sizedCommands{
 						state:    command.NextState(prev.state),
 						commands: append(prev.commands, command),
@@ -77,6 +77,6 @@ func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
 				})
 			}, reflect.TypeOf(sizedCommands{}))
 		}
-		return gen(genParams)
+		return sizedCommandsGen(genParams)
 	}
 }
