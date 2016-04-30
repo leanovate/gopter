@@ -111,8 +111,8 @@ func TestCombineShrinker(t *testing.T) {
 
 func TestShrinkMap(t *testing.T) {
 	counter := &counterShrink{n: 10}
-	shrink := gopter.Shrink(counter.Next).Map(func(v interface{}) interface{} {
-		return 10 - v.(int)
+	shrink := gopter.Shrink(counter.Next).Map(func(v int) int {
+		return 10 - v
 	})
 
 	all := shrink.All()

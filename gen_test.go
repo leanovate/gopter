@@ -24,8 +24,8 @@ func TestGenSample(t *testing.T) {
 
 func TestGenMap(t *testing.T) {
 	gen := constGen("sample")
-	var mappedWith interface{}
-	mapper := func(v interface{}) interface{} {
+	var mappedWith string
+	mapper := func(v string) string {
 		mappedWith = v
 		return "other"
 	}
@@ -33,7 +33,7 @@ func TestGenMap(t *testing.T) {
 	if !ok || value != "other" {
 		t.Errorf("Invalid gen sample: %#v", value)
 	}
-	if mappedWith.(string) != "sample" {
+	if mappedWith != "sample" {
 		t.Errorf("Invalid mapped with: %#v", mappedWith)
 	}
 

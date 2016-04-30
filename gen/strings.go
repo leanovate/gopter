@@ -89,8 +89,7 @@ func Identifier() gopter.Gen {
 	return gopter.CombineGens(
 		AlphaLowerChar(),
 		SliceOf(AlphaNumChar()),
-	).Map(func(v interface{}) interface{} {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) string {
 		first := values[0].(rune)
 		tail := values[1].([]rune)
 		result := make([]rune, 0, len(tail)+1)

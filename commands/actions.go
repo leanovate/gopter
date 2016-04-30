@@ -39,20 +39,20 @@ type sizedCommands struct {
 
 func actionsShrinker(v interface{}) gopter.Shrink {
 	a := v.(*actions)
-	return gen.SliceShrinker(gopter.NoShrinker)(a.sequentialCommands).Map(func(v interface{}) interface{} {
+	return gen.SliceShrinker(gopter.NoShrinker)(a.sequentialCommands).Map(func(v []Command) *actions {
 		return &actions{
 			initialState:       a.initialState,
-			sequentialCommands: v.([]Command),
+			sequentialCommands: v,
 		}
 	})
 }
 
 func genActions(commands Commands) gopter.Gen {
 	return commands.GenInitialState().FlatMap(func(initialState interface{}) gopter.Gen {
-		return genSizedCommands(commands, initialState.(State)).Map(func(v interface{}) interface{} {
+		return genSizedCommands(commands, initialState.(State)).Map(func(v sizedCommands) *actions {
 			return &actions{
 				initialState:       initialState.(State),
-				sequentialCommands: v.(sizedCommands).commands,
+				sequentialCommands: v.commands,
 			}
 		}).WithShrinker(actionsShrinker)
 	}, reflect.TypeOf((*actions)(nil)))

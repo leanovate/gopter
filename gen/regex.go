@@ -29,30 +29,23 @@ func regexMatchGen(regex *syntax.Regexp) gopter.Gen {
 	case syntax.OpCharClass:
 		gens := make([]gopter.Gen, 0, len(regex.Rune)/2)
 		for i := 0; i+1 < len(regex.Rune); i += 2 {
-			gens = append(gens, RuneRange(regex.Rune[i], regex.Rune[i+1]).Map(func(v interface{}) string {
-				return string(v.(rune))
-			}))
+			gens = append(gens, RuneRange(regex.Rune[i], regex.Rune[i+1]).Map(runeToString))
 		}
 		return OneGenOf(gens...)
 	case syntax.OpAnyChar:
-		return Rune().Map(func(v interface{}) string {
-			return string(v.(rune))
-		})
+		return Rune().Map(runeToString)
 	case syntax.OpAnyCharNotNL:
-		return RuneNoControl().Map(func(v interface{}) string {
-			return string(v.(rune))
-		})
+		return RuneNoControl().Map(runeToString)
 	case syntax.OpCapture:
 		return regexMatchGen(regex.Sub[0])
 	case syntax.OpStar:
 		elementGen := regexMatchGen(regex.Sub[0])
-		return SliceOf(elementGen).Map(func(v interface{}) string {
-			return strings.Join(v.([]string), "")
+		return SliceOf(elementGen).Map(func(v []string) string {
+			return strings.Join(v, "")
 		})
 	case syntax.OpPlus:
 		elementGen := regexMatchGen(regex.Sub[0])
-		return gopter.CombineGens(elementGen, SliceOf(elementGen)).Map(func(v interface{}) string {
-			vs := v.([]interface{})
+		return gopter.CombineGens(elementGen, SliceOf(elementGen)).Map(func(vs []interface{}) string {
 			return vs[0].(string) + strings.Join(vs[1].([]string), "")
 		})
 	case syntax.OpQuest:
@@ -63,9 +56,9 @@ func regexMatchGen(regex *syntax.Regexp) gopter.Gen {
 		for i, sub := range regex.Sub {
 			gens[i] = regexMatchGen(sub)
 		}
-		return gopter.CombineGens(gens...).Map(func(v interface{}) string {
+		return gopter.CombineGens(gens...).Map(func(v []interface{}) string {
 			result := ""
-			for _, str := range v.([]interface{}) {
+			for _, str := range v {
 				result += str.(string)
 			}
 			return result
@@ -78,4 +71,8 @@ func regexMatchGen(regex *syntax.Regexp) gopter.Gen {
 		return OneGenOf(gens...)
 	}
 	return Const("")
+}
+
+func runeToString(v rune) string {
+	return string(v)
 }

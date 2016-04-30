@@ -7,8 +7,7 @@ func Complex128Box(min, max complex128) gopter.Gen {
 	return gopter.CombineGens(
 		Float64Range(real(min), real(max)),
 		Float64Range(imag(min), imag(max)),
-	).Map(func(v interface{}) complex128 {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) complex128 {
 		return complex(values[0].(float64), values[1].(float64))
 	}).SuchThat(func(v interface{}) bool {
 		c := v.(complex128)
@@ -22,8 +21,7 @@ func Complex128() gopter.Gen {
 	return gopter.CombineGens(
 		Float64(),
 		Float64(),
-	).Map(func(v interface{}) complex128 {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) complex128 {
 		return complex(values[0].(float64), values[1].(float64))
 	}).WithShrinker(Complex128Shrinker)
 }
@@ -33,8 +31,7 @@ func Complex64Box(min, max complex64) gopter.Gen {
 	return gopter.CombineGens(
 		Float32Range(real(min), real(max)),
 		Float32Range(imag(min), imag(max)),
-	).Map(func(v interface{}) complex64 {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) complex64 {
 		return complex(values[0].(float32), values[1].(float32))
 	}).SuchThat(func(v interface{}) bool {
 		c := v.(complex64)
@@ -48,8 +45,7 @@ func Complex64() gopter.Gen {
 	return gopter.CombineGens(
 		Float32(),
 		Float32(),
-	).Map(func(v interface{}) complex64 {
-		values := v.([]interface{})
+	).Map(func(values []interface{}) complex64 {
 		return complex(values[0].(float32), values[1].(float32))
 	}).WithShrinker(Complex64Shrinker)
 }
