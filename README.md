@@ -5,6 +5,8 @@
 [![codecov.io](https://codecov.io/github/leanovate/gopter/coverage.svg?branch=master)](https://codecov.io/github/leanovate/gopter?branch=master)
 [![GoDoc](https://godoc.org/github.com/leanovate/gopter?status.png)](https://godoc.org/github.com/leanovate/gopter)
 
+[Change Log](CHANGELOG.md)
+
 ## Synopsis
 
 Gopter tries to bring the goodness of [ScalaCheck](https://www.scalacheck.org/) (and impliticly the goodness of [QuickCheck](http://hackage.haskell.org/package/QuickCheck)) to Go.
