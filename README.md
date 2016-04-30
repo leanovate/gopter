@@ -2,7 +2,7 @@
 
 ... the GOlang Property TestER
 [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
-[![codecov.io](https://codecov.io/github/leanovate/gopter/coverage.svg?branch=master)](https://codecov.io/github/leanovate/gopter?branch=master)
+[![codecov](https://codecov.io/gh/leanovate/gopter/branch/master/graph/badge.svg)](https://codecov.io/gh/leanovate/gopter)
 [![GoDoc](https://godoc.org/github.com/leanovate/gopter?status.png)](https://godoc.org/github.com/leanovate/gopter)
 
 [Change Log](CHANGELOG.md)
