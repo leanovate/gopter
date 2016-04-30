@@ -72,6 +72,8 @@ func (r *PropResult) AddArgs(args ...*PropArg) *PropResult {
 	return r
 }
 
+// And combines two PropResult by an and operation.
+// The resulting PropResult will be only true if both PropResults are true.
 func (r *PropResult) And(other *PropResult) *PropResult {
 	switch {
 	case r.Status == PropError:
