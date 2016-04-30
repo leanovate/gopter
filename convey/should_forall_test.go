@@ -46,7 +46,7 @@ func TestShouldSucceedForAll(t *testing.T) {
 
 		Convey("Then check with arbitraries succeeds", func() {
 			arbitraries := arbitrary.DefaultArbitraries()
-			arbitraries.RegisterGen(gen.Float64Range(-1e8, 1e8))
+			arbitraries.RegisterGen(gen.Float64Range(-1e7, 1e7))
 
 			So(checkSolve, ShouldSucceedForAll, arbitraries)
 
@@ -60,9 +60,9 @@ func TestShouldSucceedForAll(t *testing.T) {
 
 		Convey("Then check with explicit generator succeeds", func() {
 			anyQudraticEquation := gen.StructPtr(reflect.TypeOf(QudraticEquation{}), map[string]gopter.Gen{
-				"A": gen.Float64Range(-1e8, 1e8),
-				"B": gen.Float64Range(-1e8, 1e8),
-				"C": gen.Float64Range(-1e8, 1e8),
+				"A": gen.Float64Range(-1e7, 1e7),
+				"B": gen.Float64Range(-1e7, 1e7),
+				"C": gen.Float64Range(-1e7, 1e7),
 			})
 
 			So(checkSolve, ShouldSucceedForAll, anyQudraticEquation)
