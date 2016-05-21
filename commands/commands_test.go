@@ -1,7 +1,6 @@
 package commands_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/leanovate/gopter"
@@ -83,7 +82,6 @@ type counterCommands struct {
 }
 
 func (c *counterCommands) NewSystemUnderTest(initialState commands.State) commands.SystemUnderTest {
-	fmt.Printf("%#v\n", initialState)
 	return &counter{value: initialState.(int)}
 }
 
