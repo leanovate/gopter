@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 ### Changed
+- `commands.Command.PostCondition` was called with the state before running the command. It makes
+  much more sense to first do `commands.Command.NextState` and then `commands.Command.PostCondition`
+- `commands.Commands.NewSystemUnderTest` now takes has an argument `initialState commands.State` to
+  allow implementators to create/bootstrap a system under test based on an arbitrary initial state.
+  So far examples were just using a constant initial state ... which is a bit boring.
+- Fixed: Actually use `commands.Commands.InitialPreCondition` as sieve for
+  `commands.Commands.GenInitialState`
 - Gen.Map and Shrink.Map now accept `interface{}` instead of `func (interface{}) interface{}`
 
   This allows cleaner mapping functions without type conversion. E.g. instead of

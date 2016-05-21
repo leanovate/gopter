@@ -78,7 +78,7 @@ var ResetBuggyCommand = &commands.ProtoCommand{
 }
 
 var buggyCounterCommands = &commands.ProtoCommands{
-	NewSystemUnderTestFunc: func() commands.SystemUnderTest {
+	NewSystemUnderTestFunc: func(initialState commands.State) commands.SystemUnderTest {
 		return &BuggyCounter{}
 	},
 	InitialStateGen: gen.Const(0),

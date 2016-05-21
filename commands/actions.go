@@ -18,7 +18,7 @@ func (a *actions) String() string {
 	return fmt.Sprintf("initial=%v sequential=%s", a.initialState, a.sequentialCommands)
 }
 
-func (a *actions) run(systemUnderTest SystemUnderTest) (interface{}, error) {
+func (a *actions) run(systemUnderTest SystemUnderTest) (*gopter.PropResult, error) {
 	state := a.initialState
 	propResult := &gopter.PropResult{Status: gopter.PropTrue}
 	for _, command := range a.sequentialCommands {
@@ -26,8 +26,8 @@ func (a *actions) run(systemUnderTest SystemUnderTest) (interface{}, error) {
 			return &gopter.PropResult{Status: gopter.PropFalse}, nil
 		}
 		result := command.Run(systemUnderTest)
-		propResult = propResult.And(command.PostCondition(state, result))
 		state = command.NextState(state)
+		propResult = propResult.And(command.PostCondition(state, result))
 	}
 	return propResult, nil
 }
@@ -48,14 +48,16 @@ func actionsShrinker(v interface{}) gopter.Shrink {
 }
 
 func genActions(commands Commands) gopter.Gen {
-	return commands.GenInitialState().FlatMap(func(initialState interface{}) gopter.Gen {
-		return genSizedCommands(commands, initialState.(State)).Map(func(v sizedCommands) *actions {
-			return &actions{
-				initialState:       initialState.(State),
-				sequentialCommands: v.commands,
-			}
-		}).WithShrinker(actionsShrinker)
-	}, reflect.TypeOf((*actions)(nil)))
+	return commands.GenInitialState().
+		SuchThat(commands.InitialPreCondition).
+		FlatMap(func(initialState interface{}) gopter.Gen {
+			return genSizedCommands(commands, initialState.(State)).Map(func(v sizedCommands) *actions {
+				return &actions{
+					initialState:       initialState.(State),
+					sequentialCommands: v.commands,
+				}
+			}).WithShrinker(actionsShrinker)
+		}, reflect.TypeOf((*actions)(nil)))
 }
 
 func genSizedCommands(commands Commands, inistialState State) gopter.Gen {

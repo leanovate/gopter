@@ -11,7 +11,7 @@ import (
 // Commands provide an entry point for testing a stateful system
 type Commands interface {
 	// NewSystemUnderTest should create a new/isolated system under test
-	NewSystemUnderTest() SystemUnderTest
+	NewSystemUnderTest(initialState State) SystemUnderTest
 	// DestroySystemUnderTest may perform any cleanup tasks to destroy a system
 	DestroySystemUnderTest(SystemUnderTest)
 	// GenInitialState provides a generator for the initial State
@@ -24,7 +24,7 @@ type Commands interface {
 
 // ProtoCommands is a prototype implementation of the Commands interface
 type ProtoCommands struct {
-	NewSystemUnderTestFunc     func() SystemUnderTest
+	NewSystemUnderTestFunc     func(initialState State) SystemUnderTest
 	DestroySystemUnderTestFunc func(SystemUnderTest)
 	InitialStateGen            gopter.Gen
 	GenCommandFunc             func(State) gopter.Gen
@@ -32,9 +32,9 @@ type ProtoCommands struct {
 }
 
 // NewSystemUnderTest should create a new/isolated system under test
-func (p *ProtoCommands) NewSystemUnderTest() SystemUnderTest {
+func (p *ProtoCommands) NewSystemUnderTest(initialState State) SystemUnderTest {
 	if p.NewSystemUnderTestFunc != nil {
-		return p.NewSystemUnderTestFunc()
+		return p.NewSystemUnderTestFunc(initialState)
 	}
 	return nil
 }
@@ -71,10 +71,10 @@ func (p *ProtoCommands) InitialPreCondition(state State) bool {
 
 // Prop creates a gopter.Prop from Commands
 func Prop(commands Commands) gopter.Prop {
-	return prop.ForAll1(genActions(commands), func(a interface{}) (interface{}, error) {
-		systemUnderTest := commands.NewSystemUnderTest()
+	return prop.ForAll(func(actions *actions) (*gopter.PropResult, error) {
+		systemUnderTest := commands.NewSystemUnderTest(actions.initialState)
 		defer commands.DestroySystemUnderTest(systemUnderTest)
 
-		return a.(*actions).run(systemUnderTest)
-	})
+		return actions.run(systemUnderTest)
+	}, genActions(commands))
 }
