@@ -136,7 +136,7 @@ func (value putCommand) String() string {
 
 // We want to have a generator for put commands for arbitrary int values.
 // In this case the command is actually shrinkable, e.g. if the property fails
-// by putting a 1000, it might also fail by putting a 500 ...
+// by putting a 1000, it might already fail for a 500 as well ...
 var genPutCommand = gen.Int().Map(func(value int) commands.Command {
 	return putCommand(value)
 }).WithShrinker(func(v interface{}) gopter.Shrink {
