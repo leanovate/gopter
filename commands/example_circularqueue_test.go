@@ -32,7 +32,7 @@ func (q *Queue) Put(n int) int {
 	q.buf[q.inp] = n
 	q.inp = (q.inp + 1) % q.size
 	if q.inp == 0 { // Intentional bug to find
-		q.buf[q.size-1] *= n
+		q.buf[q.size-1] *= (n + 1)
 	}
 	return n
 }
@@ -96,28 +96,39 @@ var genGetCommand = gen.Const(&commands.ProtoCommand{
 	},
 })
 
-var genPutCommand = gen.Int().Map(func(value int) commands.Command {
-	return &commands.ProtoCommand{
-		Name: fmt.Sprintf("Put(%d)", value),
-		RunFunc: func(q commands.SystemUnderTest) commands.Result {
-			return q.(*Queue).Put(value)
-		},
-		NextStateFunc: func(state commands.State) commands.State {
-			state.(*cbState).PushBack(value)
-			return state
-		},
-		PreConditionFunc: func(state commands.State) bool {
-			s := state.(*cbState)
-			return len(s.elements) < s.size
-		},
-		PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
-			st := state.(*cbState)
-			if result.(int) != st.elements[len(st.elements)-1] {
-				return &gopter.PropResult{Status: gopter.PropFalse}
-			}
-			return &gopter.PropResult{Status: gopter.PropTrue}
-		},
+type putCommand int
+
+func (value putCommand) Run(q commands.SystemUnderTest) commands.Result {
+	return q.(*Queue).Put(int(value))
+}
+func (value putCommand) NextState(state commands.State) commands.State {
+	state.(*cbState).PushBack(int(value))
+	return state
+}
+
+func (putCommand) PreCondition(state commands.State) bool {
+	s := state.(*cbState)
+	return len(s.elements) < s.size
+}
+
+func (putCommand) PostCondition(state commands.State, result commands.Result) *gopter.PropResult {
+	st := state.(*cbState)
+	if result.(int) != st.elements[len(st.elements)-1] {
+		return &gopter.PropResult{Status: gopter.PropFalse}
 	}
+	return &gopter.PropResult{Status: gopter.PropTrue}
+}
+
+func (value putCommand) String() string {
+	return fmt.Sprintf("Put(%d)", value)
+}
+
+var genPutCommand = gen.Int().Map(func(value int) commands.Command {
+	return putCommand(value)
+}).WithShrinker(func(v interface{}) gopter.Shrink {
+	return gen.IntShrinker(int(v.(putCommand))).Map(func(value int) putCommand {
+		return putCommand(value)
+	})
 })
 
 var genSizeCommand = gen.Const(&commands.ProtoCommand{
@@ -193,11 +204,9 @@ func Example_circularqueue() {
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// ! circular buffer: Falsified after 33 passed tests.
-	// ARG_0: initialState=State(size=7, elements=[])
-	//    sequential=[Put(-1590798911) Put(1121470879) Put(2086210077)
-	//    Put(920967946) Put(-1336336465) Get Put(-1420016806) Get Get Get
-	//    Put(1371806167) Get Put(556302804) Get Get Get]
-	// ARG_0_ORIGINAL (11 shrinks): initialState=State(size=7, elements=[])
+	// ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
+	//    Put(0) Put(0) Put(0) Get Put(0) Get Get Get Put(0) Get Put(1) Get Get Get]
+	// ARG_0_ORIGINAL (48 shrinks): initialState=State(size=7, elements=[])
 	//    sequential=[Put(-106526931) Get Size Size Put(-1590798911) Size
 	//    Put(1121470879) Size Put(2086210077) Size Put(920967946) Put(-1336336465)
 	//    Get Put(-1420016806) Get Get Get Put(1371806167) Get Size Put(556302804)

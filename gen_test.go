@@ -96,6 +96,26 @@ func TestGenFlatMap(t *testing.T) {
 	}
 }
 
+func TestGenMapResult(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith *gopter.GenResult
+	mapper := func(result *gopter.GenResult) *gopter.GenResult {
+		mappedWith = result
+		return gopter.NewGenResult("other", gopter.NoShrinker)
+	}
+
+	value, ok := gen.MapResult(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith == nil {
+		t.Error("Mapper not called")
+	}
+	if mapperValue, ok := mappedWith.Retrieve(); !ok || mapperValue != "sample" {
+		t.Errorf("Mapper was called with invalid value: %#v", mapperValue)
+	}
+}
+
 func TestCombineGens(t *testing.T) {
 	gens := make([]gopter.Gen, 0, 20)
 	for i := 0; i < 20; i++ {

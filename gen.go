@@ -150,6 +150,15 @@ func (g Gen) FlatMap(f func(interface{}) Gen, resultType reflect.Type) Gen {
 	}
 }
 
+// MapResult creates a derived generator by mapping the GenResult directly.
+// Contrary to `Map` and `FlatMap` this also allow the conversion of
+// shrinkers and sieves, but implementation is more cumbersome.
+func (g Gen) MapResult(f func(*GenResult) *GenResult) Gen {
+	return func(genParams *GenParameters) *GenResult {
+		return f(g(genParams))
+	}
+}
+
 // CombineGens creates a generators from a list of generators.
 // The result type will be a []interface{} containing the generated values of each generators in
 // the list.
