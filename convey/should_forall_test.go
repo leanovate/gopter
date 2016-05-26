@@ -67,5 +67,15 @@ func TestShouldSucceedForAll(t *testing.T) {
 
 			So(checkSolve, ShouldSucceedForAll, anyQudraticEquation)
 		})
+
+		Convey("Expect fail", func() {
+			parameters := gopter.DefaultTestParameters()
+			parameters.Rng.Seed(1234)
+			result := ShouldSucceedForAll(func(i int) bool {
+				return i > 500
+			}, gen.Int(), parameters)
+
+			So(result, ShouldStartWith, "! : Falsified after 1 passed tests.\nARG_0: 0\nARG_0_ORIGINAL (1 shrinks): -642623569")
+		})
 	})
 }
