@@ -76,6 +76,8 @@ func (c *cbState) String() string {
 	return fmt.Sprintf("State(size=%d, elements=%v)", c.size, c.elements)
 }
 
+// Get command simply invokesthe Get function on the queue and compares the
+// result with the expected state.
 var genGetCommand = gen.Const(&commands.ProtoCommand{
 	Name: "Get",
 	RunFunc: func(q commands.SystemUnderTest) commands.Result {
@@ -85,6 +87,8 @@ var genGetCommand = gen.Const(&commands.ProtoCommand{
 		state.(*cbState).TakeFront()
 		return state
 	},
+	// The implementation implicitly assumes that Get is never called on an
+	// empty Query, therefore the command requires a corresponding pre-condition
 	PreConditionFunc: func(state commands.State) bool {
 		return len(state.(*cbState).elements) > 0
 	},
@@ -96,16 +100,23 @@ var genGetCommand = gen.Const(&commands.ProtoCommand{
 	},
 })
 
+// Put command puts a value into the queue by using the Put function. Since
+// the Put function has an int argument the Put command should have a
+// corresponding parameter.
 type putCommand int
 
 func (value putCommand) Run(q commands.SystemUnderTest) commands.Result {
 	return q.(*Queue).Put(int(value))
 }
+
 func (value putCommand) NextState(state commands.State) commands.State {
 	state.(*cbState).PushBack(int(value))
 	return state
 }
 
+// The implementation implicitly assumes that that Put is never called if
+// the capacity is exhausted, therefore the command requires a corresponding
+// pre-condition.
 func (putCommand) PreCondition(state commands.State) bool {
 	s := state.(*cbState)
 	return len(s.elements) < s.size
@@ -123,6 +134,9 @@ func (value putCommand) String() string {
 	return fmt.Sprintf("Put(%d)", value)
 }
 
+// We want to have a generator for put commands for arbitrary int values.
+// In this case the command is actually shrinkable, i.e. if the property fails
+// by putting a 1000, it might also fail by putting a 500 ...
 var genPutCommand = gen.Int().Map(func(value int) commands.Command {
 	return putCommand(value)
 }).WithShrinker(func(v interface{}) gopter.Shrink {
@@ -131,14 +145,14 @@ var genPutCommand = gen.Int().Map(func(value int) commands.Command {
 	})
 })
 
+// Size command is simpe again, it just invokes the Size function and
+// compares compares the result with the expected state.
+// The Size function can be called any time, therefore this command does not
+// require a pre-condition.
 var genSizeCommand = gen.Const(&commands.ProtoCommand{
 	Name: "Size",
 	RunFunc: func(q commands.SystemUnderTest) commands.Result {
 		return q.(*Queue).Size()
-	},
-	PreConditionFunc: func(state commands.State) bool {
-		_, ok := state.(*cbState)
-		return ok
 	},
 	PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
 		if result.(int) != len(state.(*cbState).elements) {
@@ -148,7 +162,9 @@ var genSizeCommand = gen.Const(&commands.ProtoCommand{
 	},
 })
 
-// cbCommands holds the expected state (i.e. its the commands.State)
+// cbCommands implements the command.Commands interface, i.e. is
+// responsible for creating/destroying the system under test and generating
+// commands and initial states (cbState)
 type cbCommands struct {
 	maxSize int
 }
