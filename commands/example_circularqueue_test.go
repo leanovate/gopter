@@ -194,7 +194,7 @@ func (c *cbCommands) GenCommand(state commands.State) gopter.Gen {
 // ... of course he did not implemented the bug, that was evil me
 //
 // The output of this example will be
-// ! circular buffer: Falsified after 33 passed tests.
+//  ! circular buffer: Falsified after 33 passed tests.
 //  ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
 //     Put(0) Put(0) Put(0) Get Put(0) Get Get Get Put(0) Get Put(1) Get Get Get]
 //  ARG_0_ORIGINAL (48 shrinks): initialState=State(size=7, elements=[])
