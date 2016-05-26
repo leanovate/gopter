@@ -135,7 +135,7 @@ func (value putCommand) String() string {
 }
 
 // We want to have a generator for put commands for arbitrary int values.
-// In this case the command is actually shrinkable, i.e. if the property fails
+// In this case the command is actually shrinkable, e.g. if the property fails
 // by putting a 1000, it might also fail by putting a 500 ...
 var genPutCommand = gen.Int().Map(func(value int) commands.Command {
 	return putCommand(value)
