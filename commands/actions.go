@@ -9,17 +9,19 @@ import (
 )
 
 type actions struct {
-	initialState       State
-	sequentialCommands []Command
+	// initialStateProvider has to reset/recreate the initial state exactly the
+	// same every time.
+	initialStateProvider func() State
+	sequentialCommands   []Command
 	// parallel commands will come later
 }
 
 func (a *actions) String() string {
-	return fmt.Sprintf("initial=%v sequential=%s", a.initialState, a.sequentialCommands)
+	return fmt.Sprintf("initialState=%v sequential=%s", a.initialStateProvider(), a.sequentialCommands)
 }
 
 func (a *actions) run(systemUnderTest SystemUnderTest) (*gopter.PropResult, error) {
-	state := a.initialState
+	state := a.initialStateProvider()
 	propResult := &gopter.PropResult{Status: gopter.PropTrue}
 	for _, command := range a.sequentialCommands {
 		if !command.PreCondition(state) {
@@ -41,29 +43,51 @@ func actionsShrinker(v interface{}) gopter.Shrink {
 	a := v.(*actions)
 	return gen.SliceShrinker(gopter.NoShrinker)(a.sequentialCommands).Map(func(v []Command) *actions {
 		return &actions{
-			initialState:       a.initialState,
-			sequentialCommands: v,
+			initialStateProvider: a.initialStateProvider,
+			sequentialCommands:   v,
 		}
 	})
 }
 
 func genActions(commands Commands) gopter.Gen {
-	return commands.GenInitialState().
-		SuchThat(commands.InitialPreCondition).
-		FlatMap(func(initialState interface{}) gopter.Gen {
-			return genSizedCommands(commands, initialState.(State)).Map(func(v sizedCommands) *actions {
-				return &actions{
-					initialState:       initialState.(State),
-					sequentialCommands: v.commands,
+	genInitialState := commands.GenInitialState()
+	genInitialStateProvider := gopter.Gen(func(params *gopter.GenParameters) *gopter.GenResult {
+		seed := params.NextInt64()
+		return gopter.NewGenResult(func() State {
+			paramsWithSeed := params.CloneWithSeed(seed)
+			if initialState, ok := genInitialState(paramsWithSeed).Retrieve(); ok {
+				return initialState
+			}
+			return nil
+		}, gopter.NoShrinker)
+	}).SuchThat(func(initialStateProvoder func() State) bool {
+		state := initialStateProvoder()
+		return state != nil && commands.InitialPreCondition(state)
+	})
+	return genInitialStateProvider.FlatMap(func(v interface{}) gopter.Gen {
+		initialStateProvider := v.(func() State)
+		return genSizedCommands(commands, initialStateProvider).Map(func(v sizedCommands) *actions {
+			return &actions{
+				initialStateProvider: initialStateProvider,
+				sequentialCommands:   v.commands,
+			}
+		}).SuchThat(func(actions *actions) bool {
+			state := actions.initialStateProvider()
+			for _, command := range actions.sequentialCommands {
+				if !command.PreCondition(state) {
+					return false
 				}
-			}).WithShrinker(actionsShrinker)
-		}, reflect.TypeOf((*actions)(nil)))
+				state = command.NextState(state)
+			}
+			return true
+		}).WithShrinker(actionsShrinker)
+	}, reflect.TypeOf((*actions)(nil)))
 }
 
-func genSizedCommands(commands Commands, inistialState State) gopter.Gen {
+func genSizedCommands(commands Commands, initialStateProvider func() State) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		sizedCommandsGen := gen.Const(sizedCommands{
-			state:    inistialState,
+			state:    initialStateProvider(),
 			commands: make([]Command, 0, genParams.Size),
 		})
 		for i := 0; i < genParams.Size; i++ {

@@ -14,7 +14,11 @@ type Commands interface {
 	NewSystemUnderTest(initialState State) SystemUnderTest
 	// DestroySystemUnderTest may perform any cleanup tasks to destroy a system
 	DestroySystemUnderTest(SystemUnderTest)
-	// GenInitialState provides a generator for the initial State
+	// GenInitialState provides a generator for the initial State.
+	// IMPORTANT: The generated state itself may be mutable, but this generator
+	// is supposed to generate a clean and reproductable state every time.
+	// Do not use an external random generator and be especially vary about
+	// `gen.Const(<pointer to some mutable struct>)`.
 	GenInitialState() gopter.Gen
 	// GenCommand provides a generator for applicable commands to for a state
 	GenCommand(state State) gopter.Gen
@@ -72,7 +76,7 @@ func (p *ProtoCommands) InitialPreCondition(state State) bool {
 // Prop creates a gopter.Prop from Commands
 func Prop(commands Commands) gopter.Prop {
 	return prop.ForAll(func(actions *actions) (*gopter.PropResult, error) {
-		systemUnderTest := commands.NewSystemUnderTest(actions.initialState)
+		systemUnderTest := commands.NewSystemUnderTest(actions.initialStateProvider())
 		defer commands.DestroySystemUnderTest(systemUnderTest)
 
 		return actions.run(systemUnderTest)

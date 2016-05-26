@@ -116,10 +116,10 @@ func Example_buggyCounter() {
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
-	// ! buggy counter: Falsified after 45 passed tests.
-	// ARG_0: initial=0 sequential=[INC INC INC INC DEC GET]
-	// ARG_0_ORIGINAL (9 shrinks): initial=0 sequential=[DEC RESET GET GET GET
+	// ! buggy counter: Falsified after 43 passed tests.
+	// ARG_0: initialState=0 sequential=[INC INC INC INC DEC GET]
+	// ARG_0_ORIGINAL (8 shrinks): initialState=0 sequential=[RESET GET GET GET
 	//    RESET DEC DEC INC INC RESET RESET DEC INC RESET INC INC GET INC INC DEC
 	//    DEC GET RESET INC INC DEC INC INC INC RESET RESET INC INC GET INC DEC GET
-	//    DEC GET INC RESET INC INC RESET]
+	//    DEC GET INC RESET INC INC]
 }

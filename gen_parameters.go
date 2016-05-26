@@ -42,6 +42,17 @@ func (p *GenParameters) NextUint64() uint64 {
 	return (first << 1) ^ second
 }
 
+// CloneWithSeed clone the current parameters with a new seed.
+// This is useful to create subsections that can rerun (provided you keep the
+// seed)
+func (p *GenParameters) CloneWithSeed(seed int64) *GenParameters {
+	return &GenParameters{
+		Size:           p.Size,
+		MaxShrinkCount: p.MaxShrinkCount,
+		Rng:            rand.New(rand.NewSource(seed)),
+	}
+}
+
 // DefaultGenParameters creates default GenParameters.
 func DefaultGenParameters() *GenParameters {
 	seed := time.Now().UnixNano()

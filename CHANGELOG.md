@@ -1,7 +1,16 @@
 # Change log
 
 ## [Unreleased]
+### Additions
+- `gopter.GenParameters` now has a `CloneWithSeed(seed int64)` function to
+  temparary copies to create rerunable sections of code.
 ### Changed
+- Refactored `commands` package under the hood to allow the use of mutable state.
+  Re-runability of commands is provided by invoking the `commands.GenInitialState`
+  generator with the same `gopter.GenParameters`. Of course `commands.GenInitialState`
+  is supposed to create the same state for the same parameters every time.
+- Fixed a bug in `commands` that might lead to shrinked command sequences not
+  satisfying the precondtions.
 - `commands.Command.PostCondition` was called with the state before running the command. It makes
   much more sense to first do `commands.Command.NextState` and then `commands.Command.PostCondition`
 - `commands.Commands.NewSystemUnderTest` now takes has an argument `initialState commands.State` to

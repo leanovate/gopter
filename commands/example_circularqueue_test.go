@@ -31,6 +31,9 @@ func New(n int) *Queue {
 func (q *Queue) Put(n int) int {
 	q.buf[q.inp] = n
 	q.inp = (q.inp + 1) % q.size
+	if q.inp == 0 { // Intentional bug to find
+		q.buf[q.size-1] *= n
+	}
 	return n
 }
 
@@ -55,63 +58,69 @@ func (q *Queue) Init() {
 
 // cbState holds the expected state (i.e. its the commands.State)
 type cbState struct {
-	size     int
-	elements []int
+	size         int
+	elements     []int
+	takenElement int
+}
+
+func (st *cbState) TakeFront() {
+	st.takenElement = st.elements[0]
+	st.elements = append(st.elements[:0], st.elements[1:]...)
+}
+
+func (st *cbState) PushBack(value int) {
+	st.elements = append(st.elements, value)
 }
 
 func (c *cbState) String() string {
 	return fmt.Sprintf("State(size=%d, elements=%v)", c.size, c.elements)
 }
 
-var getCommand = &commands.ProtoCommand{
+var genGetCommand = gen.Const(&commands.ProtoCommand{
 	Name: "Get",
 	RunFunc: func(q commands.SystemUnderTest) commands.Result {
 		return q.(*Queue).Get()
 	},
 	NextStateFunc: func(state commands.State) commands.State {
-		st := state.(*cbState)
-		return &cbState{
-			size:     st.size,
-			elements: st.elements[1:],
-		}
+		state.(*cbState).TakeFront()
+		return state
 	},
 	PreConditionFunc: func(state commands.State) bool {
 		return len(state.(*cbState).elements) > 0
 	},
 	PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
-		if result.(int) != 1 {
+		if result.(int) != state.(*cbState).takenElement {
 			return &gopter.PropResult{Status: gopter.PropFalse}
 		}
 		return &gopter.PropResult{Status: gopter.PropTrue}
 	},
-}
+})
 
-var putCommand = &commands.ProtoCommand{
-	Name: "Put",
-	RunFunc: func(q commands.SystemUnderTest) commands.Result {
-		return q.(*Queue).Put(1)
-	},
-	NextStateFunc: func(state commands.State) commands.State {
-		st := state.(*cbState)
-		return &cbState{
-			size:     st.size,
-			elements: append(st.elements, 1),
-		}
-	},
-	PreConditionFunc: func(state commands.State) bool {
-		s := state.(*cbState)
-		return len(s.elements) < s.size
-	},
-	PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
-		st := state.(*cbState)
-		if result.(int) != st.elements[len(st.elements)-1] {
-			return &gopter.PropResult{Status: gopter.PropFalse}
-		}
-		return &gopter.PropResult{Status: gopter.PropTrue}
-	},
-}
+var genPutCommand = gen.Int().Map(func(value int) commands.Command {
+	return &commands.ProtoCommand{
+		Name: fmt.Sprintf("Put(%d)", value),
+		RunFunc: func(q commands.SystemUnderTest) commands.Result {
+			return q.(*Queue).Put(value)
+		},
+		NextStateFunc: func(state commands.State) commands.State {
+			state.(*cbState).PushBack(value)
+			return state
+		},
+		PreConditionFunc: func(state commands.State) bool {
+			s := state.(*cbState)
+			return len(s.elements) < s.size
+		},
+		PostConditionFunc: func(state commands.State, result commands.Result) *gopter.PropResult {
+			st := state.(*cbState)
+			if result.(int) != st.elements[len(st.elements)-1] {
+				return &gopter.PropResult{Status: gopter.PropFalse}
+			}
+			return &gopter.PropResult{Status: gopter.PropTrue}
+		},
+	}
+})
 
-var sizeCommand = &commands.ProtoCommand{
+var genSizeCommand = gen.Const(&commands.ProtoCommand{
 	Name: "Size",
 	RunFunc: func(q commands.SystemUnderTest) commands.Result {
 		return q.(*Queue).Size()
@@ -126,7 +135,7 @@ var sizeCommand = &commands.ProtoCommand{
 		}
 		return &gopter.PropResult{Status: gopter.PropTrue}
 	},
-}
+})
 
 // cbCommands holds the expected state (i.e. its the commands.State)
 type cbCommands struct {
@@ -153,9 +162,11 @@ func (c *cbCommands) DestroySystemUnderTest(sut commands.SystemUnderTest) {
 }
 
 func (c *cbCommands) GenInitialState() gopter.Gen {
-	return gen.Const(&cbState{
-		size:     c.maxSize,
-		elements: make([]int, 0),
+	return gen.IntRange(1, c.maxSize).Map(func(maxSize int) *cbState {
+		return &cbState{
+			size:     maxSize,
+			elements: make([]int, 0, maxSize),
+		}
 	})
 }
 
@@ -165,20 +176,31 @@ func (c *cbCommands) InitialPreCondition(state commands.State) bool {
 }
 
 func (c *cbCommands) GenCommand(state commands.State) gopter.Gen {
-	return gen.OneConstOf(getCommand, putCommand, sizeCommand)
+	return gen.OneGenOf(genGetCommand, genPutCommand, genSizeCommand)
 }
 
-// Kudos to @jamesd for providing this real world example
+// Kudos to @jamesd for providing this real world example.
+// ... of course he did not implemented the bug, that was evil me
 func Example_circularqueue() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("circular buffer", commands.Prop(NewCbCommands(10)))
+	properties.Property("circular buffer", commands.Prop(NewCbCommands(100)))
 
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
-	// + circular buffer: OK, passed 100 tests.
+	// ! circular buffer: Falsified after 33 passed tests.
+	// ARG_0: initialState=State(size=7, elements=[])
+	//    sequential=[Put(-1590798911) Put(1121470879) Put(2086210077)
+	//    Put(920967946) Put(-1336336465) Get Put(-1420016806) Get Get Get
+	//    Put(1371806167) Get Put(556302804) Get Get Get]
+	// ARG_0_ORIGINAL (11 shrinks): initialState=State(size=7, elements=[])
+	//    sequential=[Put(-106526931) Get Size Size Put(-1590798911) Size
+	//    Put(1121470879) Size Put(2086210077) Size Put(920967946) Put(-1336336465)
+	//    Get Put(-1420016806) Get Get Get Put(1371806167) Get Size Put(556302804)
+	//    Size Put(1154954099) Size Get Size Size Get Get Size Get Put(126492399)
+	//    Size]
 }
