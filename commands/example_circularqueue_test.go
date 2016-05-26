@@ -192,6 +192,17 @@ func (c *cbCommands) GenCommand(state commands.State) gopter.Gen {
 
 // Kudos to @jamesd for providing this real world example.
 // ... of course he did not implemented the bug, that was evil me
+//
+// The output of this example will be
+// ! circular buffer: Falsified after 33 passed tests.
+//  ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
+//     Put(0) Put(0) Put(0) Get Put(0) Get Get Get Put(0) Get Put(1) Get Get Get]
+//  ARG_0_ORIGINAL (48 shrinks): initialState=State(size=7, elements=[])
+//     sequential=[Put(-106526931) Get Size Size Put(-1590798911) Size
+//     Put(1121470879) Size Put(2086210077) Size Put(920967946) Put(-1336336465)
+//     Get Put(-1420016806) Get Get Get Put(1371806167) Get Size Put(556302804)
+//     Size Put(1154954099) Size Get Size Size Get Get Size Get Put(126492399)
+//     Size]
 func Example_circularqueue() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
