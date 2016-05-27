@@ -223,8 +223,8 @@ var cbCommands = &commands.ProtoCommands{
 //     Put(-1509199920) Get Put(967212411) Size Get Put(578995532) Size Get Size
 //     Get]
 //
-// Though this is not the minimal possible combination of arguments, its already
-// quiet close.
+// Though this is not the minimal possible combination of command, its already
+// pretty close.
 func Example_circularqueue() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
