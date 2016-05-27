@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
@@ -114,4 +115,16 @@ func TestInt(t *testing.T) {
 		v, ok := value.(uint)
 		return ok && v >= 1234 && v <= 5678
 	})
+}
+
+func TestGenSize(t *testing.T) {
+	params := gopter.DefaultGenParameters()
+	genSize := gen.GenSize()
+	for i := 0; i < 100; i++ {
+		result := genSize(params.WithSize(i))
+		value, ok := result.Retrieve()
+		if !ok || value.(int) != i {
+			t.Errorf("Invalid gen size: %v", value)
+		}
+	}
 }

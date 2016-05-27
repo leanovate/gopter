@@ -29,11 +29,11 @@ func New(n int) *Queue {
 }
 
 func (q *Queue) Put(n int) int {
+	if q.inp == 4 && n > 0 { // Intentional spooky bug
+		q.buf[q.size-1] *= n
+	}
 	q.buf[q.inp] = n
 	q.inp = (q.inp + 1) % q.size
-	if q.inp == 0 { // Intentional bug to find
-		q.buf[q.size-1] *= (n + 1)
-	}
 	return n
 }
 
@@ -165,78 +165,93 @@ var genSizeCommand = gen.Const(&commands.ProtoCommand{
 // cbCommands implements the command.Commands interface, i.e. is
 // responsible for creating/destroying the system under test and generating
 // commands and initial states (cbState)
-type cbCommands struct {
-	maxSize int
-}
-
-func NewCbCommands(maxSize int) *cbCommands {
-	return &cbCommands{
-		maxSize: maxSize,
-	}
-}
-
-func (c *cbCommands) NewSystemUnderTest(initialState commands.State) commands.SystemUnderTest {
-	s := initialState.(*cbState)
-	q := New(s.size)
-	for e := range s.elements {
-		q.Put(e)
-	}
-	return q
-}
-
-func (c *cbCommands) DestroySystemUnderTest(sut commands.SystemUnderTest) {
-	sut.(*Queue).Init()
-}
-
-func (c *cbCommands) GenInitialState() gopter.Gen {
-	return gen.IntRange(1, c.maxSize).Map(func(maxSize int) *cbState {
-		return &cbState{
-			size:     maxSize,
-			elements: make([]int, 0, maxSize),
+var cbCommands = &commands.ProtoCommands{
+	NewSystemUnderTestFunc: func(initialState commands.State) commands.SystemUnderTest {
+		s := initialState.(*cbState)
+		q := New(s.size)
+		for e := range s.elements {
+			q.Put(e)
 		}
-	})
-}
-
-func (c *cbCommands) InitialPreCondition(state commands.State) bool {
-	s := state.(*cbState)
-	return len(s.elements) >= 0 && len(s.elements) <= s.size
-}
-
-func (c *cbCommands) GenCommand(state commands.State) gopter.Gen {
-	return gen.OneGenOf(genGetCommand, genPutCommand, genSizeCommand)
+		return q
+	},
+	DestroySystemUnderTestFunc: func(sut commands.SystemUnderTest) {
+		sut.(*Queue).Init()
+	},
+	InitialStateGen: gen.IntRange(1, 30).Map(func(size int) *cbState {
+		return &cbState{
+			size:     size,
+			elements: make([]int, 0, size),
+		}
+	}),
+	InitialPreConditionFunc: func(state commands.State) bool {
+		s := state.(*cbState)
+		return len(s.elements) >= 0 && len(s.elements) <= s.size
+	},
+	GenCommandFunc: func(state commands.State) gopter.Gen {
+		return gen.OneGenOf(genGetCommand, genPutCommand, genSizeCommand)
+	},
 }
 
 // Kudos to @jamesd for providing this real world example.
 // ... of course he did not implemented the bug, that was evil me
 //
+// The bug only occures on the following conditions:
+//  - the queue size has to be greater than 4
+//  - the queue has to be filled entirely once
+//  - Get operations have to be at least 5 elements behind put
+//  - The Put at the end of the queue and 5 elements later have to be non-zero
+//
+// Lets see what gopter has to say:
+//
 // The output of this example will be
-//  ! circular buffer: Falsified after 33 passed tests.
+//  ! circular buffer: Falsified after 96 passed tests.
 //  ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
-//     Put(0) Put(0) Put(0) Get Put(0) Get Get Get Put(0) Get Put(1) Get Get Get]
-//  ARG_0_ORIGINAL (48 shrinks): initialState=State(size=7, elements=[])
-//     sequential=[Put(-106526931) Get Size Size Put(-1590798911) Size
-//     Put(1121470879) Size Put(2086210077) Size Put(920967946) Put(-1336336465)
-//     Get Put(-1420016806) Get Get Get Put(1371806167) Get Size Put(556302804)
-//     Size Put(1154954099) Size Get Size Size Get Get Size Get Put(126492399)
-//     Size]
+//     Get Put(0) Get Put(0) Put(0) Get Put(0) Get Put(0) Get Put(-1) Put(0)
+//     Put(0) Put(0) Put(0) Get Get Put(2) Get]
+//  ARG_0_ORIGINAL (85 shrinks): initialState=State(size=7, elements=[])
+//     sequential=[Put(-1855365712) Put(-1591723498) Get Size Size
+//     Put(-1015561691) Get Put(397128011) Size Get Put(1943174048) Size
+//     Put(1309500770) Size Get Put(-879438231) Size Get Put(-1644094687) Get
+//     Put(-1818606323) Size Put(488620313) Size Put(-1219794505)
+//     Put(1166147059) Get Put(11390361) Get Size Put(-1407993944) Get Get Size
+//     Put(1393923085) Get Put(1222853245) Size Put(2070918543) Put(1741323168)
+//     Size Get Get Size Put(2019939681) Get Put(-170089451) Size Get Get Size
+//     Size Put(-49249034) Put(1229062846) Put(642598551) Get Put(1183453167)
+//     Size Get Get Get Put(1010460728) Put(6828709) Put(-185198587) Size Size
+//     Get Put(586459644) Get Size Put(-1802196502) Get Size Put(2097590857) Get
+//     Get Get Get Size Put(-474576011) Size Get Size Size Put(771190414) Size
+//     Put(-1509199920) Get Put(967212411) Size Get Put(578995532) Size Get Size
+//     Get]
+//
+// Though this is not the minimal possible combination of arguments, its already
+// quiet close.
 func Example_circularqueue() {
 	parameters := gopter.DefaultTestParameters()
 	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("circular buffer", commands.Prop(NewCbCommands(100)))
+	properties.Property("circular buffer", commands.Prop(cbCommands))
 
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
-	// ! circular buffer: Falsified after 33 passed tests.
+	// ! circular buffer: Falsified after 96 passed tests.
 	// ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
-	//    Put(0) Put(0) Put(0) Get Put(0) Get Get Get Put(0) Get Put(1) Get Get Get]
-	// ARG_0_ORIGINAL (48 shrinks): initialState=State(size=7, elements=[])
-	//    sequential=[Put(-106526931) Get Size Size Put(-1590798911) Size
-	//    Put(1121470879) Size Put(2086210077) Size Put(920967946) Put(-1336336465)
-	//    Get Put(-1420016806) Get Get Get Put(1371806167) Get Size Put(556302804)
-	//    Size Put(1154954099) Size Get Size Size Get Get Size Get Put(126492399)
-	//    Size]
+	//    Get Put(0) Get Put(0) Put(0) Get Put(0) Get Put(0) Get Put(-1) Put(0)
+	//    Put(0) Put(0) Put(0) Get Get Put(2) Get]
+	// ARG_0_ORIGINAL (85 shrinks): initialState=State(size=7, elements=[])
+	//    sequential=[Put(-1855365712) Put(-1591723498) Get Size Size
+	//    Put(-1015561691) Get Put(397128011) Size Get Put(1943174048) Size
+	//    Put(1309500770) Size Get Put(-879438231) Size Get Put(-1644094687) Get
+	//    Put(-1818606323) Size Put(488620313) Size Put(-1219794505)
+	//    Put(1166147059) Get Put(11390361) Get Size Put(-1407993944) Get Get Size
+	//    Put(1393923085) Get Put(1222853245) Size Put(2070918543) Put(1741323168)
+	//    Size Get Get Size Put(2019939681) Get Put(-170089451) Size Get Get Size
+	//    Size Put(-49249034) Put(1229062846) Put(642598551) Get Put(1183453167)
+	//    Size Get Get Get Put(1010460728) Put(6828709) Put(-185198587) Size Size
+	//    Get Put(586459644) Get Size Put(-1802196502) Get Size Put(2097590857) Get
+	//    Get Get Get Size Put(-474576011) Size Get Size Size Put(771190414) Size
+	//    Put(-1509199920) Get Put(967212411) Size Get Put(578995532) Size Get Size
+	//    Get]
 }
