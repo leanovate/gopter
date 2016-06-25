@@ -90,7 +90,7 @@ func (b *BiMapper) ConvertDown(up []interface{}) []interface{} {
 		upVals[i] = reflect.ValueOf(val)
 	}
 	downVals := b.Downstream.Call(upVals)
-	down := make([]interface{}, len(upVals))
+	down := make([]interface{}, len(downVals))
 	for i, downVal := range downVals {
 		down[i] = downVal.Interface()
 	}
