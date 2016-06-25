@@ -32,6 +32,6 @@ func TestDeriveGenSingleDown(t *testing.T) {
 	}
 	_, ok = sample.(*downStruct)
 	if !ok {
-		t.Error("%#v is not a downStruct", sample)
+		t.Errorf("%#v is not a downStruct", sample)
 	}
 }
