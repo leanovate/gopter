@@ -6,11 +6,11 @@ import (
 )
 
 type derivedGen struct {
-	biMapper    *BiMapper
-	upGens      []Gen
-	upSieves    []func(interface{}) bool
-	upShrinkers []Shrinker
-	resultType  reflect.Type
+	biMapper   *BiMapper
+	upGens     []Gen
+	upSieves   []func(interface{}) bool
+	upShrinker Shrinker
+	resultType reflect.Type
 }
 
 func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
@@ -32,6 +32,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 				result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
+				Sieve:      d.Sieve,
 			}
 		}
 	}
@@ -54,11 +55,26 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 	}
 }
 
-func (d *derivedGen) Sieve(v interface{}) bool {
+func (d *derivedGen) Sieve(down interface{}) bool {
+	downs, ok := down.([]interface{})
+	if !ok {
+		downs = []interface{}{down}
+	}
+	ups := d.biMapper.ConvertUp(downs)
+	for i, up := range ups {
+		if d.upSieves[i] != nil && !d.upSieves[i](up) {
+			return false
+		}
+	}
 	return true
 }
 
-func (d *derivedGen) Shrinker(v interface{}) Shrink {
+func (d *derivedGen) Shrinker(down interface{}) Shrink {
+	downs, ok := down.([]interface{})
+	if !ok {
+		downs = []interface{}{down}
+	}
+	d.biMapper.ConvertUp(downs)
 	return NoShrink
 }
 
@@ -85,11 +101,11 @@ func DeriveGen(downstream interface{}, upstream interface{}, gens ...Gen) Gen {
 	}
 
 	derived := &derivedGen{
-		biMapper:    biMapper,
-		upGens:      gens,
-		upSieves:    sieves,
-		upShrinkers: shrinkers,
-		resultType:  resultType,
+		biMapper:   biMapper,
+		upGens:     gens,
+		upSieves:   sieves,
+		upShrinker: CombineShrinker(shrinkers...),
+		resultType: resultType,
 	}
 	return derived.Generate
 }
