@@ -32,6 +32,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 				result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
+				Sieve:      d.Sieve,
 			}
 		}
 	}
@@ -55,6 +56,9 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 }
 
 func (d *derivedGen) Sieve(down interface{}) bool {
+	if down == nil {
+		return false
+	}
 	downs, ok := down.([]interface{})
 	if !ok {
 		downs = []interface{}{down}

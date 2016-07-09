@@ -89,19 +89,19 @@ func TestDeriveGenSingleDownWithSieves(t *testing.T) {
 	parameters.Rng.Seed(1234)
 
 	hasNoValue := false
-	var sieve func(interface{}) bool
 	for i := 0; i < 100; i++ {
 		result := gen(parameters)
 		_, ok := result.Retrieve()
 		if !ok {
 			hasNoValue = true
-		} else {
-			sieve = result.Sieve
+			break
 		}
 	}
-	if !hasNoValue || sieve == nil {
+	if !hasNoValue {
 		t.Error("Sieve is not applied")
 	}
+
+	sieve := gen(parameters).Sieve
 
 	if !sieve(&downStruct{a: 2, b: "something", c: false}) {
 		t.Error("Sieve did not pass even")

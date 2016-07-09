@@ -70,7 +70,11 @@ func (b *BiMapper) ConvertUp(down []interface{}) []interface{} {
 	}
 	downVals := make([]reflect.Value, len(b.DownTypes))
 	for i, val := range down {
-		downVals[i] = reflect.ValueOf(val)
+		if val == nil {
+			downVals[i] = reflect.Zero(b.DownTypes[i])
+		} else {
+			downVals[i] = reflect.ValueOf(val)
+		}
 	}
 	upVals := b.Upstream.Call(downVals)
 	up := make([]interface{}, len(upVals))
@@ -87,7 +91,11 @@ func (b *BiMapper) ConvertDown(up []interface{}) []interface{} {
 	}
 	upVals := make([]reflect.Value, len(b.UpTypes))
 	for i, val := range up {
-		upVals[i] = reflect.ValueOf(val)
+		if val == nil {
+			upVals[i] = reflect.Zero(b.UpTypes[i])
+		} else {
+			upVals[i] = reflect.ValueOf(val)
+		}
 	}
 	downVals := b.Downstream.Call(upVals)
 	down := make([]interface{}, len(downVals))
