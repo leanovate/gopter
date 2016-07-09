@@ -28,7 +28,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 		up[i], ok = result.Retrieve()
 		if !ok {
 			return &GenResult{
-				Shrinker:   NoShrinker,
+				Shrinker:   d.Shrinker,
 				result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
@@ -74,8 +74,16 @@ func (d *derivedGen) Shrinker(down interface{}) Shrink {
 	if !ok {
 		downs = []interface{}{down}
 	}
-	d.biMapper.ConvertUp(downs)
-	return NoShrink
+	ups := d.biMapper.ConvertUp(downs)
+	upShrink := d.upShrinker(ups)
+
+	return upShrink.Map(func(shrinkedUps []interface{}) interface{} {
+		downs := d.biMapper.ConvertDown(shrinkedUps)
+		if len(downs) == 1 {
+			return downs[0]
+		}
+		return downs
+	})
 }
 
 // DeriveGen derives a generator with shrinkers from a sequence of other

@@ -34,6 +34,20 @@ func TestDeriveGenSingleDown(t *testing.T) {
 	if !ok {
 		t.Errorf("%#v is not a downStruct", sample)
 	}
+
+	shrinker := gen(gopter.DefaultGenParameters()).Shrinker
+	shrink := shrinker(&downStruct{a: 10, b: "abcd", c: false})
+
+	shrinkedStructs := make([]*downStruct, 0)
+	value, next := shrink()
+	for next {
+		shrinkedStruct, ok := value.(*downStruct)
+		if !ok {
+			t.Errorf("Invalid shrinked value: %#v", value)
+		}
+		shrinkedStructs = append(shrinkedStructs, shrinkedStruct)
+		value, next = shrink()
+	}
 }
 
 func TestDeriveGenSingleDownWithSieves(t *testing.T) {
