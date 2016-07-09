@@ -5,6 +5,8 @@
 - `gopter.GenParameters` now has a `CloneWithSeed(seed int64)` function to
   temparary copies to create rerunable sections of code.
 - Added `gopter.Gen.MapResult` for power-user mappings
+- Added `gopter.DeriveGen` to derive a generator and it's shrinker from a
+  bi-directional mapping (`gopter.BiMapper`)
 
 ### Changed
 - Refactored `commands` package under the hood to allow the use of mutable state.
