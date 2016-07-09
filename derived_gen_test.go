@@ -1,6 +1,7 @@
 package gopter_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/leanovate/gopter"
@@ -48,6 +49,25 @@ func TestDeriveGenSingleDown(t *testing.T) {
 		shrinkedStructs = append(shrinkedStructs, shrinkedStruct)
 		value, next = shrink()
 	}
+
+	expected := []*downStruct{
+		&downStruct{a: 0, b: "abcd", c: false},
+		&downStruct{a: 5, b: "abcd", c: false},
+		&downStruct{a: -5, b: "abcd", c: false},
+		&downStruct{a: 8, b: "abcd", c: false},
+		&downStruct{a: -8, b: "abcd", c: false},
+		&downStruct{a: 9, b: "abcd", c: false},
+		&downStruct{a: -9, b: "abcd", c: false},
+		&downStruct{a: 10, b: "cd", c: false},
+		&downStruct{a: 10, b: "ab", c: false},
+		&downStruct{a: 10, b: "bcd", c: false},
+		&downStruct{a: 10, b: "acd", c: false},
+		&downStruct{a: 10, b: "abd", c: false},
+		&downStruct{a: 10, b: "abc", c: false},
+	}
+	if !reflect.DeepEqual(shrinkedStructs, expected) {
+		t.Errorf("%v does not equal %v", shrinkedStructs, expected)
+	}
 }
 
 func TestDeriveGenSingleDownWithSieves(t *testing.T) {
@@ -65,7 +85,23 @@ func TestDeriveGenSingleDownWithSieves(t *testing.T) {
 		gen.Bool(),
 	)
 
-	sieve := gen(gopter.DefaultGenParameters()).Sieve
+	parameters := gopter.DefaultGenParameters()
+	parameters.Rng.Seed(1234)
+
+	hasNoValue := false
+	var sieve func(interface{}) bool
+	for i := 0; i < 100; i++ {
+		result := gen(parameters)
+		_, ok := result.Retrieve()
+		if !ok {
+			hasNoValue = true
+		} else {
+			sieve = result.Sieve
+		}
+	}
+	if !hasNoValue || sieve == nil {
+		t.Error("Sieve is not applied")
+	}
 
 	if !sieve(&downStruct{a: 2, b: "something", c: false}) {
 		t.Error("Sieve did not pass even")
