@@ -18,7 +18,7 @@ func Example_sqrt() {
 		func(v float64) bool {
 			return math.Sqrt(v) >= 1
 		},
-		gen.Float64Range(1, math.MaxFloat64),
+		gen.Float64().SuchThat(func(x float64) bool { return x >= 1.0 }),
 	))
 
 	properties.Property("squared is equal to value", prop.ForAll(
@@ -26,7 +26,7 @@ func Example_sqrt() {
 			r := math.Sqrt(v)
 			return math.Abs(r*r-v) < 1e-10*v
 		},
-		gen.Float64Range(0, math.MaxFloat64),
+		gen.Float64().SuchThat(func(x float64) bool { return x >= 0.0 }),
 	))
 
 	// When using testing.T you might just use: properties.TestingRun(t)
