@@ -64,6 +64,8 @@ func NewBiMapper(downstream interface{}, upstream interface{}) *BiMapper {
 	}
 }
 
+// ConvertUp calls the Upstream function on the arguments in the down array
+// and returns the results.
 func (b *BiMapper) ConvertUp(down []interface{}) []interface{} {
 	if len(down) != len(b.DownTypes) {
 		panic(fmt.Sprintf("Expected %d values != %d", len(b.DownTypes), len(down)))
@@ -85,6 +87,8 @@ func (b *BiMapper) ConvertUp(down []interface{}) []interface{} {
 	return up
 }
 
+// ConvertDown calls the Downstream function on the elements of the up array
+// and returns the results.
 func (b *BiMapper) ConvertDown(up []interface{}) []interface{} {
 	if len(up) != len(b.UpTypes) {
 		panic(fmt.Sprintf("Expected %d values != %d", len(b.UpTypes), len(up)))
