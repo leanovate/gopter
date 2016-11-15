@@ -119,7 +119,7 @@ func TestInt(t *testing.T) {
 
 func TestGenSize(t *testing.T) {
 	params := gopter.DefaultGenParameters()
-	genSize := gen.GenSize()
+	genSize := gen.Size()
 	for i := 0; i < 100; i++ {
 		result := genSize(params.WithSize(i))
 		value, ok := result.Retrieve()

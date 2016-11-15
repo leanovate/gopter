@@ -72,8 +72,8 @@ func (st *cbState) PushBack(value int) {
 	st.elements = append(st.elements, value)
 }
 
-func (c *cbState) String() string {
-	return fmt.Sprintf("State(size=%d, elements=%v)", c.size, c.elements)
+func (st *cbState) String() string {
+	return fmt.Sprintf("State(size=%d, elements=%v)", st.size, st.elements)
 }
 
 // Get command simply invokesthe Get function on the queue and compares the
