@@ -9,7 +9,7 @@
 
 ## Synopsis
 
-Gopter tries to bring the goodness of [ScalaCheck](https://www.scalacheck.org/) (and impliticly the goodness of [QuickCheck](http://hackage.haskell.org/package/QuickCheck)) to Go.
+Gopter tries to bring the goodness of [ScalaCheck](https://www.scalacheck.org/) (and implicitly, the goodness of [QuickCheck](http://hackage.haskell.org/package/QuickCheck)) to Go.
 It can also be seen as a more sophisticated version of the testing/quick package.
 
 Main differences to ScalaCheck:
@@ -26,6 +26,7 @@ Main differences to the testing/quick package:
 * Much tighter control over generators
 * Shrinkers, i.e. automatically find the minimum value falsifying a property
 * A generator for regex matches (already mentioned that ... but it's cool)
+* Support for stateful tests
 
 ## Documentation
 
