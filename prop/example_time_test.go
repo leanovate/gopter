@@ -15,7 +15,7 @@ func Example_timeGen() {
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("regular time format parsable", prop.ForAll(
+	properties.Property("time in range format parsable", prop.ForAll(
 		func(actual time.Time) (bool, error) {
 			str := actual.Format(time.RFC3339Nano)
 			parsed, err := time.Parse(time.RFC3339Nano, str)
@@ -24,7 +24,7 @@ func Example_timeGen() {
 		gen.TimeRange(time.Now(), time.Duration(100*24*365)*time.Hour),
 	))
 
-	properties.Property("any time format parsable", prop.ForAll(
+	properties.Property("regular time format parsable", prop.ForAll(
 		func(actual time.Time) (bool, error) {
 			str := actual.Format(time.RFC3339Nano)
 			parsed, err := time.Parse(time.RFC3339Nano, str)
@@ -33,14 +33,24 @@ func Example_timeGen() {
 		gen.Time(),
 	))
 
+	properties.Property("any time format parsable", prop.ForAll(
+		func(actual time.Time) (bool, error) {
+			str := actual.Format(time.RFC3339Nano)
+			parsed, err := time.Parse(time.RFC3339Nano, str)
+			return actual.Equal(parsed), err
+		},
+		gen.AnyTime(),
+	))
+
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
+	// + time in range format parsable: OK, passed 100 tests.
 	// + regular time format parsable: OK, passed 100 tests.
 	// ! any time format parsable: Error on property evaluation after 0 passed
-	//    tests: parsing time "-0001-12-31T23:59:59Z" as
-	//    "2006-01-02T15:04:05.999999999Z07:00": cannot parse
-	//    "-0001-12-31T23:59:59Z" as "2006"
-	// ARG_0: -0001-12-31 23:59:59 +0000 UTC
-	// ARG_0_ORIGINAL (45 shrinks): -274321993098-08-05 07:52:07.761378105 +0000
+	//    tests: parsing time "10000-01-01T00:00:00Z" as
+	//    "2006-01-02T15:04:05.999999999Z07:00": cannot parse "0-01-01T00:00:00Z"
+	//    as "-"
+	// ARG_0: 10000-01-01 00:00:00 +0000 UTC
+	// ARG_0_ORIGINAL (45 shrinks): 237903042092-02-10 19:15:18.148265469 +0000
 	//    UTC
 }

@@ -19,6 +19,24 @@ func TestTime(t *testing.T) {
 		if !ok || v.String() == "" {
 			t.Errorf("Invalid time: %#v", value)
 		}
+		if v.Year() < 0 || v.Year() > 9999 {
+			t.Errorf("Year out of range: %#v", v)
+		}
+	}
+}
+
+func TestAnyTime(t *testing.T) {
+	timeGen := gen.AnyTime()
+	for i := 0; i < 100; i++ {
+		value, ok := timeGen.Sample()
+
+		if !ok || value == nil {
+			t.Errorf("Invalid time: %#v", value)
+		}
+		v, ok := value.(time.Time)
+		if !ok || v.String() == "" {
+			t.Errorf("Invalid time: %#v", value)
+		}
 	}
 }
 
