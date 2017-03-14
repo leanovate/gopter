@@ -37,6 +37,8 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 }
 
 // StructPtr generates pointers to a given struct type.
+// Not that SturctPtr does not generate nil, if you want to include nil in your
+// testing you should combine gen.PtrOf with gen.Struct.
 // rt has to be the reflect type of the struct, gens contains a map of field generators.
 // Note that the result types of the generators in gen have to match the type of the correspoinding
 // field in the struct. Also note that only public fields of a struct can be generated
