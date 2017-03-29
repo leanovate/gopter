@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"reflect"
 	"unicode"
 	"unicode/utf8"
 
@@ -59,12 +60,38 @@ func AlphaChar() gopter.Gen {
 	})
 }
 
-// AlphaNumChar generate arbitrary alpha-numeric character runes
+// AlphaNumChar generates arbitrary alpha-numeric character runes
 func AlphaNumChar() gopter.Gen {
 	return Frequency(map[int]gopter.Gen{
 		0: NumChar(),
 		9: AlphaChar(),
 	})
+}
+
+// UnicodeChar generates arbitrary character runes with a given unicode table
+func UnicodeChar(table *unicode.RangeTable) gopter.Gen {
+	if table == nil || len(table.R16)+len(table.R32) == 0 {
+		return Fail(reflect.TypeOf(rune('a')))
+	}
+	return func(genParams *gopter.GenParameters) *gopter.GenResult {
+		tableIdx := genParams.Rng.Intn(len(table.R16) + len(table.R32))
+
+		var selectedRune rune
+		if tableIdx < len(table.R16) {
+			r := table.R16[tableIdx]
+			runeOffset := uint16(genParams.Rng.Int63n(int64((r.Hi-r.Lo+1)/r.Stride))) * r.Stride
+			selectedRune = rune(runeOffset + r.Lo)
+		} else {
+			r := table.R32[tableIdx-len(table.R16)]
+			runeOffset := uint32(genParams.Rng.Int63n(int64((r.Hi-r.Lo+1)/r.Stride))) * r.Stride
+			selectedRune = rune(runeOffset + r.Lo)
+		}
+		genResult := gopter.NewGenResult(selectedRune, gopter.NoShrinker)
+		genResult.Sieve = func(v interface{}) bool {
+			return unicode.Is(table, v.(rune))
+		}
+		return genResult
+	}
 }
 
 // AnyString generates an arbitrary string
@@ -105,6 +132,14 @@ func Identifier() gopter.Gen {
 		}
 		return true
 	}).WithShrinker(StringShrinker)
+}
+
+// UnicodeString generates an arbitrary string from a given
+// unicode table.
+func UnicodeString(table *unicode.RangeTable) gopter.Gen {
+	return genString(UnicodeChar(table), func(ch rune) bool {
+		return unicode.Is(table, ch)
+	})
 }
 
 func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
