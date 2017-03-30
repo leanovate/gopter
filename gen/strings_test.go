@@ -134,3 +134,28 @@ func TestIdentifier(t *testing.T) {
 		t.Error("Invalid sieve")
 	}
 }
+
+func TestUnicodeString(t *testing.T) {
+	fail := gen.UnicodeChar(nil)
+	value, ok := fail.Sample()
+	if value != nil || ok {
+		t.Fail()
+	}
+
+	for _, table := range unicode.Scripts {
+		unicodeString := gen.UnicodeString(table)
+		commonGeneratorTest(t, "unicodeString", unicodeString, func(value interface{}) bool {
+			str, ok := value.(string)
+
+			if !ok {
+				return false
+			}
+			for _, ch := range str {
+				if !utf8.ValidRune(ch) || !unicode.Is(table, ch) {
+					return false
+				}
+			}
+			return true
+		})
+	}
+}
