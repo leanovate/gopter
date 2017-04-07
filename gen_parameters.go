@@ -7,7 +7,8 @@ import (
 
 // GenParameters encapsulates the parameters for all generators.
 type GenParameters struct {
-	Size           int
+	MinSize        int
+	MaxSize        int
 	MaxShrinkCount int
 	Rng            *rand.Rand
 }
@@ -16,7 +17,7 @@ type GenParameters struct {
 // generated slices or strings.
 func (p *GenParameters) WithSize(size int) *GenParameters {
 	newParameters := *p
-	newParameters.Size = size
+	newParameters.MaxSize = size
 	return &newParameters
 }
 
@@ -47,7 +48,8 @@ func (p *GenParameters) NextUint64() uint64 {
 // seed)
 func (p *GenParameters) CloneWithSeed(seed int64) *GenParameters {
 	return &GenParameters{
-		Size:           p.Size,
+		MinSize:        p.MinSize,
+		MaxSize:        p.MaxSize,
 		MaxShrinkCount: p.MaxShrinkCount,
 		Rng:            rand.New(rand.NewSource(seed)),
 	}
@@ -58,7 +60,8 @@ func DefaultGenParameters() *GenParameters {
 	seed := time.Now().UnixNano()
 
 	return &GenParameters{
-		Size:           100,
+		MinSize:        0,
+		MaxSize:        100,
 		MaxShrinkCount: 1000,
 		Rng:            rand.New(rand.NewSource(seed)),
 	}

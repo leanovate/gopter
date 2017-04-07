@@ -9,7 +9,7 @@ import (
 
 func TestSliceOf(t *testing.T) {
 	genParams := gopter.DefaultGenParameters()
-	genParams.Size = 50
+	genParams.MaxSize = 50
 	elementGen := gen.Const("element")
 	sliceGen := gen.SliceOf(elementGen)
 
@@ -23,7 +23,7 @@ func TestSliceOf(t *testing.T) {
 		if !ok {
 			t.Errorf("Sample not slice of string: %#v", sample)
 		} else {
-			if len(strings) >= 50 {
+			if len(strings) > 50 {
 				t.Errorf("Sample has invalid length: %#v", len(strings))
 			}
 			for _, str := range strings {
@@ -34,7 +34,31 @@ func TestSliceOf(t *testing.T) {
 		}
 	}
 
-	genParams.Size = 0
+	genParams.MinSize = 10
+
+	for i := 0; i < 100; i++ {
+		sample, ok := sliceGen(genParams).Retrieve()
+
+		if !ok {
+			t.Error("Sample was not ok")
+		}
+		strings, ok := sample.([]string)
+		if !ok {
+			t.Errorf("Sample not slice of string: %#v", sample)
+		} else {
+			if len(strings) > 50 || len(strings) < 10 {
+				t.Errorf("Sample has invalid length: %#v", len(strings))
+			}
+			for _, str := range strings {
+				if str != "element" {
+					t.Errorf("Sample contains invalid value: %#v", sample)
+				}
+			}
+		}
+	}
+
+	genParams.MaxSize = 0
+	genParams.MinSize = 0
 
 	for i := 0; i < 100; i++ {
 		sample, ok := sliceGen(genParams).Retrieve()

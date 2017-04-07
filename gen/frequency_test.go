@@ -17,7 +17,7 @@ func (f fixedSeed) Seed(seed int64) {}
 
 func fixedParameters(size int, fixed int64) *gopter.GenParameters {
 	return &gopter.GenParameters{
-		Size: size,
+		MaxSize: size,
 		Rng: rand.New(fixedSeed{
 			fixed: fixed,
 		}),

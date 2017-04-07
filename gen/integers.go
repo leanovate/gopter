@@ -183,12 +183,12 @@ func UInt() gopter.Gen {
 		WithShrinker(UIntShrinker)
 }
 
-// Size just extracts the Size field of the GenParameters.
+// Size just extracts the MaxSize field of the GenParameters.
 // This can be helpful to generate limited integer value in a more structued
 // manner.
 func Size() gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		return gopter.NewGenResult(genParams.Size, IntShrinker)
+		return gopter.NewGenResult(genParams.MaxSize, IntShrinker)
 	}
 }
 
