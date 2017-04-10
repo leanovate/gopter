@@ -77,6 +77,22 @@ func TestSliceOf(t *testing.T) {
 	}
 }
 
+func TestSliceOfPanic(t *testing.T) {
+	genParams := gopter.DefaultGenParameters()
+	genParams.MaxSize = 0
+	genParams.MinSize = 1
+	elementGen := gen.Const("element")
+	sliceGen := gen.SliceOf(elementGen)
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("SliceOf did not panic when MinSize was > MaxSize")
+		}
+	}()
+
+	sliceGen(genParams).Retrieve()
+}
+
 func TestSliceOfN(t *testing.T) {
 	elementGen := gen.Const("element")
 	sliceGen := gen.SliceOfN(10, elementGen)
