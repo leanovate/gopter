@@ -13,6 +13,10 @@ func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		len := 0
 		if genParams.MaxSize > 0 || genParams.MinSize > 0 {
+			if genParams.MinSize > genParams.MaxSize {
+				panic("GenParameters.MinSize must be <= GenParameters.MaxSize")
+			}
+
 			len = genParams.Rng.Intn(genParams.MaxSize-genParams.MinSize) + genParams.MinSize
 		}
 		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, len)
