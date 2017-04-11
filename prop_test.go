@@ -46,7 +46,7 @@ func TestPropMaxDiscardRatio(t *testing.T) {
 	prop := Prop(func(genParams *GenParameters) *PropResult {
 		atomic.AddInt64(&called, 1)
 
-		if genParams.Size > 21 {
+		if genParams.MaxSize > 21 {
 			return &PropResult{
 				Status: PropTrue,
 			}

@@ -7,11 +7,17 @@ import (
 )
 
 // SliceOf generates an arbitrary slice of generated elements
+// genParams.MaxSize sets an (exclusive) upper limit on the size of the slice
+// genParams.MinSize sets an (inclusive) lower limit on the size of the slice
 func SliceOf(elementGen gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		len := 0
-		if genParams.Size > 0 {
-			len = genParams.Rng.Intn(genParams.Size)
+		if genParams.MaxSize > 0 || genParams.MinSize > 0 {
+			if genParams.MinSize > genParams.MaxSize {
+				panic("GenParameters.MinSize must be <= GenParameters.MaxSize")
+			}
+
+			len = genParams.Rng.Intn(genParams.MaxSize-genParams.MinSize) + genParams.MinSize
 		}
 		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, len)
 

@@ -16,8 +16,8 @@ func (f *fixedSeed) Seed(seed int64) { f.fixed = seed }
 
 func TestGenParameters(t *testing.T) {
 	parameters := &gopter.GenParameters{
-		Size: 100,
-		Rng:  rand.New(&fixedSeed{}),
+		MaxSize: 100,
+		Rng:     rand.New(&fixedSeed{}),
 	}
 
 	if !parameters.NextBool() {

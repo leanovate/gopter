@@ -8,12 +8,14 @@ import (
 // TestParameters to run property tests
 type TestParameters struct {
 	MinSuccessfulTests int
-	MinSize            int
-	MaxSize            int
-	MaxShrinkCount     int
-	Rng                *rand.Rand
-	Workers            int
-	MaxDiscardRatio    float64
+	// MinSize is an (inclusive) lower limit on the size of the parameters
+	MinSize int
+	// MaxSize is an (exclusive) upper limit on the size of the parameters
+	MaxSize         int
+	MaxShrinkCount  int
+	Rng             *rand.Rand
+	Workers         int
+	MaxDiscardRatio float64
 }
 
 // DefaultTestParameters creates reasonable default Parameters for most cases

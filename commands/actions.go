@@ -109,9 +109,9 @@ func genSizedCommands(commands Commands, initialStateProvider func() State) gopt
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		sizedCommandsGen := gen.Const(sizedCommands{
 			state:    initialStateProvider(),
-			commands: make([]shrinkableCommand, 0, genParams.Size),
+			commands: make([]shrinkableCommand, 0, genParams.MaxSize),
 		})
-		for i := 0; i < genParams.Size; i++ {
+		for i := 0; i < genParams.MaxSize; i++ {
 			sizedCommandsGen = sizedCommandsGen.FlatMap(func(v interface{}) gopter.Gen {
 				prev := v.(sizedCommands)
 				return gen.RetryUntil(commands.GenCommand(prev.state), func(command Command) bool {
