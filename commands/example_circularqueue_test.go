@@ -76,7 +76,7 @@ func (st *cbState) String() string {
 	return fmt.Sprintf("State(size=%d, elements=%v)", st.size, st.elements)
 }
 
-// Get command simply invokesthe Get function on the queue and compares the
+// Get command simply invokes the Get function on the queue and compares the
 // result with the expected state.
 var genGetCommand = gen.Const(&commands.ProtoCommand{
 	Name: "Get",
@@ -88,7 +88,7 @@ var genGetCommand = gen.Const(&commands.ProtoCommand{
 		return state
 	},
 	// The implementation implicitly assumes that Get is never called on an
-	// empty Query, therefore the command requires a corresponding pre-condition
+	// empty Queue, therefore the command requires a corresponding pre-condition
 	PreConditionFunc: func(state commands.State) bool {
 		return len(state.(*cbState).elements) > 0
 	},
@@ -145,7 +145,7 @@ var genPutCommand = gen.Int().Map(func(value int) commands.Command {
 	})
 })
 
-// Size command is simpe again, it just invokes the Size function and
+// Size command is simple again, it just invokes the Size function and
 // compares compares the result with the expected state.
 // The Size function can be called any time, therefore this command does not
 // require a pre-condition.
