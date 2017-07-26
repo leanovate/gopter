@@ -139,12 +139,12 @@ func UInt8Range(min, max uint8) gopter.Gen {
 		})
 }
 
-// Int8 generate arbitrary int16 numbers
+// Int8 generate arbitrary int8 numbers
 func Int8() gopter.Gen {
 	return Int8Range(math.MinInt8, math.MaxInt8)
 }
 
-// UInt8 generate arbitrary uint16 numbers
+// UInt8 generate arbitrary uint8 numbers
 func UInt8() gopter.Gen {
 	return UInt8Range(0, math.MaxUint8)
 }
