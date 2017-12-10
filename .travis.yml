@@ -1,8 +1,7 @@
 sudo: false
 language: go
 go:
-- 1.5
-- 1.6
+- 1.x
 script: make all coverage refreshGodoc
 before_install:
   - pip install --user codecov
