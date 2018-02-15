@@ -76,6 +76,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapIntish(reflect.TypeOf(int(0)), v)).Map(func(s interface{}) interface{} {
+						return mapIntish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Uint:
@@ -86,6 +91,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapUintish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapUintish(reflect.TypeOf(uint(0)), v)).Map(func(s interface{}) interface{} {
+						return mapUintish(rt, s)
+					})
 				},
 			}
 		})
@@ -98,6 +108,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int8(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapIntish(reflect.TypeOf(int8(0)), v)).Map(func(s interface{}) interface{} {
+						return mapIntish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Uint8:
@@ -108,6 +123,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapUintish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint8(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapUintish(reflect.TypeOf(uint8(0)), v)).Map(func(s interface{}) interface{} {
+						return mapUintish(rt, s)
+					})
 				},
 			}
 		})
@@ -120,6 +140,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int16(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapIntish(reflect.TypeOf(int16(0)), v)).Map(func(s interface{}) interface{} {
+						return mapIntish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Uint16:
@@ -130,6 +155,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapUintish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint16(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapUintish(reflect.TypeOf(uint16(0)), v)).Map(func(s interface{}) interface{} {
+						return mapUintish(rt, s)
+					})
 				},
 			}
 		})
@@ -142,6 +172,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int32(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapIntish(reflect.TypeOf(int32(0)), v)).Map(func(s interface{}) interface{} {
+						return mapIntish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Uint32:
@@ -152,6 +187,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapUintish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint32(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapUintish(reflect.TypeOf(uint32(0)), v)).Map(func(s interface{}) interface{} {
+						return mapUintish(rt, s)
+					})
 				},
 			}
 		})
@@ -164,6 +204,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int32(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapIntish(reflect.TypeOf(int64(0)), v)).Map(func(s interface{}) interface{} {
+						return mapIntish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Uint64:
@@ -174,6 +219,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapUintish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint64(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapUintish(reflect.TypeOf(uint64(0)), v)).Map(func(s interface{}) interface{} {
+						return mapUintish(rt, s)
+					})
 				},
 			}
 		})
@@ -186,6 +236,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapFloatish(reflect.TypeOf(float32(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapFloatish(reflect.TypeOf(float32(0)), v)).Map(func(s interface{}) interface{} {
+						return mapFloatish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Float64:
@@ -196,6 +251,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapFloatish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapFloatish(reflect.TypeOf(float64(0)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapFloatish(reflect.TypeOf(float64(0)), v)).Map(func(s interface{}) interface{} {
+						return mapFloatish(rt, s)
+					})
 				},
 			}
 		})
@@ -208,6 +268,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapComplexish(reflect.TypeOf(complex64(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapComplexish(reflect.TypeOf(complex64(0)), v)).Map(func(s interface{}) interface{} {
+						return mapComplexish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Complex128:
@@ -219,6 +284,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapComplexish(reflect.TypeOf(complex128(0)), v))
 				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapComplexish(reflect.TypeOf(complex128(0)), v)).Map(func(s interface{}) interface{} {
+						return mapComplexish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.String:
@@ -229,6 +299,11 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Result:     mapStringish(rt, result.Result),
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapStringish(reflect.TypeOf(string("")), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapStringish(reflect.TypeOf(string("")), v)).Map(func(s interface{}) interface{} {
+						return mapStringish(rt, s)
+					})
 				},
 			}
 		})
