@@ -7,7 +7,7 @@ type GenResult struct {
 	Labels     []string
 	Shrinker   Shrinker
 	ResultType reflect.Type
-	result     interface{}
+	Result     interface{}
 	Sieve      func(interface{}) bool
 }
 
@@ -18,7 +18,7 @@ func NewGenResult(result interface{}, shrinker Shrinker) *GenResult {
 	return &GenResult{
 		Shrinker:   shrinker,
 		ResultType: reflect.TypeOf(result),
-		result:     result,
+		Result:     result,
 	}
 }
 
@@ -36,8 +36,8 @@ func NewEmptyResult(resultType reflect.Type) *GenResult {
 // If the result is invalid or does not pass the sieve there is no concrete
 // value and the property using the generator should be undecided.
 func (r *GenResult) Retrieve() (interface{}, bool) {
-	if (r.Sieve == nil && r.result != nil) || (r.Sieve != nil && r.Sieve(r.result)) {
-		return r.result, true
+	if (r.Sieve == nil && r.Result != nil) || (r.Sieve != nil && r.Sieve(r.Result)) {
+		return r.Result, true
 	}
 	return nil, false
 }
@@ -46,9 +46,9 @@ func (r *GenResult) Retrieve() (interface{}, bool) {
 // If the result is invalid or does not pass the sieve there is no concrete
 // value and the property using the generator should be undecided.
 func (r *GenResult) RetrieveAsValue() (reflect.Value, bool) {
-	if r.result != nil && (r.Sieve == nil || r.Sieve(r.result)) {
-		return reflect.ValueOf(r.result), true
-	} else if r.result == nil && r.Sieve != nil && r.Sieve(r.result) {
+	if r.Result != nil && (r.Sieve == nil || r.Sieve(r.Result)) {
+		return reflect.ValueOf(r.Result), true
+	} else if r.Result == nil && r.Sieve != nil && r.Sieve(r.Result) {
 		return reflect.Zero(r.ResultType), true
 	}
 	return reflect.Zero(r.ResultType), false

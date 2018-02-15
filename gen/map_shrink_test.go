@@ -1,7 +1,6 @@
 package gen_test
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -55,5 +54,4 @@ func TestMapShrinker(t *testing.T) {
 			t.Errorf("mapShrink2 invalid type: %#v", mapShrink2)
 		}
 	}
-	fmt.Printf("%#v\n", mapShrink2)
 }

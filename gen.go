@@ -118,14 +118,14 @@ func (g Gen) Map(f interface{}) Gen {
 			mapped := mapperVal.Call([]reflect.Value{value})[0]
 			return &GenResult{
 				Shrinker:   NoShrinker,
-				result:     mapped.Interface(),
+				Result:     mapped.Interface(),
 				Labels:     result.Labels,
 				ResultType: mapperType.Out(0),
 			}
 		}
 		return &GenResult{
 			Shrinker:   NoShrinker,
-			result:     nil,
+			Result:     nil,
 			Labels:     result.Labels,
 			ResultType: mapperType.Out(0),
 		}
@@ -143,7 +143,7 @@ func (g Gen) FlatMap(f func(interface{}) Gen, resultType reflect.Type) Gen {
 		}
 		return &GenResult{
 			Shrinker:   NoShrinker,
-			result:     nil,
+			Result:     nil,
 			Labels:     result.Labels,
 			ResultType: resultType,
 		}
@@ -180,7 +180,7 @@ func CombineGens(gens ...Gen) Gen {
 			if !ok {
 				return &GenResult{
 					Shrinker:   NoShrinker,
-					result:     nil,
+					Result:     nil,
 					Labels:     result.Labels,
 					ResultType: reflect.TypeOf(values),
 				}
@@ -188,7 +188,7 @@ func CombineGens(gens ...Gen) Gen {
 		}
 		return &GenResult{
 			Shrinker:   CombineShrinker(shrinkers...),
-			result:     values,
+			Result:     values,
 			Labels:     labels,
 			ResultType: reflect.TypeOf(values),
 			Sieve: func(v interface{}) bool {

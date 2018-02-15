@@ -29,7 +29,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 		if !ok {
 			return &GenResult{
 				Shrinker:   d.Shrinker,
-				result:     nil,
+				Result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
 				Sieve:      d.Sieve,
@@ -40,7 +40,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 	if len(down) == 1 {
 		return &GenResult{
 			Shrinker:   d.Shrinker,
-			result:     down[0],
+			Result:     down[0],
 			Labels:     labels,
 			ResultType: reflect.TypeOf(down[0]),
 			Sieve:      d.Sieve,
@@ -48,7 +48,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 	}
 	return &GenResult{
 		Shrinker:   d.Shrinker,
-		result:     down,
+		Result:     down,
 		Labels:     labels,
 		ResultType: reflect.TypeOf(down),
 		Sieve:      d.Sieve,
