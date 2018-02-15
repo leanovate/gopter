@@ -35,8 +35,18 @@ func Example_quadratic() {
 
 	properties := gopter.NewProperties(parameters)
 
-	properties.Property("Quadratic equations can be solved", arbitraries.ForAll(
+	properties.Property("Quadratic equations can be solved (as pointer)", arbitraries.ForAll(
 		func(quadratic *QudraticEquation) bool {
+			x1, x2, err := quadratic.Solve()
+			if err != nil {
+				return true
+			}
+
+			return cmplx.Abs(quadratic.Eval(x1)) < 1e-5 && cmplx.Abs(quadratic.Eval(x2)) < 1e-5
+		}))
+
+	properties.Property("Quadratic equations can be solved (as struct)", arbitraries.ForAll(
+		func(quadratic QudraticEquation) bool {
 			x1, x2, err := quadratic.Solve()
 			if err != nil {
 				return true
@@ -63,6 +73,7 @@ func Example_quadratic() {
 	// When using testing.T you might just use: properties.TestingRun(t)
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
-	// + Quadratic equations can be solved: OK, passed 100 tests.
+	// + Quadratic equations can be solved (as pointer): OK, passed 100 tests.
+	// + Quadratic equations can be solved (as struct): OK, passed 100 tests.
 	// + Quadratic equations can be solved alternative: OK, passed 100 tests.
 }

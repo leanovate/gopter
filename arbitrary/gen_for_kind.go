@@ -7,196 +7,229 @@ import (
 	"github.com/leanovate/gopter/gen"
 )
 
+func mapBoolish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetBool(value.Bool())
+	return result.Interface()
+}
+
+func mapIntish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetInt(value.Int())
+	return result.Interface()
+}
+
+func mapUintish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetUint(value.Uint())
+	return result.Interface()
+}
+
+func mapFloatish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetFloat(value.Float())
+	return result.Interface()
+}
+
+func mapComplexish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetComplex(value.Complex())
+	return result.Interface()
+}
+
+func mapStringish(to reflect.Type, v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	result := reflect.New(to).Elem()
+	result.SetString(value.String())
+	return result.Interface()
+}
+
 func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 	switch rt.Kind() {
 	case reflect.Bool:
 		return gen.Bool().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(bool); ok {
-				value.SetBool(v)
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapBoolish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapBoolish(reflect.TypeOf(bool(false)), v))
+				},
+				Shrinker: func(v interface{}) gopter.Shrink {
+					return result.Shrinker(mapBoolish(reflect.TypeOf(bool(false)), v)).Map(func(s interface{}) interface{} {
+						return mapBoolish(rt, s)
+					})
+				},
 			}
 		})
 	case reflect.Int:
 		return gen.Int().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(int); ok {
-				value.SetInt(int64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapIntish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int(0)), v))
+				},
 			}
 		})
 	case reflect.Uint:
 		return gen.UInt().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(uint); ok {
-				value.SetUint(uint64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapUintish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint(0)), v))
+				},
 			}
 		})
 	case reflect.Int8:
 		return gen.Int8().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(int8); ok {
-				value.SetInt(int64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapIntish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int8(0)), v))
+				},
 			}
 		})
 	case reflect.Uint8:
 		return gen.UInt8().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(uint8); ok {
-				value.SetUint(uint64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapUintish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint8(0)), v))
+				},
 			}
 		})
 	case reflect.Int16:
 		return gen.Int16().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(int16); ok {
-				value.SetInt(int64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapIntish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int16(0)), v))
+				},
 			}
 		})
 	case reflect.Uint16:
 		return gen.UInt16().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(uint16); ok {
-				value.SetUint(uint64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapUintish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint16(0)), v))
+				},
 			}
 		})
 	case reflect.Int32:
 		return gen.Int32().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(int32); ok {
-				value.SetInt(int64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapIntish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int32(0)), v))
+				},
 			}
 		})
 	case reflect.Uint32:
 		return gen.UInt32().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(uint32); ok {
-				value.SetUint(uint64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapUintish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint32(0)), v))
+				},
 			}
 		})
 	case reflect.Int64:
 		return gen.Int64().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(int64); ok {
-				value.SetInt(v)
-			}
-			result.ResultType = rt
-			result.Result = value.Interface()
-			return result
-		})
-	case reflect.Uint64:
-		return gen.UInt64().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(uint64); ok {
-				value.SetUint(v)
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapIntish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapIntish(reflect.TypeOf(int32(0)), v))
+				},
+			}
+		})
+	case reflect.Uint64:
+		return gen.UInt64().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
+			return &gopter.GenResult{
+				Labels:     result.Labels,
+				ResultType: rt,
+				Result:     mapUintish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapUintish(reflect.TypeOf(uint64(0)), v))
+				},
 			}
 		})
 	case reflect.Float32:
 		return gen.Float32().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(float32); ok {
-				value.SetFloat(float64(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapFloatish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapFloatish(reflect.TypeOf(float32(0)), v))
+				},
 			}
 		})
 	case reflect.Float64:
 		return gen.Float64().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(float64); ok {
-				value.SetFloat(v)
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapFloatish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapFloatish(reflect.TypeOf(float64(0)), v))
+				},
 			}
 		})
 	case reflect.Complex64:
 		return gen.Complex64().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(complex64); ok {
-				value.SetComplex(complex128(v))
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapComplexish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapComplexish(reflect.TypeOf(complex64(0)), v))
+				},
 			}
 		})
 	case reflect.Complex128:
 		return gen.Complex128().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(complex128); ok {
-				value.SetComplex(v)
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapComplexish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapComplexish(reflect.TypeOf(complex128(0)), v))
+				},
 			}
 		})
 	case reflect.String:
 		return gen.AnyString().MapResult(func(result *gopter.GenResult) *gopter.GenResult {
-			value := reflect.New(rt).Elem()
-			if v, ok := result.Result.(string); ok {
-				value.SetString(v)
-			}
 			return &gopter.GenResult{
 				Labels:     result.Labels,
 				ResultType: rt,
-				Result:     value.Interface(),
+				Result:     mapStringish(rt, result.Result),
+				Sieve: func(v interface{}) bool {
+					return result.Sieve == nil || result.Sieve(mapStringish(reflect.TypeOf(string("")), v))
+				},
 			}
 		})
 	case reflect.Slice:
@@ -215,6 +248,15 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 			return gen.StructPtr(rt, gens)
 		}
 		return gen.PtrOf(a.GenForType(rt.Elem()))
+	case reflect.Struct:
+		gens := make(map[string]gopter.Gen)
+		for i := 0; i < rt.NumField(); i++ {
+			field := rt.Field(i)
+			if gen := a.GenForType(field.Type); gen != nil {
+				gens[field.Name] = gen
+			}
+		}
+		return gen.Struct(rt, gens)
 	}
 	return nil
 }

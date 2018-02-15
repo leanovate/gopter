@@ -16,7 +16,11 @@ func PtrOf(elementGen gopter.Gen) gopter.Gen {
 		if !ok || genParams.NextBool() {
 			result := gopter.NewEmptyResult(reflect.PtrTo(element.ResultType))
 			result.Sieve = func(v interface{}) bool {
-				return v == nil || elementSieve == nil || elementSieve(reflect.ValueOf(v).Elem().Interface())
+				if elementSieve == nil {
+					return true
+				}
+				r := reflect.ValueOf(v)
+				return !r.IsValid() || r.IsNil() || elementSieve(r.Elem().Interface())
 			}
 			return result
 		}
@@ -26,7 +30,11 @@ func PtrOf(elementGen gopter.Gen) gopter.Gen {
 
 		result := gopter.NewGenResult(slice.Index(0).Addr().Interface(), PtrShrinker(elementShrinker))
 		result.Sieve = func(v interface{}) bool {
-			return v == nil || elementSieve == nil || elementSieve(reflect.ValueOf(v).Elem().Interface())
+			if elementSieve == nil {
+				return true
+			}
+			r := reflect.ValueOf(v)
+			return !r.IsValid() || r.IsNil() || elementSieve(r.Elem().Interface())
 		}
 		return result
 	}
