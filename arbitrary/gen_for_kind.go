@@ -60,11 +60,7 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				Sieve: func(v interface{}) bool {
 					return result.Sieve == nil || result.Sieve(mapBoolish(reflect.TypeOf(bool(false)), v))
 				},
-				Shrinker: func(v interface{}) gopter.Shrink {
-					return result.Shrinker(mapBoolish(reflect.TypeOf(bool(false)), v)).Map(func(s interface{}) interface{} {
-						return mapBoolish(rt, s)
-					})
-				},
+				Shrinker: gopter.NoShrinker,
 			}
 		})
 	case reflect.Int:
