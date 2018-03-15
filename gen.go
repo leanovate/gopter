@@ -16,6 +16,10 @@ import (
 // If you just plug generators together you do not have to worry about this.
 type Gen func(*GenParameters) *GenResult
 
+var (
+	DefaultGenParams = DefaultGenParameters()
+)
+
 // Sample generate a sample value.
 // Depending on the state of the RNG the generate might fail to provide a sample
 func (g Gen) Sample() (interface{}, bool) {
@@ -48,7 +52,7 @@ func (g Gen) SuchThat(f interface{}) Gen {
 	if checkType.NumIn() != 1 {
 		panic(fmt.Sprintf("Param of SuchThat has to be a func with one param, but is %v", checkType.NumIn()))
 	} else {
-		genResultType := g(DefaultGenParameters()).ResultType
+		genResultType := g(DefaultGenParams).ResultType
 		if !genResultType.AssignableTo(checkType.In(0)) {
 			panic(fmt.Sprintf("Param of SuchThat has to be a func with one param assignable to %v, but is %v", genResultType, checkType.In(0)))
 		}
@@ -102,7 +106,7 @@ func (g Gen) Map(f interface{}) Gen {
 	if mapperType.NumIn() != 1 {
 		panic(fmt.Sprintf("Param of Map has to be a func with one param, but is %v", mapperType.NumIn()))
 	} else {
-		genResultType := g(DefaultGenParameters()).ResultType
+		genResultType := g(DefaultGenParams).ResultType
 		if !genResultType.AssignableTo(mapperType.In(0)) {
 			panic(fmt.Sprintf("Param of Map has to be a func with one param assignable to %v, but is %v", genResultType, mapperType.In(0)))
 		}
