@@ -22,6 +22,32 @@ func TestGenSample(t *testing.T) {
 	}
 }
 
+func BenchmarkMap(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		gen := constGen("sample")
+		var mappedWith string
+		mapper := func(v string) string {
+			mappedWith = v
+			return "other"
+		}
+		value, ok := gen.Map(mapper).Sample()
+		if !ok || value != "other" {
+			b.Errorf("Invalid gen sample: %#v", value)
+		}
+		if mappedWith != "sample" {
+			b.Errorf("Invalid mapped with: %#v", mappedWith)
+		}
+
+		gen = gen.SuchThat(func(interface{}) bool {
+			return false
+		})
+		value, ok = gen.Map(mapper).Sample()
+		if ok {
+			b.Errorf("Invalid gen sample: %#v", value)
+		}
+	}
+}
+
 func TestGenMap(t *testing.T) {
 	gen := constGen("sample")
 	var mappedWith string
