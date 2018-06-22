@@ -48,6 +48,6 @@ func (p *Properties) Run(reporter Reporter) bool {
 // This the preferred wait to run property tests as part of a go unit test.
 func (p *Properties) TestingRun(t *testing.T) {
 	if !p.Run(ConsoleReporter(true)) {
-		t.Fail()
+		t.Errorf("failed with initial seed: %d", p.parameters.Seed)
 	}
 }
