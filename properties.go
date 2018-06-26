@@ -46,8 +46,14 @@ func (p *Properties) Run(reporter Reporter) bool {
 
 // TestingRun checks all definied properties with a testing.T context.
 // This the preferred wait to run property tests as part of a go unit test.
-func (p *Properties) TestingRun(t *testing.T) {
-	if !p.Run(ConsoleReporter(true)) {
+func (p *Properties) TestingRun(t *testing.T, opts ...interface{}) {
+	reporter := ConsoleReporter(true)
+	for _, opt := range opts {
+		if r, ok := opt.(Reporter); ok {
+			reporter = r
+		}
+	}
+	if !p.Run(reporter) {
 		t.Errorf("failed with initial seed: %d", p.parameters.Seed)
 	}
 }
