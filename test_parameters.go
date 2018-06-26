@@ -13,6 +13,7 @@ type TestParameters struct {
 	// MaxSize is an (exclusive) upper limit on the size of the parameters
 	MaxSize         int
 	MaxShrinkCount  int
+	Seed            int64
 	Rng             *rand.Rand
 	Workers         int
 	MaxDiscardRatio float64
@@ -27,6 +28,7 @@ func DefaultTestParameters() *TestParameters {
 		MinSize:            0,
 		MaxSize:            100,
 		MaxShrinkCount:     1000,
+		Seed:               seed,
 		Rng:                rand.New(rand.NewSource(seed)),
 		Workers:            1,
 		MaxDiscardRatio:    5,
