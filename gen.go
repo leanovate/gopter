@@ -17,6 +17,7 @@ import (
 type Gen func(*GenParameters) *GenResult
 
 var (
+	// DefaultGenParams can be used as default für *GenParameters
 	DefaultGenParams = DefaultGenParameters()
 )
 
@@ -148,24 +149,23 @@ func (g Gen) Map(f interface{}) Gen {
 				Labels:     result.Labels,
 				ResultType: mapperType.Out(0),
 			}
-		} else {
-			value, ok := result.RetrieveAsValue()
-			if ok {
-				var mapped reflect.Value
-				if needsGenParameters {
-					mapped = mapperVal.Call([]reflect.Value{value, reflect.ValueOf(genParams)})[0]
-				} else {
-					mapped = mapperVal.Call([]reflect.Value{value})[0]
-				}
-				if genResultOutput {
-					return mapped.Interface().(*GenResult)
-				}
-				return &GenResult{
-					Shrinker:   NoShrinker,
-					Result:     mapped.Interface(),
-					Labels:     result.Labels,
-					ResultType: mapperType.Out(0),
-				}
+		}
+		value, ok := result.RetrieveAsValue()
+		if ok {
+			var mapped reflect.Value
+			if needsGenParameters {
+				mapped = mapperVal.Call([]reflect.Value{value, reflect.ValueOf(genParams)})[0]
+			} else {
+				mapped = mapperVal.Call([]reflect.Value{value})[0]
+			}
+			if genResultOutput {
+				return mapped.Interface().(*GenResult)
+			}
+			return &GenResult{
+				Shrinker:   NoShrinker,
+				Result:     mapped.Interface(),
+				Labels:     result.Labels,
+				ResultType: mapperType.Out(0),
 			}
 		}
 		return &GenResult{

@@ -7,6 +7,8 @@ import (
 	"github.com/leanovate/gopter"
 )
 
+// WeightedGen adds a weight number to a generator.
+// To be used as parameter to gen.Weighted
 type WeightedGen struct {
 	Weight int
 	Gen    gopter.Gen

@@ -8,9 +8,9 @@ import (
 
 func TestWeighted(t *testing.T) {
 	weighted := gen.Weighted([]gen.WeightedGen{
-		{1, gen.Const("A")},
-		{2, gen.Const("B")},
-		{7, gen.Const("C")},
+		{Weight: 1, Gen: gen.Const("A")},
+		{Weight: 2, Gen: gen.Const("B")},
+		{Weight: 7, Gen: gen.Const("C")},
 	})
 	results := make(map[string]int)
 	for i := int64(0); i < int64(1000); i++ {
