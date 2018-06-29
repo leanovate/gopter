@@ -226,8 +226,7 @@ var cbCommands = &commands.ProtoCommands{
 // Though this is not the minimal possible combination of command, its already
 // pretty close.
 func Example_circularqueue() {
-	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
 
 	properties := gopter.NewProperties(parameters)
 

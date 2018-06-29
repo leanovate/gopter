@@ -19,10 +19,8 @@ type TestParameters struct {
 	MaxDiscardRatio float64
 }
 
-// DefaultTestParameters creates reasonable default Parameters for most cases
-func DefaultTestParameters() *TestParameters {
-	seed := time.Now().UnixNano()
-
+// DefaultTestParameterWithSeeds creates reasonable default Parameters for most cases based on a fixed RNG-seed
+func DefaultTestParametersWithSeed(seed int64) *TestParameters {
 	return &TestParameters{
 		MinSuccessfulTests: 100,
 		MinSize:            0,
@@ -33,4 +31,9 @@ func DefaultTestParameters() *TestParameters {
 		Workers:            1,
 		MaxDiscardRatio:    5,
 	}
+}
+
+// DefaultTestParameterWithSeeds creates reasonable default Parameters for most cases with an undefined RNG-seed
+func DefaultTestParameters() *TestParameters {
+	return DefaultTestParametersWithSeed(time.Now().UnixNano())
 }
