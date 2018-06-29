@@ -72,13 +72,49 @@ func TestGenMap(t *testing.T) {
 	}
 }
 
+func TestGenMapWithParams(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith string
+	var mappedWithParams *gopter.GenParameters
+	mapper := func(v string, params *gopter.GenParameters) string {
+		mappedWith = v
+		mappedWithParams = params
+		return "other"
+	}
+	value, ok := gen.Map(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith != "sample" {
+		t.Errorf("Invalid mapped with: %#v", mappedWith)
+	}
+	if mappedWithParams == nil || mappedWithParams.MaxSize != 100 {
+		t.Error("Mapper not called with currect parameters")
+	}
+
+	gen = gen.SuchThat(func(interface{}) bool {
+		return false
+	})
+	value, ok = gen.Map(mapper).Sample()
+	if ok {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+}
+
 func TestGenMapNoFunc(t *testing.T) {
 	defer expectPanic(t, "Param of Map has to be a func, but is string")
 	constGen("sample").Map("not a function")
 }
 
 func TestGenMapTooManyParams(t *testing.T) {
-	defer expectPanic(t, "Param of Map has to be a func with one param, but is 2")
+	defer expectPanic(t, "Param of Map has to be a func with one or two params, but is 3")
+	constGen("sample").Map(func(a, b, C string) string {
+		return ""
+	})
+}
+
+func TestGenMapInvalidSecondParam(t *testing.T) {
+	defer expectPanic(t, "Second parameter of mapper function has to be a *GenParameters")
 	constGen("sample").Map(func(a, b string) string {
 		return ""
 	})
@@ -96,6 +132,95 @@ func TestGenMapToManyReturns(t *testing.T) {
 	constGen("sample").Map(func(a string) (string, bool) {
 		return "", false
 	})
+}
+
+func TestGenMapResultIn(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith *gopter.GenResult
+	mapper := func(result *gopter.GenResult) string {
+		mappedWith = result
+		return "other"
+	}
+
+	value, ok := gen.Map(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith == nil {
+		t.Error("Mapper not called")
+	}
+	if mapperValue, ok := mappedWith.Retrieve(); !ok || mapperValue != "sample" {
+		t.Errorf("Mapper was called with invalid value: %#v", mapperValue)
+	}
+}
+
+func TestGenMapResultInWithParams(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith *gopter.GenResult
+	var mappedWithParams *gopter.GenParameters
+	mapper := func(result *gopter.GenResult, params *gopter.GenParameters) string {
+		mappedWith = result
+		mappedWithParams = params
+		return "other"
+	}
+
+	value, ok := gen.Map(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith == nil {
+		t.Error("Mapper not called")
+	}
+	if mappedWithParams == nil || mappedWithParams.MaxSize != 100 {
+		t.Error("Mapper not called with currect parameters")
+	}
+	if mapperValue, ok := mappedWith.Retrieve(); !ok || mapperValue != "sample" {
+		t.Errorf("Mapper was called with invalid value: %#v", mapperValue)
+	}
+}
+
+func TestGenMapResultOut(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith string
+	mapper := func(v string) *gopter.GenResult {
+		mappedWith = v
+		return gopter.NewGenResult("other", gopter.NoShrinker)
+	}
+	value, ok := gen.Map(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith != "sample" {
+		t.Errorf("Invalid mapped with: %#v", mappedWith)
+	}
+
+	gen = gen.SuchThat(func(interface{}) bool {
+		return false
+	})
+	value, ok = gen.Map(mapper).Sample()
+	if ok {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+}
+
+func TestGenMapResultInOut(t *testing.T) {
+	gen := constGen("sample")
+	var mappedWith *gopter.GenResult
+	mapper := func(result *gopter.GenResult) *gopter.GenResult {
+		mappedWith = result
+		return gopter.NewGenResult("other", gopter.NoShrinker)
+	}
+
+	value, ok := gen.Map(mapper).Sample()
+	if !ok || value != "other" {
+		t.Errorf("Invalid gen sample: %#v", value)
+	}
+	if mappedWith == nil {
+		t.Error("Mapper not called")
+	}
+	if mapperValue, ok := mappedWith.Retrieve(); !ok || mapperValue != "sample" {
+		t.Errorf("Mapper was called with invalid value: %#v", mapperValue)
+	}
 }
 
 func TestGenFlatMap(t *testing.T) {

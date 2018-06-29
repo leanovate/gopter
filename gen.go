@@ -96,35 +96,76 @@ func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 // Map creates a derived generators by mapping all generatored values with a given function.
 // f: has to be a function with one parameter (matching the generated value) and a single return.
 // Note: The derived generator will not have a sieve or shrinker.
+// Note: The mapping function may have a second parameter "*GenParameters"
+// Note: The first parameter of the mapping function and its return may be a *GenResult (this makes MapResult obsolete)
 func (g Gen) Map(f interface{}) Gen {
 	mapperVal := reflect.ValueOf(f)
 	mapperType := mapperVal.Type()
+	needsGenParameters := false
+	genResultInput := false
+	genResultOutput := false
 
 	if mapperVal.Kind() != reflect.Func {
 		panic(fmt.Sprintf("Param of Map has to be a func, but is %v", mapperType.Kind()))
 	}
-	if mapperType.NumIn() != 1 {
-		panic(fmt.Sprintf("Param of Map has to be a func with one param, but is %v", mapperType.NumIn()))
+	if mapperType.NumIn() != 1 && mapperType.NumIn() != 2 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one or two params, but is %v", mapperType.NumIn()))
 	} else {
+		if mapperType.NumIn() == 2 {
+			if !reflect.TypeOf(&GenParameters{}).AssignableTo(mapperType.In(1)) {
+				panic("Second parameter of mapper function has to be a *GenParameters")
+			}
+			needsGenParameters = true
+		}
 		genResultType := g(DefaultGenParams).ResultType
-		if !genResultType.AssignableTo(mapperType.In(0)) {
+		if reflect.TypeOf(&GenResult{}).AssignableTo(mapperType.In(0)) {
+			genResultInput = true
+		} else if !genResultType.AssignableTo(mapperType.In(0)) {
 			panic(fmt.Sprintf("Param of Map has to be a func with one param assignable to %v, but is %v", genResultType, mapperType.In(0)))
 		}
 	}
 	if mapperType.NumOut() != 1 {
 		panic(fmt.Sprintf("Param of Map has to be a func with one return value, but is %v", mapperType.NumOut()))
+	} else if reflect.TypeOf(&GenResult{}).AssignableTo(mapperType.Out(0)) {
+		genResultOutput = true
 	}
 
 	return func(genParams *GenParameters) *GenResult {
 		result := g(genParams)
-		value, ok := result.RetrieveAsValue()
-		if ok {
-			mapped := mapperVal.Call([]reflect.Value{value})[0]
+		if genResultInput {
+			var mapped reflect.Value
+			if needsGenParameters {
+				mapped = mapperVal.Call([]reflect.Value{reflect.ValueOf(result), reflect.ValueOf(genParams)})[0]
+			} else {
+				mapped = mapperVal.Call([]reflect.Value{reflect.ValueOf(result)})[0]
+			}
+			if genResultOutput {
+				return mapped.Interface().(*GenResult)
+			}
 			return &GenResult{
 				Shrinker:   NoShrinker,
 				Result:     mapped.Interface(),
 				Labels:     result.Labels,
 				ResultType: mapperType.Out(0),
+			}
+		} else {
+			value, ok := result.RetrieveAsValue()
+			if ok {
+				var mapped reflect.Value
+				if needsGenParameters {
+					mapped = mapperVal.Call([]reflect.Value{value, reflect.ValueOf(genParams)})[0]
+				} else {
+					mapped = mapperVal.Call([]reflect.Value{value})[0]
+				}
+				if genResultOutput {
+					return mapped.Interface().(*GenResult)
+				}
+				return &GenResult{
+					Shrinker:   NoShrinker,
+					Result:     mapped.Interface(),
+					Labels:     result.Labels,
+					ResultType: mapperType.Out(0),
+				}
 			}
 		}
 		return &GenResult{
@@ -157,6 +198,7 @@ func (g Gen) FlatMap(f func(interface{}) Gen, resultType reflect.Type) Gen {
 // MapResult creates a derived generator by mapping the GenResult directly.
 // Contrary to `Map` and `FlatMap` this also allow the conversion of
 // shrinkers and sieves, but implementation is more cumbersome.
+// Deprecation note: Map now has the same functionality
 func (g Gen) MapResult(f func(*GenResult) *GenResult) Gen {
 	return func(genParams *GenParameters) *GenResult {
 		return f(g(genParams))
