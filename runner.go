@@ -16,24 +16,28 @@ type runner struct {
 }
 
 func (r *runner) mergeCheckResults(r1, r2 *TestResult) *TestResult {
-	var status testStatus
-	if r1.Status != TestPassed && r1.Status != TestExhausted {
-		status = r1.Status
-	} else if r2.Status != TestPassed && r2.Status != TestExhausted {
-		status = r2.Status
-	} else {
+	var result TestResult
+
+	switch {
+	case r1 == nil:
+		return r2
+	case r1.Status != TestPassed && r1.Status != TestExhausted:
+		result = *r1
+	case r2.Status != TestPassed && r2.Status != TestExhausted:
+		result = *r2
+	default:
+		result.Status = TestExhausted
+
 		if r1.Succeeded+r2.Succeeded >= r.parameters.MinSuccessfulTests &&
 			float64(r1.Discarded+r2.Discarded) <= float64(r1.Succeeded+r2.Succeeded)*r.parameters.MaxDiscardRatio {
-			status = TestPassed
-		} else {
-			status = TestExhausted
+			result.Status = TestPassed
 		}
 	}
-	return &TestResult{
-		Status:    status,
-		Succeeded: r1.Succeeded + r2.Succeeded,
-		Discarded: r1.Discarded + r2.Discarded,
-	}
+
+	result.Succeeded = r1.Succeeded + r2.Succeeded
+	result.Discarded = r1.Discarded + r2.Discarded
+
+	return &result
 }
 
 func (r *runner) runWorkers() *TestResult {
@@ -54,11 +58,7 @@ func (r *runner) runWorkers() *TestResult {
 	go func() {
 		var combined *TestResult
 		for result := range results {
-			if combined == nil {
-				combined = result
-			} else {
-				combined = r.mergeCheckResults(combined, result)
-			}
+			combined = r.mergeCheckResults(combined, result)
 		}
 		combinedResult <- combined
 	}()
