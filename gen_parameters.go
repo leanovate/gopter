@@ -51,7 +51,7 @@ func (p *GenParameters) CloneWithSeed(seed int64) *GenParameters {
 		MinSize:        p.MinSize,
 		MaxSize:        p.MaxSize,
 		MaxShrinkCount: p.MaxShrinkCount,
-		Rng:            rand.New(rand.NewSource(seed)),
+		Rng:            rand.New(NewLockedSource(seed)),
 	}
 }
 
@@ -63,6 +63,6 @@ func DefaultGenParameters() *GenParameters {
 		MinSize:        0,
 		MaxSize:        100,
 		MaxShrinkCount: 1000,
-		Rng:            rand.New(rand.NewSource(seed)),
+		Rng:            rand.New(NewLockedSource(seed)),
 	}
 }
