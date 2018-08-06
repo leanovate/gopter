@@ -27,7 +27,7 @@ func DefaultTestParametersWithSeed(seed int64) *TestParameters {
 		MaxSize:            100,
 		MaxShrinkCount:     1000,
 		Seed:               seed,
-		Rng:                rand.New(rand.NewSource(seed)),
+		Rng:                rand.New(NewLockedSource(seed)),
 		Workers:            1,
 		MaxDiscardRatio:    5,
 	}
