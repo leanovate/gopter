@@ -20,7 +20,11 @@ func (s *sliceShrinkOne) Next() (interface{}, bool) {
 	}
 	result := reflect.MakeSlice(s.original.Type(), s.original.Len(), s.original.Len())
 	reflect.Copy(result, s.original)
-	result.Index(s.index).Set(reflect.ValueOf(value))
+	if value == nil {
+		result.Index(s.index).Set(reflect.Zero(s.original.Type().Elem()))
+	} else {
+		result.Index(s.index).Set(reflect.ValueOf(value))
+	}
 
 	return result.Interface(), true
 }
