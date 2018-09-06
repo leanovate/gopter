@@ -1,6 +1,7 @@
 package gen_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/leanovate/gopter"
@@ -170,3 +171,27 @@ func TestSliceOfNSieve(t *testing.T) {
 		t.Error("Sieve must not allow array with invalid element")
 	}
 }
+
+func TestSliceOfOverride(t *testing.T) {
+	genParams := gopter.DefaultGenParameters()
+	genParams.MaxSize = 50
+	sliceType := reflect.TypeOf((*baseType)(nil)).Elem()
+	sliceGen := gen.SliceOf(gen.OneGenOf(genA(), genB()), sliceType)
+	result := sliceGen(gopter.DefaultGenParameters())
+	value, ok := result.Retrieve()
+	if !ok || value == nil {
+		t.Errorf("Invalid value: %#v", value)
+	}
+}
+
+type baseType interface {
+	String() string
+}
+
+type specA struct{}
+type specB struct{}
+
+func (a specA) String() string { return "specA" }
+func (b specB) String() string { return "specB" }
+func genA() gopter.Gen         { return gen.Const(specA{}) }
+func genB() gopter.Gen         { return gen.Const(specB{}) }
