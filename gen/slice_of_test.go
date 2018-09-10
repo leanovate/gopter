@@ -182,6 +182,10 @@ func TestSliceOfOverride(t *testing.T) {
 	if !ok || value == nil {
 		t.Errorf("Invalid value: %#v", value)
 	}
+	_, okType := value.([]baseType)
+	if !okType {
+		t.Errorf("Invalid type: %#v", value)
+	}
 }
 
 type baseType interface {

@@ -40,7 +40,7 @@ func SliceOf(elementGen gopter.Gen, typeOverrides ...reflect.Type) gopter.Gen {
 }
 
 // SliceOfN generates a slice of generated elements with definied length
-func SliceOfN(l int, elementGen gopter.Gen, typeOverrides ...reflect.Type) gopter.Gen {
+func SliceOfN(desiredlen int, elementGen gopter.Gen, typeOverrides ...reflect.Type) gopter.Gen {
 	var typeOverride reflect.Type
 	if len(typeOverrides) > 1 {
 		panic("too many type overrides specified, at most 1 may be provided.")
@@ -48,24 +48,24 @@ func SliceOfN(l int, elementGen gopter.Gen, typeOverrides ...reflect.Type) gopte
 		typeOverride = typeOverrides[0]
 	}
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, l, typeOverride)
+		result, elementSieve, elementShrinker := genSlice(elementGen, genParams, desiredlen, typeOverride)
 
 		genResult := gopter.NewGenResult(result.Interface(), SliceShrinkerOne(elementShrinker))
 		if elementSieve != nil {
 			genResult.Sieve = func(v interface{}) bool {
 				rv := reflect.ValueOf(v)
-				return rv.Len() == l && forAllSieve(elementSieve)(v)
+				return rv.Len() == desiredlen && forAllSieve(elementSieve)(v)
 			}
 		} else {
 			genResult.Sieve = func(v interface{}) bool {
-				return reflect.ValueOf(v).Len() == l
+				return reflect.ValueOf(v).Len() == desiredlen
 			}
 		}
 		return genResult
 	}
 }
 
-func genSlice(elementGen gopter.Gen, genParams *gopter.GenParameters, len int, typeOverride reflect.Type) (reflect.Value, func(interface{}) bool, gopter.Shrinker) {
+func genSlice(elementGen gopter.Gen, genParams *gopter.GenParameters, desiredlen int, typeOverride reflect.Type) (reflect.Value, func(interface{}) bool, gopter.Shrinker) {
 	element := elementGen(genParams)
 	elementSieve := element.Sieve
 	elementShrinker := element.Shrinker
@@ -75,9 +75,9 @@ func genSlice(elementGen gopter.Gen, genParams *gopter.GenParameters, len int, t
 		sliceType = element.ResultType
 	}
 
-	result := reflect.MakeSlice(reflect.SliceOf(sliceType), 0, len)
+	result := reflect.MakeSlice(reflect.SliceOf(sliceType), 0, desiredlen)
 
-	for i := 0; i < len; i++ {
+	for i := 0; i < desiredlen; i++ {
 		value, ok := element.Retrieve()
 
 		if ok {
