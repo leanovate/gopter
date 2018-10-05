@@ -64,7 +64,11 @@ func (g Gen) SuchThat(f interface{}) Gen {
 		panic(fmt.Sprintf("Param of SuchThat has to be a func with one return value of bool, but is %v", checkType.Out(0).Kind()))
 	}
 	sieve := func(v interface{}) bool {
-		return checkVal.Call([]reflect.Value{reflect.ValueOf(v)})[0].Bool()
+		valueOf := reflect.ValueOf(v)
+		if !valueOf.IsValid() {
+			return false
+		}
+		return checkVal.Call([]reflect.Value{valueOf})[0].Bool()
 	}
 
 	return func(genParams *GenParameters) *GenResult {
