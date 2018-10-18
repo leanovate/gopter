@@ -2,6 +2,7 @@ package gen
 
 import (
 	"reflect"
+	"sort"
 
 	"github.com/leanovate/gopter"
 )
@@ -20,7 +21,15 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		result := reflect.New(rt)
 
-		for name, gen := range gens {
+		names := make([]string, len(gens))
+		i := 0
+		for name := range gens {
+			names[i] = name
+			i++
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			gen := gens[name]
 			field, ok := rt.FieldByName(name)
 			if !ok {
 				continue
