@@ -38,7 +38,11 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 			if !ok {
 				return gopter.NewEmptyResult(rt)
 			}
-			result.Elem().FieldByIndex(field.Index).Set(reflect.ValueOf(value))
+			if value == nil {
+				result.Elem().FieldByIndex(field.Index).Set(reflect.Zero(field.Type))
+			} else {
+				result.Elem().FieldByIndex(field.Index).Set(reflect.ValueOf(value))
+			}
 		}
 
 		return gopter.NewGenResult(reflect.Indirect(result).Interface(), gopter.NoShrinker)
