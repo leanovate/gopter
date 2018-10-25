@@ -91,7 +91,7 @@ var buggyCounterCommands = &commands.ProtoCommands{
 }
 
 // Demonstrates the usage of the commands package to find a bug in a counter
-// implementation that only occures if the counter is above 3.
+// implementation that only occurs if the counter is above 3.
 //
 // The output of this example will be
 //  ! buggy counter: Falsified after 45 passed tests.
