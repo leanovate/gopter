@@ -91,7 +91,7 @@ var buggyCounterCommands = &commands.ProtoCommands{
 }
 
 // Demonstrates the usage of the commands package to find a bug in a counter
-// implementation that only occures if the counter is above 3.
+// implementation that only occurs if the counter is above 3.
 //
 // The output of this example will be
 //  ! buggy counter: Falsified after 45 passed tests.
@@ -101,13 +101,13 @@ var buggyCounterCommands = &commands.ProtoCommands{
 //     DEC GET RESET INC INC DEC INC INC INC RESET RESET INC INC GET INC DEC GET
 //     DEC GET INC RESET INC INC RESET]
 // I.e. gopter found an invalid state with a rather long sequence of arbitrary
-// commonds/function calls, and then shrinkted that sequence down to
+// commands/function calls, and then shrank that sequence down to
 //  INC INC INC INC DEC GET
 // which is indeed the minimal set of commands one has to perform to find the
 // bug.
 func Example_buggyCounter() {
 	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducible results
 
 	properties := gopter.NewProperties(parameters)
 
