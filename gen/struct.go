@@ -2,7 +2,6 @@ package gen
 
 import (
 	"reflect"
-	"sort"
 
 	"github.com/leanovate/gopter"
 )
@@ -18,39 +17,52 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() != reflect.Struct {
 		return Fail(rt)
 	}
-	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		result := reflect.New(rt)
-
-		names := make([]string, len(gens))
-		i := 0
-		for name := range gens {
-			names[i] = name
-			i++
+	fieldGens := []gopter.Gen{}
+	fieldTypes := []reflect.Type{}
+	for i := 0; i < rt.NumField(); i++ {
+		fieldName := rt.Field(i).Name
+		gen := gens[fieldName]
+		if gen != nil {
+			fieldGens = append(fieldGens, gen)
+			fieldTypes = append(fieldTypes, gen(gopter.DefaultGenParameters()).ResultType)
 		}
-		sort.Strings(names)
-		for _, name := range names {
-			gen := gens[name]
-			field, ok := rt.FieldByName(name)
-			if !ok {
+	}
+
+	buildStructType := reflect.FuncOf(fieldTypes, []reflect.Type{rt}, false)
+	unbuildStructType := reflect.FuncOf([]reflect.Type{rt}, fieldTypes, false)
+
+	buildStructFunc := reflect.MakeFunc(buildStructType, func(args []reflect.Value) []reflect.Value {
+		result := reflect.New(rt)
+		for i := 0; i < rt.NumField(); i++ {
+			if _, ok := gens[rt.Field(i).Name]; !ok {
 				continue
 			}
-			value, ok := gen(genParams).Retrieve()
-			if !ok {
-				return gopter.NewEmptyResult(rt)
-			}
-			if value == nil {
-				result.Elem().FieldByIndex(field.Index).Set(reflect.Zero(field.Type))
-			} else {
-				result.Elem().FieldByIndex(field.Index).Set(reflect.ValueOf(value))
-			}
+			result.Elem().Field(i).Set(args[0])
+			args = args[1:]
 		}
+		return []reflect.Value{result.Elem()}
+	})
+	unbuildStructFunc := reflect.MakeFunc(unbuildStructType, func(args []reflect.Value) []reflect.Value {
+		s := args[0]
+		results := []reflect.Value{}
+		for i := 0; i < s.NumField(); i++ {
+			if _, ok := gens[rt.Field(i).Name]; !ok {
+				continue
+			}
+			results = append(results, s.Field(i))
+		}
+		return results
+	})
 
-		return gopter.NewGenResult(reflect.Indirect(result).Interface(), gopter.NoShrinker)
-	}
+	return gopter.DeriveGen(
+		buildStructFunc.Interface(),
+		unbuildStructFunc.Interface(),
+		fieldGens...,
+	)
 }
 
 // StructPtr generates pointers to a given struct type.
-// Not that SturctPtr does not generate nil, if you want to include nil in your
+// Note that StructPtr does not generate nil, if you want to include nil in your
 // testing you should combine gen.PtrOf with gen.Struct.
 // rt has to be the reflect type of the struct, gens contains a map of field generators.
 // Note that the result types of the generators in gen have to match the type of the correspoinding
@@ -59,24 +71,15 @@ func StructPtr(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() == reflect.Ptr {
 		rt = rt.Elem()
 	}
-	if rt.Kind() != reflect.Struct {
-		return Fail(rt)
-	}
-	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		result := reflect.New(rt)
-
-		for name, gen := range gens {
-			field, ok := rt.FieldByName(name)
-			if !ok {
-				continue
-			}
-			value, ok := gen(genParams).Retrieve()
-			if !ok {
-				return gopter.NewEmptyResult(rt)
-			}
-			result.Elem().FieldByIndex(field.Index).Set(reflect.ValueOf(value))
-		}
-
-		return gopter.NewGenResult(result.Interface(), gopter.NoShrinker)
-	}
+	return gopter.DeriveGen(
+		func(s interface{}) interface{} {
+			sp := reflect.New(rt)
+			sp.Elem().Set(reflect.ValueOf(s))
+			return sp.Interface()
+		},
+		func(sp interface{}) interface{} {
+			return reflect.ValueOf(sp).Elem().Interface()
+		},
+		Struct(rt, gens),
+	)
 }
