@@ -36,7 +36,7 @@ func genTestLibrary() gopter.Gen {
 
 type CityName = string
 type TestCities struct {
-	Libraries map[string][]TestLibrary
+	Libraries map[CityName][]TestLibrary
 }
 
 func genTestCities() gopter.Gen {
@@ -70,4 +70,27 @@ func Example_libraries() {
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// + no unsupervised libraries: OK, passed 100 tests.
+}
+
+func Example_libraries2() {
+	parameters := gopter.DefaultTestParameters()
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+
+	arbitraries := arbitrary.DefaultArbitraries()
+	// All string are alphanumeric
+	arbitraries.RegisterGen(gen.AlphaString())
+
+	properties := gopter.NewProperties(parameters)
+
+	properties.Property("libraries always empty", arbitraries.ForAll(
+		func(tc *TestCities) bool {
+			return len(tc.Libraries) == 0
+		},
+	))
+
+	// When using testing.T you might just use: properties.TestingRun(t)
+	properties.Run(gopter.ConsoleReporter(false))
+	// Output:
+	// ! libraries always empty: Falsified after 2 passed tests.
+	// ARG_0: &{map[z:[]]}
 }

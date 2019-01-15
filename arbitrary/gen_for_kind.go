@@ -328,6 +328,10 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 			}
 		}
 		return gen.Struct(rt, gens)
+	case reflect.Map:
+		keyGen := a.GenForType(rt.Key())
+		valueGen := a.GenForType(rt.Elem())
+		return gen.MapOf(keyGen, valueGen)
 	}
 	return nil
 }
