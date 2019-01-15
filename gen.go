@@ -19,6 +19,7 @@ type Gen func(*GenParameters) *GenResult
 var (
 	// DefaultGenParams can be used as default für *GenParameters
 	DefaultGenParams = DefaultGenParameters()
+	MinGenParams     = MinGenParameters()
 )
 
 // Sample generate a sample value.
@@ -53,7 +54,7 @@ func (g Gen) SuchThat(f interface{}) Gen {
 	if checkType.NumIn() != 1 {
 		panic(fmt.Sprintf("Param of SuchThat has to be a func with one param, but is %v", checkType.NumIn()))
 	} else {
-		genResultType := g(DefaultGenParams).ResultType
+		genResultType := g(MinGenParams).ResultType
 		if !genResultType.AssignableTo(checkType.In(0)) {
 			panic(fmt.Sprintf("Param of SuchThat has to be a func with one param assignable to %v, but is %v", genResultType, checkType.In(0)))
 		}
@@ -122,7 +123,7 @@ func (g Gen) Map(f interface{}) Gen {
 			}
 			needsGenParameters = true
 		}
-		genResultType := g(DefaultGenParams).ResultType
+		genResultType := g(MinGenParams).ResultType
 		if reflect.TypeOf(&GenResult{}).AssignableTo(mapperType.In(0)) {
 			genResultInput = true
 		} else if !genResultType.AssignableTo(mapperType.In(0)) {

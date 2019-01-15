@@ -106,7 +106,7 @@ func DeriveGen(downstream interface{}, upstream interface{}, gens ...Gen) Gen {
 	sieves := make([]func(interface{}) bool, len(gens))
 	shrinkers := make([]Shrinker, len(gens))
 	for i, gen := range gens {
-		result := gen(DefaultGenParams)
+		result := gen(MinGenParams)
 		sieves[i] = result.Sieve
 		shrinkers[i] = result.Shrinker
 	}

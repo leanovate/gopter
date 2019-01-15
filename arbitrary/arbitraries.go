@@ -35,7 +35,7 @@ func (a *Arbitraries) GenForType(rt reflect.Type) gopter.Gen {
 
 // RegisterGen registers a generator
 func (a *Arbitraries) RegisterGen(gen gopter.Gen) {
-	result := gen(gopter.DefaultGenParameters())
+	result := gen(gopter.MinGenParams)
 	rt := result.ResultType
 	a.generators[rt] = gen
 }

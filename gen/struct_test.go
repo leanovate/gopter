@@ -22,7 +22,7 @@ func TestStruct(t *testing.T) {
 		"Value2":   gen.Int64(),
 		"Value3":   gen.SliceOf(gen.Int8()),
 		"NotThere": gen.AnyString(),
-		"Value5": gen.PtrOf(gen.Const("v5")),
+		"Value5":   gen.PtrOf(gen.Const("v5")),
 	})
 	for i := 0; i < 100; i++ {
 		value, ok := structGen.Sample()
@@ -31,7 +31,7 @@ func TestStruct(t *testing.T) {
 			t.Errorf("Invalid value: %#v", value)
 		}
 		v, ok := value.(testStruct)
-		if !ok || v.Value1 == "" || v.Value3 == nil || v.Value4 != "" || !(v.Value5 == nil || *v.Value5  == "v5"){
+		if !ok || v.Value1 == "" || v.Value3 == nil || v.Value4 != "" || !(v.Value5 == nil || *v.Value5 == "v5") {
 			t.Errorf("Invalid value: %#v", value)
 		}
 	}
