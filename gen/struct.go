@@ -71,15 +71,22 @@ func StructPtr(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() == reflect.Ptr {
 		rt = rt.Elem()
 	}
+
+	buildPtrType := reflect.FuncOf([]reflect.Type{rt}, []reflect.Type{reflect.PtrTo(rt)}, false)
+	unbuildPtrType := reflect.FuncOf([]reflect.Type{reflect.PtrTo(rt)}, []reflect.Type{rt}, false)
+
+	buildPtrFunc := reflect.MakeFunc(buildPtrType, func(args []reflect.Value) []reflect.Value {
+		sp := reflect.New(rt)
+		sp.Elem().Set(args[0])
+		return []reflect.Value{sp}
+	})
+	unbuildPtrFunc := reflect.MakeFunc(unbuildPtrType, func(args []reflect.Value) []reflect.Value {
+		return []reflect.Value{args[0].Elem()}
+	})
+
 	return gopter.DeriveGen(
-		func(s interface{}) interface{} {
-			sp := reflect.New(rt)
-			sp.Elem().Set(reflect.ValueOf(s))
-			return sp.Interface()
-		},
-		func(sp interface{}) interface{} {
-			return reflect.ValueOf(sp).Elem().Interface()
-		},
+		buildPtrFunc.Interface(),
+		unbuildPtrFunc.Interface(),
 		Struct(rt, gens),
 	)
 }
