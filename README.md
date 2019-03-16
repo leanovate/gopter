@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/leanovate/gopter.svg?branch=master)](https://travis-ci.org/leanovate/gopter)
 [![codecov](https://codecov.io/gh/leanovate/gopter/branch/master/graph/badge.svg)](https://codecov.io/gh/leanovate/gopter)
 [![GoDoc](https://godoc.org/github.com/leanovate/gopter?status.png)](https://godoc.org/github.com/leanovate/gopter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/leanovate/gopter)](https://goreportcard.com/report/github.com/leanovate/gopter)
 
 [Change Log](CHANGELOG.md)
 
