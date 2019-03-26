@@ -22,7 +22,7 @@ func solveQuadratic(a, b, c float64) (float64, float64, error) {
 }
 
 func Example_quadratic() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 
 	properties := gopter.NewProperties(parameters)
 

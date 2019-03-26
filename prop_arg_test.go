@@ -8,7 +8,7 @@ import (
 
 func TestPropArg(t *testing.T) {
 	gen := constGen("nothing").WithLabel("Label1").WithLabel("Label2")
-	prop := gopter.NewPropArg(gen(gopter.DefaultGenParameters()), 1, "nothing", "noth")
+	prop := gopter.NewPropArg(gen(gopter.DefaultGenParameters()), 1, "nothing", "nothing")
 
 	if prop.Label != "Label1, Label2" {
 		t.Errorf("Invalid prop.Label: %#v", prop.Label)

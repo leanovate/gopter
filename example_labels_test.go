@@ -27,7 +27,7 @@ func spookyCalculation(a, b int) int {
 //  b_ORIGINAL (1 shrinks): -642623569
 func Example_labels() {
 	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducible results
 	parameters.MinSuccessfulTests = 10000
 
 	properties := gopter.NewProperties(parameters)

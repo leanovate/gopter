@@ -27,7 +27,7 @@ func (q *QudraticEquation) Solve() (complex128, complex128, error) {
 }
 
 func Example_quadratic() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 
 	arbitraries := arbitrary.DefaultArbitraries()
 	arbitraries.RegisterGen(gen.Complex128Box(-1e8-1e8i, 1e8+1e8i)) // Only use complex values within a range

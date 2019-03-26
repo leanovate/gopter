@@ -12,8 +12,8 @@ func TestComplex128Box(t *testing.T) {
 	maxReal := 2345.78
 	minImag := -5432.8
 	maxImag := 8764.6
-	complexs := gen.Complex128Box(complex(minReal, minImag), complex(maxReal, maxImag))
-	commonGeneratorTest(t, "complex 128 box", complexs, func(value interface{}) bool {
+	complexes := gen.Complex128Box(complex(minReal, minImag), complex(maxReal, maxImag))
+	commonGeneratorTest(t, "complex 128 box", complexes, func(value interface{}) bool {
 		v, ok := value.(complex128)
 		return ok && real(v) >= minReal && real(v) < maxReal && imag(v) >= minImag && imag(v) < maxImag
 	})
@@ -31,8 +31,8 @@ func TestComplex64Box(t *testing.T) {
 	maxReal := float32(2345.78)
 	minImag := float32(-5432.8)
 	maxImag := float32(8764.6)
-	complexs := gen.Complex64Box(complex(minReal, minImag), complex(maxReal, maxImag))
-	commonGeneratorTest(t, "complex 64 box", complexs, func(value interface{}) bool {
+	complexes := gen.Complex64Box(complex(minReal, minImag), complex(maxReal, maxImag))
+	commonGeneratorTest(t, "complex 64 box", complexes, func(value interface{}) bool {
 		v, ok := value.(complex64)
 		return ok && real(v) >= minReal && real(v) < maxReal && imag(v) >= minImag && imag(v) < maxImag
 	})

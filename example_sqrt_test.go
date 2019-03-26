@@ -10,7 +10,7 @@ import (
 
 func Example_sqrt() {
 	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducible results
 
 	properties := gopter.NewProperties(parameters)
 

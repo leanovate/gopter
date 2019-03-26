@@ -46,7 +46,7 @@ func genTestCities() gopter.Gen {
 }
 func Example_libraries() {
 	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducible results
 	parameters.MaxSize = 5
 	arbitraries := arbitrary.DefaultArbitraries()
 	arbitraries.RegisterGen(genTestCities())
@@ -74,7 +74,7 @@ func Example_libraries() {
 
 func Example_libraries2() {
 	parameters := gopter.DefaultTestParameters()
-	parameters.Rng.Seed(1234) // Just for this example to generate reproducable results
+	parameters.Rng.Seed(1234) // Just for this example to generate reproducible results
 
 	arbitraries := arbitrary.DefaultArbitraries()
 	// All string are alphanumeric

@@ -6,7 +6,7 @@ all: format
 
 format:
 	@echo "--> Running go fmt"
-	@go fmt ./...
+	@gofmt -s -w .
 
 test:
 	@echo "--> Running tests"

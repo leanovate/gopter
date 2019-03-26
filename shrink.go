@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-// Shrink is a stream of shrinked down values.
+// Shrink is a stream of shrunk down values.
 // Once the result of a shrink is false, it is considered to be exhausted.
 // Important notes for implementors:
 //   * Ensure that the returned stream is finite, even though shrinking will
@@ -143,15 +143,15 @@ func (e *elementShrink) Next() (interface{}, bool) {
 	if !ok {
 		return nil, false
 	}
-	shrinked := make([]interface{}, len(e.original))
-	copy(shrinked, e.original)
-	shrinked[e.index] = element
+	shrunk := make([]interface{}, len(e.original))
+	copy(shrunk, e.original)
+	shrunk[e.index] = element
 
-	return shrinked, true
+	return shrunk, true
 }
 
 // CombineShrinker create a shrinker by combining a list of shrinkers.
-// The resulting shrinker will shrink an []interface{} where each element will be shrinked by
+// The resulting shrinker will shrink an []interface{} where each element will be shrunk by
 // the corresonding shrinker in 'shrinkers'.
 // This method is implicitly used by CombineGens.
 func CombineShrinker(shrinkers ...Shrinker) Shrinker {

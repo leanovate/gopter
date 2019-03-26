@@ -19,7 +19,7 @@ func MisimplementedConcat(a, b string) string {
 // Example_invalidconcat demonstrates shrinking of string
 // Kudos to @exarkun and @itamarst for finding this issue
 func Example_invalidconcat() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 
 	properties := gopter.NewProperties(parameters)
 

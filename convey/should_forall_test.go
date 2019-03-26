@@ -69,7 +69,7 @@ func TestShouldSucceedForAll(t *testing.T) {
 		})
 
 		Convey("Expect fail", func() {
-			parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+			parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 			result := ShouldSucceedForAll(func(i int) bool {
 				return i > 500
 			}, gen.Int(), parameters)

@@ -39,34 +39,34 @@ func TestDeriveGenSingleDown(t *testing.T) {
 	shrinker := gen(gopter.DefaultGenParameters()).Shrinker
 	shrink := shrinker(&downStruct{a: 10, b: "abcd", c: false})
 
-	shrinkedStructs := make([]*downStruct, 0)
+	shrunkStructs := make([]*downStruct, 0)
 	value, next := shrink()
 	for next {
-		shrinkedStruct, ok := value.(*downStruct)
+		shrunkStruct, ok := value.(*downStruct)
 		if !ok {
-			t.Errorf("Invalid shrinked value: %#v", value)
+			t.Errorf("Invalid shrunk value: %#v", value)
 		}
-		shrinkedStructs = append(shrinkedStructs, shrinkedStruct)
+		shrunkStructs = append(shrunkStructs, shrunkStruct)
 		value, next = shrink()
 	}
 
 	expected := []*downStruct{
-		&downStruct{a: 0, b: "abcd", c: false},
-		&downStruct{a: 5, b: "abcd", c: false},
-		&downStruct{a: -5, b: "abcd", c: false},
-		&downStruct{a: 8, b: "abcd", c: false},
-		&downStruct{a: -8, b: "abcd", c: false},
-		&downStruct{a: 9, b: "abcd", c: false},
-		&downStruct{a: -9, b: "abcd", c: false},
-		&downStruct{a: 10, b: "cd", c: false},
-		&downStruct{a: 10, b: "ab", c: false},
-		&downStruct{a: 10, b: "bcd", c: false},
-		&downStruct{a: 10, b: "acd", c: false},
-		&downStruct{a: 10, b: "abd", c: false},
-		&downStruct{a: 10, b: "abc", c: false},
+		{a: 0, b: "abcd", c: false},
+		{a: 5, b: "abcd", c: false},
+		{a: -5, b: "abcd", c: false},
+		{a: 8, b: "abcd", c: false},
+		{a: -8, b: "abcd", c: false},
+		{a: 9, b: "abcd", c: false},
+		{a: -9, b: "abcd", c: false},
+		{a: 10, b: "cd", c: false},
+		{a: 10, b: "ab", c: false},
+		{a: 10, b: "bcd", c: false},
+		{a: 10, b: "acd", c: false},
+		{a: 10, b: "abd", c: false},
+		{a: 10, b: "abc", c: false},
 	}
-	if !reflect.DeepEqual(shrinkedStructs, expected) {
-		t.Errorf("%v does not equal %v", shrinkedStructs, expected)
+	if !reflect.DeepEqual(shrunkStructs, expected) {
+		t.Errorf("%v does not equal %v", shrunkStructs, expected)
 	}
 }
 
@@ -147,40 +147,40 @@ func TestDeriveGenMultiDown(t *testing.T) {
 	shrink := shrinker([]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(20)})
 
 	value, next := shrink()
-	shrinkedValues := make([][]interface{}, 0)
+	shrunkValues := make([][]interface{}, 0)
 	for next {
-		shrinked, ok := value.([]interface{})
+		shrunk, ok := value.([]interface{})
 		if !ok || len(values) != 2 {
 			t.Errorf("%#v is not a slice of interface", sample)
 		}
-		shrinkedValues = append(shrinkedValues, shrinked)
+		shrunkValues = append(shrunkValues, shrunk)
 		value, next = shrink()
 	}
 
 	expected := [][]interface{}{
-		[]interface{}{&downStruct{a: 0, b: "abcd", c: false}, int64(10)},
-		[]interface{}{&downStruct{a: 5, b: "abcd", c: false}, int64(15)},
-		[]interface{}{&downStruct{a: -5, b: "abcd", c: false}, int64(5)},
-		[]interface{}{&downStruct{a: 8, b: "abcd", c: false}, int64(18)},
-		[]interface{}{&downStruct{a: -8, b: "abcd", c: false}, int64(2)},
-		[]interface{}{&downStruct{a: 9, b: "abcd", c: false}, int64(19)},
-		[]interface{}{&downStruct{a: -9, b: "abcd", c: false}, int64(1)},
-		[]interface{}{&downStruct{a: 10, b: "cd", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "ab", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "bcd", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "acd", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "abd", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "abc", c: false}, int64(20)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(10)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(15)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(5)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(18)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(2)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(19)},
-		[]interface{}{&downStruct{a: 10, b: "abcd", c: false}, int64(1)},
+		{&downStruct{a: 0, b: "abcd", c: false}, int64(10)},
+		{&downStruct{a: 5, b: "abcd", c: false}, int64(15)},
+		{&downStruct{a: -5, b: "abcd", c: false}, int64(5)},
+		{&downStruct{a: 8, b: "abcd", c: false}, int64(18)},
+		{&downStruct{a: -8, b: "abcd", c: false}, int64(2)},
+		{&downStruct{a: 9, b: "abcd", c: false}, int64(19)},
+		{&downStruct{a: -9, b: "abcd", c: false}, int64(1)},
+		{&downStruct{a: 10, b: "cd", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "ab", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "bcd", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "acd", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "abd", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "abc", c: false}, int64(20)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(10)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(15)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(5)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(18)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(2)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(19)},
+		{&downStruct{a: 10, b: "abcd", c: false}, int64(1)},
 	}
 
-	if !reflect.DeepEqual(shrinkedValues, expected) {
-		t.Errorf("%v does not equal %v", shrinkedValues, expected)
+	if !reflect.DeepEqual(shrunkValues, expected) {
+		t.Errorf("%v does not equal %v", shrunkValues, expected)
 	}
 }

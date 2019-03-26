@@ -24,7 +24,7 @@ func TestConsoleReporter(t *testing.T) {
 	reporter.ReportTestResult("test property", &TestResult{
 		Status:    TestFailed,
 		Succeeded: 50,
-		Args: PropArgs([]*PropArg{&PropArg{
+		Args: PropArgs([]*PropArg{{
 			Arg: "0",
 		}}),
 	})
@@ -36,7 +36,7 @@ func TestConsoleReporter(t *testing.T) {
 	reporter.ReportTestResult("test property", &TestResult{
 		Status:    TestProved,
 		Succeeded: 50,
-		Args: PropArgs([]*PropArg{&PropArg{
+		Args: PropArgs([]*PropArg{{
 			Arg:     "0",
 			Label:   "somehing",
 			OrigArg: "10",
@@ -62,7 +62,7 @@ func TestConsoleReporter(t *testing.T) {
 		Status:    TestError,
 		Error:     errors.New("Poop"),
 		Succeeded: 50,
-		Args: PropArgs([]*PropArg{&PropArg{
+		Args: PropArgs([]*PropArg{{
 			Arg: "0",
 		}}),
 	})

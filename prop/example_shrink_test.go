@@ -7,7 +7,7 @@ import (
 )
 
 func Example_shrink() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 
 	properties := gopter.NewProperties(parameters)
 

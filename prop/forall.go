@@ -10,7 +10,7 @@ var typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 
 /*
 ForAll creates a property that requires the check condition to be true for all values, if the
-condition falsiies the generated values will be shrinked.
+condition falsiies the generated values will be shrunk.
 
 "condition" has to be a function with the same number of parameters as the provided
 generators "gens". The function may return a simple bool (true means that the
@@ -46,14 +46,14 @@ func ForAll(condition interface{}, gens ...gopter.Gen) gopter.Prop {
 			for i, genResult := range genResults {
 				nextResult, nextValue := shrinkValue(genParams.MaxShrinkCount, genResult, values[i].Interface(), result,
 					func(v interface{}) *gopter.PropResult {
-						shrinkedOne := make([]reflect.Value, len(values))
-						copy(shrinkedOne, values)
+						shrunkOne := make([]reflect.Value, len(values))
+						copy(shrunkOne, values)
 						if v == nil {
-							shrinkedOne[i] = reflect.Zero(values[i].Type())
+							shrunkOne[i] = reflect.Zero(values[i].Type())
 						} else {
-							shrinkedOne[i] = reflect.ValueOf(v)
+							shrunkOne[i] = reflect.ValueOf(v)
 						}
-						return callCheck(shrinkedOne)
+						return callCheck(shrunkOne)
 					})
 				result = nextResult
 				if nextValue == nil {

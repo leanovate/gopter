@@ -80,8 +80,8 @@ func (d *derivedGen) Shrinker(down interface{}) Shrink {
 	ups := d.biMapper.ConvertUp(downs)
 	upShrink := d.upShrinker(ups)
 
-	return upShrink.Map(func(shrinkedUps []interface{}) interface{} {
-		downs := d.biMapper.ConvertDown(shrinkedUps)
+	return upShrink.Map(func(shrunkUps []interface{}) interface{} {
+		downs := d.biMapper.ConvertDown(shrunkUps)
 		if len(downs) == 1 {
 			return downs[0]
 		}

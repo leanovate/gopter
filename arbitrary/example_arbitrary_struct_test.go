@@ -28,7 +28,7 @@ type Foo struct {
 }
 
 func Example_arbitrary_structs() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
 
 	arbitraries := arbitrary.DefaultArbitraries()
 

@@ -9,8 +9,8 @@ import (
 )
 
 func Example_timeGen() {
-	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducable results, otherwise DefaultTestParameters() will suffice
-	time.Local = time.UTC                                    // Just for this example to generate reproducable results
+	parameters := gopter.DefaultTestParametersWithSeed(1234) // Example should generate reproducible results, otherwise DefaultTestParameters() will suffice
+	time.Local = time.UTC                                    // Just for this example to generate reproducible results
 
 	properties := gopter.NewProperties(parameters)
 

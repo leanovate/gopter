@@ -30,7 +30,7 @@ func (s *sliceShrinkOne) Next() (interface{}, bool) {
 }
 
 // SliceShrinkerOne creates a slice shrinker from a shrinker for the elements of the slice.
-// The length of the slice will remains unchanged, instead each element is shrinked after the
+// The length of the slice will remains unchanged, instead each element is shrunk after the
 // other.
 func SliceShrinkerOne(elementShrinker gopter.Shrinker) gopter.Shrinker {
 	return func(v interface{}) gopter.Shrink {
@@ -76,7 +76,7 @@ func (s *sliceShrink) Next() (interface{}, bool) {
 }
 
 // SliceShrinker creates a slice shrinker from a shrinker for the elements of the slice.
-// The length of the slice will be shrinked as well
+// The length of the slice will be shrunk as well
 func SliceShrinker(elementShrinker gopter.Shrinker) gopter.Shrinker {
 	return func(v interface{}) gopter.Shrink {
 		rv := reflect.ValueOf(v)
