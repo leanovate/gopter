@@ -39,6 +39,19 @@ func TestStruct(t *testing.T) {
 	}
 }
 
+func TestStructWithDifferentValueTypesInSameField(t *testing.T) {
+	structGen := gen.Struct(reflect.TypeOf(&testStruct{}), map[string]gopter.Gen{
+		"Value6": gen.OneGenOf(gen.AnyString(), gen.Int()),
+	})
+	for i := 0; i < 100; i++ {
+		value, ok := structGen.Sample()
+
+		if !ok {
+			t.Errorf("Invalid value: %#v", value)
+		}
+	}
+}
+
 func TestStructDeterminism(t *testing.T) {
 	structGen := gen.Struct(reflect.TypeOf(&testStruct{}), map[string]gopter.Gen{
 		"Value1": gen.Identifier(),

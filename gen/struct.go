@@ -24,7 +24,7 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 		gen := gens[fieldName]
 		if gen != nil {
 			fieldGens = append(fieldGens, gen)
-			fieldTypes = append(fieldTypes, gen(gopter.MinGenParams).ResultType)
+			fieldTypes = append(fieldTypes, rt.Field(i).Type)
 		}
 	}
 
@@ -49,11 +49,7 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 			if _, ok := gens[rt.Field(i).Name]; !ok {
 				continue
 			}
-			val := s.Field(i)
-			if val.Kind() == reflect.Interface {
-				val = val.Elem()
-			}
-			results = append(results, val)
+			results = append(results, s.Field(i))
 		}
 		return results
 	})
