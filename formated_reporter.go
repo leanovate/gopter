@@ -55,7 +55,11 @@ func (r *FormatedReporter) reportResult(result *TestResult) string {
 	case TestExhausted:
 		status = fmt.Sprintf("Gave up after only %d passed tests. %d tests were discarded.", result.Succeeded, result.Discarded)
 	case TestError:
-		status = fmt.Sprintf("Error on property evaluation after %d passed tests: %s\n%s", result.Succeeded, result.Error.Error(), r.reportPropArgs(result.Args))
+		if r.verbose {
+			status = fmt.Sprintf("Error on property evaluation after %d passed tests: %s\n%s\n%s", result.Succeeded, result.Error.Error(), result.ErrorStack, r.reportPropArgs(result.Args))
+		} else {
+			status = fmt.Sprintf("Error on property evaluation after %d passed tests: %s\n%s", result.Succeeded, result.Error.Error(), r.reportPropArgs(result.Args))
+		}
 	}
 
 	if r.verbose {
