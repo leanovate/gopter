@@ -14,6 +14,7 @@ type testStruct struct {
 	Value3 []int8
 	Value4 string
 	Value5 *string
+	Value6 interface{}
 }
 
 func TestStruct(t *testing.T) {
@@ -23,6 +24,7 @@ func TestStruct(t *testing.T) {
 		"Value3":   gen.SliceOf(gen.Int8()),
 		"NotThere": gen.AnyString(),
 		"Value5":   gen.PtrOf(gen.Const("v5")),
+		"Value6":   gen.AnyString(),
 	})
 	for i := 0; i < 100; i++ {
 		value, ok := structGen.Sample()

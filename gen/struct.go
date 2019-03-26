@@ -49,7 +49,11 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 			if _, ok := gens[rt.Field(i).Name]; !ok {
 				continue
 			}
-			results = append(results, s.Field(i))
+			val := s.Field(i)
+			if val.Kind() == reflect.Interface {
+				val = val.Elem()
+			}
+			results = append(results, val)
 		}
 		return results
 	})
