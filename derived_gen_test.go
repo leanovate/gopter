@@ -89,25 +89,31 @@ func TestDeriveGenSingleDownWithSieves(t *testing.T) {
 	parameters.Rng.Seed(1234)
 
 	hasNoValue := false
+	sawEven := false
+	sawOdd := false
 	for i := 0; i < 100; i++ {
 		result := gen(parameters)
-		_, ok := result.Retrieve()
-		if !ok {
+		val, ok := result.Retrieve()
+		if ok {
+			ds := val.(*downStruct)
+			if ds.a%2 == 0 {
+				sawEven = true
+			} else {
+				sawOdd = true
+			}
+		} else {
 			hasNoValue = true
-			break
 		}
 	}
 	if !hasNoValue {
 		t.Error("Sieve is not applied")
 	}
 
-	sieve := gen(parameters).Sieve
-
-	if !sieve(&downStruct{a: 2, b: "something", c: false}) {
+	if !sawEven {
 		t.Error("Sieve did not pass even")
 	}
 
-	if sieve(&downStruct{a: 3, b: "something", c: false}) {
+	if sawOdd {
 		t.Error("Sieve did pass odd")
 	}
 }
@@ -182,5 +188,34 @@ func TestDeriveGenMultiDown(t *testing.T) {
 
 	if !reflect.DeepEqual(shrunkValues, expected) {
 		t.Errorf("%v does not equal %v", shrunkValues, expected)
+	}
+}
+
+func TestDeriveGenVaryingSieve(t *testing.T) {
+	gen := gopter.DeriveGen(
+		func(a interface{}) interface{} {
+			return a
+		},
+		func(a interface{}) interface{} {
+			return a
+		},
+		gen.OneGenOf(gen.AnyString(), gen.Int()),
+	)
+
+	parameters := gopter.DefaultGenParameters()
+	parameters.Rng.Seed(1234)
+
+	for i := 0; i < 100; i++ {
+		sample, ok := gen.Sample()
+		if !ok {
+			t.Error("Sample not ok")
+		}
+		_, ok = sample.(string)
+		if !ok {
+			_, ok = sample.(int)
+			if !ok {
+				t.Errorf("%#v is not a string or int", sample)
+			}
+		}
 	}
 }

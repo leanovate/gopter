@@ -8,7 +8,6 @@ import (
 type derivedGen struct {
 	biMapper   *BiMapper
 	upGens     []Gen
-	upSieves   []func(interface{}) bool
 	upShrinker Shrinker
 	resultType reflect.Type
 }
@@ -32,7 +31,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 				Result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
-				Sieve:      d.Sieve,
+				Sieve:      d.Sieve(result.Sieve),
 			}
 		}
 	}
@@ -43,7 +42,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 			Result:     down[0],
 			Labels:     labels,
 			ResultType: reflect.TypeOf(down[0]),
-			Sieve:      d.Sieve,
+			Sieve:      d.Sieve(sieves...),
 		}
 	}
 	return &GenResult{
@@ -51,25 +50,27 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 		Result:     down,
 		Labels:     labels,
 		ResultType: reflect.TypeOf(down),
-		Sieve:      d.Sieve,
+		Sieve:      d.Sieve(sieves...),
 	}
 }
 
-func (d *derivedGen) Sieve(down interface{}) bool {
-	if down == nil {
-		return false
-	}
-	downs, ok := down.([]interface{})
-	if !ok {
-		downs = []interface{}{down}
-	}
-	ups := d.biMapper.ConvertUp(downs)
-	for i, up := range ups {
-		if d.upSieves[i] != nil && !d.upSieves[i](up) {
+func (d *derivedGen) Sieve(baseSieve ...func(interface{}) bool) func(interface{}) bool {
+	return func(down interface{}) bool {
+		if down == nil {
 			return false
 		}
+		downs, ok := down.([]interface{})
+		if !ok {
+			downs = []interface{}{down}
+		}
+		ups := d.biMapper.ConvertUp(downs)
+		for i, up := range ups {
+			if baseSieve[i] != nil && !baseSieve[i](up) {
+				return false
+			}
+		}
+		return true
 	}
-	return true
 }
 
 func (d *derivedGen) Shrinker(down interface{}) Shrink {
@@ -114,7 +115,6 @@ func DeriveGen(downstream interface{}, upstream interface{}, gens ...Gen) Gen {
 	derived := &derivedGen{
 		biMapper:   biMapper,
 		upGens:     gens,
-		upSieves:   sieves,
 		upShrinker: CombineShrinker(shrinkers...),
 		resultType: resultType,
 	}
