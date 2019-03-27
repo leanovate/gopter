@@ -104,11 +104,9 @@ func DeriveGen(downstream interface{}, upstream interface{}, gens ...Gen) Gen {
 		resultType = biMapper.DownTypes[0]
 	}
 
-	sieves := make([]func(interface{}) bool, len(gens))
 	shrinkers := make([]Shrinker, len(gens))
 	for i, gen := range gens {
 		result := gen(MinGenParams)
-		sieves[i] = result.Sieve
 		shrinkers[i] = result.Shrinker
 	}
 
