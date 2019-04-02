@@ -191,7 +191,7 @@ func TestDeriveGenMultiDown(t *testing.T) {
 	}
 }
 
-func TestDeriveGenVaryingSieve(t *testing.T) {
+func TestDeriveGenVaryingSieveAndShrinker(t *testing.T) {
 	gen := gopter.DeriveGen(
 		func(a interface{}) interface{} {
 			return a
@@ -205,17 +205,19 @@ func TestDeriveGenVaryingSieve(t *testing.T) {
 	parameters := gopter.DefaultGenParameters()
 	parameters.Rng.Seed(1234)
 
-	for i := 0; i < 100; i++ {
-		sample, ok := gen.Sample()
+	for i := 0; i < 20; i++ {
+		result := gen(parameters)
+		sample, ok := result.Retrieve()
 		if !ok {
 			t.Error("Sample not ok")
 		}
-		_, ok = sample.(string)
-		if !ok {
-			_, ok = sample.(int)
-			if !ok {
-				t.Errorf("%#v is not a string or int", sample)
-			}
+		if stringval, ok := sample.(string); ok {
+			// check that the Shrinker doesn't panic
+			result.Shrinker(stringval)
+		} else if intval, ok := sample.(int); ok {
+			result.Shrinker(intval)
+		} else {
+			t.Errorf("%#v is not a string or int", sample)
 		}
 	}
 }

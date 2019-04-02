@@ -8,7 +8,6 @@ import (
 type derivedGen struct {
 	biMapper   *BiMapper
 	upGens     []Gen
-	upShrinker Shrinker
 	resultType reflect.Type
 }
 
@@ -27,7 +26,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 		up[i], ok = result.Retrieve()
 		if !ok {
 			return &GenResult{
-				Shrinker:   d.Shrinker,
+				Shrinker:   d.Shrinker(result.Shrinker),
 				Result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
@@ -38,7 +37,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 	down := d.biMapper.ConvertDown(up)
 	if len(down) == 1 {
 		return &GenResult{
-			Shrinker:   d.Shrinker,
+			Shrinker:   d.Shrinker(CombineShrinker(shrinkers...)),
 			Result:     down[0],
 			Labels:     labels,
 			ResultType: reflect.TypeOf(down[0]),
@@ -46,7 +45,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 		}
 	}
 	return &GenResult{
-		Shrinker:   d.Shrinker,
+		Shrinker:   d.Shrinker(CombineShrinker(shrinkers...)),
 		Result:     down,
 		Labels:     labels,
 		ResultType: reflect.TypeOf(down),
@@ -73,21 +72,23 @@ func (d *derivedGen) Sieve(baseSieve ...func(interface{}) bool) func(interface{}
 	}
 }
 
-func (d *derivedGen) Shrinker(down interface{}) Shrink {
-	downs, ok := down.([]interface{})
-	if !ok {
-		downs = []interface{}{down}
-	}
-	ups := d.biMapper.ConvertUp(downs)
-	upShrink := d.upShrinker(ups)
-
-	return upShrink.Map(func(shrunkUps []interface{}) interface{} {
-		downs := d.biMapper.ConvertDown(shrunkUps)
-		if len(downs) == 1 {
-			return downs[0]
+func (d *derivedGen) Shrinker(baseShrinker Shrinker) func(down interface{}) Shrink {
+	return func(down interface{}) Shrink {
+		downs, ok := down.([]interface{})
+		if !ok {
+			downs = []interface{}{down}
 		}
-		return downs
-	})
+		ups := d.biMapper.ConvertUp(downs)
+		upShrink := baseShrinker(ups)
+
+		return upShrink.Map(func(shrunkUps []interface{}) interface{} {
+			downs := d.biMapper.ConvertDown(shrunkUps)
+			if len(downs) == 1 {
+				return downs[0]
+			}
+			return downs
+		})
+	}
 }
 
 // DeriveGen derives a generator with shrinkers from a sequence of other
@@ -104,18 +105,9 @@ func DeriveGen(downstream interface{}, upstream interface{}, gens ...Gen) Gen {
 		resultType = biMapper.DownTypes[0]
 	}
 
-	sieves := make([]func(interface{}) bool, len(gens))
-	shrinkers := make([]Shrinker, len(gens))
-	for i, gen := range gens {
-		result := gen(MinGenParams)
-		sieves[i] = result.Sieve
-		shrinkers[i] = result.Shrinker
-	}
-
 	derived := &derivedGen{
 		biMapper:   biMapper,
 		upGens:     gens,
-		upShrinker: CombineShrinker(shrinkers...),
 		resultType: resultType,
 	}
 	return derived.Generate
