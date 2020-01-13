@@ -10,7 +10,7 @@ format:
 
 test:
 	@echo "--> Running tests"
-	@go test -v ./...
+	@go test -v ./... -count=1
 	@$(MAKE) vet
 
 coverage:
