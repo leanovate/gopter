@@ -30,7 +30,7 @@ func (d *derivedGen) Generate(genParams *GenParameters) *GenResult {
 				Result:     nil,
 				Labels:     result.Labels,
 				ResultType: d.resultType,
-				Sieve:      d.Sieve(result.Sieve),
+				Sieve:      d.Sieve(sieves...),
 			}
 		}
 	}

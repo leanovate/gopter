@@ -28,7 +28,10 @@ type TestLibrary struct {
 
 func genTestLibrary() gopter.Gen {
 	return gen.Struct(reflect.TypeOf(&TestLibrary{}), map[string]gopter.Gen{
-		"Name":       gen.AlphaString(),
+		"Name": gen.AlphaString().SuchThat(func(s string) bool {
+			// Non-empty string
+			return s != ""
+		}),
 		"Librarians": gen.UInt8Range(1, 255),
 		"Books":      gen.SliceOf(genTestBook()),
 	})
