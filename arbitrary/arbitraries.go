@@ -20,7 +20,13 @@ type Arbitraries struct {
 func DefaultArbitraries() *Arbitraries {
 	return &Arbitraries{
 		generators: map[reflect.Type]gopter.Gen{
-			reflect.TypeOf(time.Now()): gen.Time(),
+			reflect.TypeOf(time.Time{}): gen.Time(),
+			reflect.TypeOf(&time.Time{}): gen.Time().
+				Map(func(time time.Time) *time.Time { return &time }).
+				WithShrinker(func(v interface{}) gopter.Shrink {
+					t := v.(*time.Time)
+					return gen.TimeShrinker(*t)
+				}),
 		},
 	}
 }
