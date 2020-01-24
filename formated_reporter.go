@@ -91,9 +91,9 @@ func (r *FormatedReporter) reportPropArg(idx int, propArg *PropArg) string {
 	if label == "" {
 		label = fmt.Sprintf("ARG_%d", idx)
 	}
-	result := fmt.Sprintf("%s: %v", label, propArg.Arg)
+	result := fmt.Sprintf("%s: %+v", label, propArg.Arg)
 	if propArg.Shrinks > 0 {
-		result += fmt.Sprintf("\n%s_ORIGINAL (%d shrinks): %v", label, propArg.Shrinks, propArg.OrigArg)
+		result += fmt.Sprintf("\n%s_ORIGINAL (%d shrinks): %+v", label, propArg.Shrinks, propArg.OrigArg)
 	}
 
 	return result

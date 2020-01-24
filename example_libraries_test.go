@@ -95,5 +95,5 @@ func Example_libraries2() {
 	properties.Run(gopter.ConsoleReporter(false))
 	// Output:
 	// ! libraries always empty: Falsified after 2 passed tests.
-	// ARG_0: &{map[z:[]]}
+	// ARG_0: &{Libraries:map[z:[]]}
 }
