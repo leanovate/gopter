@@ -170,8 +170,13 @@ func (g Gen) Map(f interface{}) Gen {
 			if mapperType.In(0) == mapperType.Out(0) {
 				shrinker = result.Shrinker
 			}
+			var sieve func(interface{}) bool
+			if mapperType.In(0) == mapperType.Out(0) {
+				sieve = result.Sieve
+			}
 			return &GenResult{
 				Shrinker:   shrinker,
+				Sieve:   	sieve,
 				Result:     mapped.Interface(),
 				Labels:     result.Labels,
 				ResultType: mapperType.Out(0),

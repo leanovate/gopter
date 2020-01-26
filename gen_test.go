@@ -379,7 +379,10 @@ func TestWithShrinker(t *testing.T) {
 	mapper := func(v string) string {
 		return "other"
 	}
-	result = gen.Map(mapper)(gopter.DefaultGenParameters())
+	sieve := func(v string) bool {
+		return true
+	}
+	result = gen.SuchThat(sieve).Map(mapper)(gopter.DefaultGenParameters())
 	value, ok = result.Retrieve()
 	if !ok {
 		t.Errorf("Invalid combined value: %#v", value)
@@ -387,6 +390,9 @@ func TestWithShrinker(t *testing.T) {
 	result.Shrinker(value)
 	if shrinkerArg != "other" {
 		t.Errorf("Shrinker was lost during Map when the in and out types were the same")
+	}
+	if result.Sieve == nil {
+		t.Errorf("Sieve was lost during Map when the in and out types were the same")
 	}
 }
 
