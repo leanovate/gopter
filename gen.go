@@ -99,9 +99,9 @@ func (g Gen) WithShrinker(shrinker Shrinker) Gen {
 	}
 }
 
-// Map creates a derived generators by mapping all generatored values with a given function.
+// Map creates a derived generator by mapping all generatored values with a given function.
 // f: has to be a function with one parameter (matching the generated value) and a single return.
-// Note: The derived generator will not have a sieve or shrinker.
+// Note: The derived generator will not have a sieve or shrinker unless you are mapping to the same type
 // Note: The mapping function may have a second parameter "*GenParameters"
 // Note: The first parameter of the mapping function and its return may be a *GenResult (this makes MapResult obsolete)
 func (g Gen) Map(f interface{}) Gen {
@@ -158,6 +158,7 @@ func (g Gen) Map(f interface{}) Gen {
 		value, ok := result.RetrieveAsValue()
 		if ok {
 			var mapped reflect.Value
+			shrinker := NoShrinker
 			if needsGenParameters {
 				mapped = mapperVal.Call([]reflect.Value{value, reflect.ValueOf(genParams)})[0]
 			} else {
@@ -166,8 +167,11 @@ func (g Gen) Map(f interface{}) Gen {
 			if genResultOutput {
 				return mapped.Interface().(*GenResult)
 			}
+			if mapperType.In(0) == mapperType.Out(0) {
+				shrinker = result.Shrinker
+			}
 			return &GenResult{
-				Shrinker:   NoShrinker,
+				Shrinker:   shrinker,
 				Result:     mapped.Interface(),
 				Labels:     result.Labels,
 				ResultType: mapperType.Out(0),
