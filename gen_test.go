@@ -386,7 +386,7 @@ func TestWithShrinker(t *testing.T) {
 	}
 	result.Shrinker(value)
 	if shrinkerArg != "other" {
-		t.Errorf("Shrinker was lost during Map: %#v", shrinkerArg)
+		t.Errorf("Shrinker was lost during Map when the in and out types were the same")
 	}
 }
 
