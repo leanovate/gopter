@@ -375,6 +375,19 @@ func TestWithShrinker(t *testing.T) {
 	if shrinkerArg != "sample" {
 		t.Errorf("Invalid shrinkerArg: %#v", shrinkerArg)
 	}
+
+	mapper := func(v string) string {
+		return "other"
+	}
+	result = gen.Map(mapper)(gopter.DefaultGenParameters())
+	value, ok = result.Retrieve()
+	if !ok {
+		t.Errorf("Invalid combined value: %#v", value)
+	}
+	result.Shrinker(value)
+	if shrinkerArg != "other" {
+		t.Errorf("Shrinker was lost during Map when the in and out types were the same")
+	}
 }
 
 func expectPanic(t *testing.T, expected string) {
