@@ -38,18 +38,18 @@ func (a *actions) String() string {
 	return fmt.Sprintf("initialState=%v sequential=%s", a.initialStateProvider(), a.sequentialCommands)
 }
 
-func (a *actions) run(systemUnderTest SystemUnderTest) (*gopter.PropResult, error) {
+func (a *actions) run(systemUnderTest SystemUnderTest) *gopter.PropResult {
 	state := a.initialStateProvider()
 	propResult := &gopter.PropResult{Status: gopter.PropTrue}
 	for _, shrinkableCommand := range a.sequentialCommands {
 		if !shrinkableCommand.command.PreCondition(state) {
-			return &gopter.PropResult{Status: gopter.PropFalse}, nil
+			return &gopter.PropResult{Status: gopter.PropFalse}
 		}
 		result := shrinkableCommand.command.Run(systemUnderTest)
 		state = shrinkableCommand.command.NextState(state)
 		propResult = propResult.And(shrinkableCommand.command.PostCondition(state, result))
 	}
-	return propResult, nil
+	return propResult
 }
 
 type sizedCommands struct {
