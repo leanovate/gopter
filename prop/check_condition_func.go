@@ -44,7 +44,8 @@ func checkConditionFunc(check interface{}, numArgs int) (func([]reflect.Value) *
 				}
 			}
 		}()
-		results := checkVal.Call(values)
+		cloned := deepCloneArgs(values)
+		results := checkVal.Call(cloned)
 		return convertResult(results[0].Interface(), nil)
 	}, nil
 }
