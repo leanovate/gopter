@@ -25,7 +25,8 @@ func TestConsoleReporter(t *testing.T) {
 		Status:    TestFailed,
 		Succeeded: 50,
 		Args: PropArgs([]*PropArg{{
-			Arg: "0",
+			Arg:         "0",
+			ArgFormatted: "0",
 		}}),
 	})
 	if buffer.String() != "! test property: Falsified after 50 passed tests.\nARG_0: 0\n" {
@@ -37,10 +38,12 @@ func TestConsoleReporter(t *testing.T) {
 		Status:    TestProved,
 		Succeeded: 50,
 		Args: PropArgs([]*PropArg{{
-			Arg:     "0",
-			Label:   "somehing",
-			OrigArg: "10",
-			Shrinks: 6,
+			Arg:             "0",
+			ArgFormatted:     "0",
+			Label:           "somehing",
+			OrigArg:         "10",
+			OrigArgFormatted: "10",
+			Shrinks:         6,
 		}}),
 	})
 	if buffer.String() != "+ test property: OK, proved property.\nsomehing: 0\nsomehing_ORIGINAL (6 shrinks): 10\n" {
@@ -64,6 +67,7 @@ func TestConsoleReporter(t *testing.T) {
 		Succeeded: 50,
 		Args: PropArgs([]*PropArg{{
 			Arg: "0",
+			ArgFormatted: "0",
 		}}),
 	})
 	if buffer.String() != "! test property: Error on property evaluation after 50 passed tests: Poop\nARG_0: 0\n" {
