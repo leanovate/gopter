@@ -19,8 +19,13 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	}
 	fieldGens := []gopter.Gen{}
 	fieldTypes := []reflect.Type{}
+	assignable := reflect.New(rt).Elem()
 	for i := 0; i < rt.NumField(); i++ {
 		fieldName := rt.Field(i).Name
+		if !assignable.Field(i).CanSet() {
+			continue
+		}
+
 		gen := gens[fieldName]
 		if gen != nil {
 			fieldGens = append(fieldGens, gen)
@@ -37,6 +42,9 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 			if _, ok := gens[rt.Field(i).Name]; !ok {
 				continue
 			}
+			if !assignable.Field(i).CanSet() {
+				continue
+			}
 			result.Elem().Field(i).Set(args[0])
 			args = args[1:]
 		}
@@ -47,6 +55,9 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 		results := []reflect.Value{}
 		for i := 0; i < s.NumField(); i++ {
 			if _, ok := gens[rt.Field(i).Name]; !ok {
+				continue
+			}
+			if !assignable.Field(i).CanSet() {
 				continue
 			}
 			results = append(results, s.Field(i))
