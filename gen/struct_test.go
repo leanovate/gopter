@@ -161,3 +161,76 @@ func TestStructPtrNoStruct(t *testing.T) {
 		t.Errorf("Invalid StructPtr generated a value")
 	}
 }
+
+func TestStrictStructExtraField(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			errmsg := r.(error).Error()
+			if errmsg != "generator for non-existent field NotThere on struct testStruct" {
+				t.Errorf("unexpected error message from StrictStruct")
+			}
+		} else {
+			t.Errorf("StrictStruct failed to panic when given an extra field")
+		}
+	}()
+	gens := map[string]gopter.Gen{
+		"Value1":   gen.Identifier(),
+		"Value2":   gen.Int64(),
+		"Value3":   gen.SliceOf(gen.Int8()),
+		"NotThere": gen.AnyString(),
+		"Value5":   gen.PtrOf(gen.Const("v5")),
+		"Value6":   gen.AnyString(),
+		"value7":   gen.AnyString(),
+	}
+	_ = gen.StrictStruct(reflect.TypeOf(&testStruct{}), gens)
+	_ = gen.StrictStructPtr(reflect.TypeOf(&testStruct{}), gens)
+}
+
+func TestStrictStructMissingField(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			errmsg := r.(error).Error()
+			if errmsg != "generator missing for fields [Value4] on struct testStruct" {
+				t.Errorf("unexpected error message from StrictStruct: %s", errmsg)
+			}
+		} else {
+			t.Errorf("StrictStruct failed to panic when field was missing")
+		}
+	}()
+	gens := map[string]gopter.Gen{
+		"Value1": gen.Identifier(),
+		"Value2": gen.Int64(),
+		"Value3": gen.SliceOf(gen.Int8()),
+		// missing Value4 field
+		"Value5": gen.PtrOf(gen.Const("v5")),
+		"Value6": gen.AnyString(),
+		"value7": gen.AnyString(),
+	}
+	_ = gen.StrictStruct(reflect.TypeOf(&testStruct{}), gens)
+	_ = gen.StrictStructPtr(reflect.TypeOf(&testStruct{}), gens)
+}
+
+func TestStrictStructAllowingMissingField(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			errmsg := r.(error).Error()
+			t.Errorf("unexpected error message from StrictStruct: %s", errmsg)
+		}
+	}()
+	gens := map[string]gopter.Gen{
+		"Value1": gen.Identifier(),
+		"Value2": gen.Int64(),
+		"Value3": gen.SliceOf(gen.Int8()),
+		// missing Value4 field
+		"Value5": gen.PtrOf(gen.Const("v5")),
+		"Value6": gen.AnyString(),
+		"value7": gen.AnyString(),
+	}
+	_ = gen.StrictStruct(reflect.TypeOf(&testStruct{}), gens,
+		true) // This "true" argument allows a missing value
+	_ = gen.StrictStructPtr(reflect.TypeOf(&testStruct{}), gens,
+		true) // This "true" argument allows a missing value
+}
