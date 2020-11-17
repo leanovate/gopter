@@ -1,10 +1,10 @@
 package gen
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/leanovate/gopter"
-	"github.com/pkg/errors"
 )
 
 // Struct generates a given struct type.
@@ -120,7 +120,7 @@ func checkFieldsMatch(
 	}
 	for field := range gens {
 		if _, ok := fields[field]; !ok {
-			panic(errors.Errorf("generator for non-existent field %s on struct %s",
+			panic(fmt.Errorf("generator for non-existent field %s on struct %s",
 				field, rt.Name()))
 		}
 		delete(fields, field)
@@ -136,7 +136,7 @@ func checkFieldsMatch(
 		for field := range fields {
 			missingFields = append(missingFields, field)
 		}
-		panic(errors.Errorf("generator missing for fields %v on struct %s",
+		panic(fmt.Errorf("generator missing for fields %v on struct %s",
 			missingFields, rt.Name()))
 	}
 }
