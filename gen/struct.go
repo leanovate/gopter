@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/leanovate/gopter"
+	"github.com/pkg/errors"
 )
 
 // Struct generates a given struct type.
@@ -100,4 +101,72 @@ func StructPtr(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 		unbuildPtrFunc.Interface(),
 		Struct(rt, gens),
 	)
+}
+
+// checkFieldsMatch panics unless the keys in gens exactly match the public
+// fields on rt. With an extra bool argument of value "true", it only panics if
+// there's a key in gens which is not a field on rt.
+func checkFieldsMatch(
+	rt reflect.Type,
+	gens map[string]gopter.Gen,
+	allowFieldsWithNoGenerator ...bool,
+) {
+	if rt.Kind() == reflect.Ptr {
+		rt = rt.Elem()
+	}
+	fields := make(map[string]bool, rt.NumField())
+	for i := 0; i < rt.NumField(); i++ {
+		fields[rt.Field(i).Name] = true
+	}
+	for field := range gens {
+		if _, ok := fields[field]; !ok {
+			panic(errors.Errorf("generator for non-existent field %s on struct %s",
+				field, rt.Name()))
+		}
+		delete(fields, field)
+	}
+	if len(allowFieldsWithNoGenerator) > 0 && allowFieldsWithNoGenerator[0] {
+		return // Don't check that every field is present in gens
+	}
+	if len(allowFieldsWithNoGenerator) > 1 {
+		panic("expect at most one boolean argument in StrictStruct/StrictStructPtr")
+	}
+	if len(fields) != 0 { // Check that every field is present in gens
+		var missingFields []string
+		for field := range fields {
+			missingFields = append(missingFields, field)
+		}
+		panic(errors.Errorf("generator missing for fields %v on struct %s",
+			missingFields, rt.Name()))
+	}
+}
+
+// StrictStruct behaves the same as Struct, except it requires the keys in gens
+// to exactly match the public fields of rt. It panics if gens contains extra
+// keys, or has missing keys.
+//
+// If given a third true argument, it only requires the keys of gens to be
+// fields of rt. In that case, unspecified fields will remain unset.
+func StrictStruct(
+	rt reflect.Type,
+	gens map[string]gopter.Gen,
+	allowFieldsWithNoGenerator ...bool,
+) gopter.Gen {
+	checkFieldsMatch(rt, gens, allowFieldsWithNoGenerator...)
+	return Struct(rt, gens)
+}
+
+// StrictStructPtr behaves the same as StructPtr, except it requires the keys in
+// gens to exactly match the public fields of rt. It panics if gens contains
+// extra keys, or has missing keys.
+//
+// If given a third true argument, it only requires the keys of gens to be
+// fields of rt. In that case, unspecified fields will remain unset.
+func StrictStructPtr(
+	rt reflect.Type,
+	gens map[string]gopter.Gen,
+	allowFieldsWithNoGenerator ...bool,
+) gopter.Gen {
+	checkFieldsMatch(rt, gens, allowFieldsWithNoGenerator...)
+	return StructPtr(rt, gens)
 }
