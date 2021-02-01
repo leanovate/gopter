@@ -29,9 +29,12 @@ func TestOneGenOf(t *testing.T) {
 }
 
 func commonOneOfTest(t *testing.T, gen gopter.Gen) {
+	parameters := gopter.DefaultGenParameters()
+	parameters.Rng.Seed(1234)
+
 	generated := make(map[string]bool, 0)
 	for i := 0; i < 100; i++ {
-		value, ok := gen.Sample()
+		value, ok := gen(parameters).Retrieve()
 
 		if !ok || value == nil {
 			t.Errorf("Invalid consts: %#v", value)

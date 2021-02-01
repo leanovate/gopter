@@ -3,10 +3,14 @@ package gen_test
 import (
 	"testing"
 
+	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 )
 
 func TestWeighted(t *testing.T) {
+	parameters := gopter.DefaultGenParameters()
+	parameters.Rng.Seed(1234)
+	
 	weighted := gen.Weighted([]gen.WeightedGen{
 		{Weight: 1, Gen: gen.Const("A")},
 		{Weight: 2, Gen: gen.Const("B")},
@@ -14,7 +18,7 @@ func TestWeighted(t *testing.T) {
 	})
 	results := make(map[string]int)
 	for i := int64(0); i < int64(1000); i++ {
-		result, ok := weighted.Sample()
+		result, ok := weighted(parameters).Retrieve()
 		if !ok {
 			t.FailNow()
 		}
