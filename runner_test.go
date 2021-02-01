@@ -170,7 +170,7 @@ func TestRunnerParallelWorkers(t *testing.T) {
 
 		result := testRunner.runWorkers()
 
-		if result.Time <= 0 {
+		if result.Time < 0 {
 			t.Errorf("[%d] expected result time to be positive number but got %s", specIdx, result.Time)
 		}
 
