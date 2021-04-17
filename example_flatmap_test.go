@@ -22,13 +22,9 @@ func Example_flatmap() {
 	genIntPair := func() gopter.Gen {
 		return gen.IntRange(10, 20).FlatMap(func(v interface{}) gopter.Gen {
 			k := v.(int)
-			n := gen.Const(k)
-			m := gen.IntRange(2*k, 50)
-			var gen_map = map[string]gopter.Gen{"Fst": n, "Snd": m}
-			return gen.Struct(
-				reflect.TypeOf(IntPair{}),
-				gen_map,
-			)
+			return gen.IntRange(2*k, 50).Map(func(m int) IntPair {
+				return IntPair{Fst: k, Snd: m}
+			})
 		},
 			reflect.TypeOf(int(0)))
 	}
