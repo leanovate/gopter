@@ -9,12 +9,13 @@ import (
 )
 
 type shrinkableCommand struct {
-	command  Command
-	shrinker gopter.Shrinker
+	command      Command
+	commandSieve func(v interface{}) bool
+	shrinker     gopter.Shrinker
 }
 
 func (s shrinkableCommand) shrink() gopter.Shrink {
-	return s.shrinker(s.command).Map(func(command Command) shrinkableCommand {
+	return s.shrinker(s.command).Filter(s.commandSieve).Map(func(command Command) shrinkableCommand {
 		return shrinkableCommand{
 			command:  command,
 			shrinker: s.shrinker,
@@ -126,8 +127,9 @@ func genSizedCommands(commands Commands, initialStateProvider func() State) gopt
 						sizedCommands{
 							state: command.NextState(prev.state),
 							commands: append(prev.commands, shrinkableCommand{
-								command:  command,
-								shrinker: result.Shrinker,
+								command:      command,
+								commandSieve: result.Sieve,
+								shrinker:     result.Shrinker,
 							}),
 						},
 						gopter.NoShrinker,
