@@ -9,7 +9,7 @@ import (
 
 // Struct generates a given struct type.
 // rt has to be the reflect type of the struct, gens contains a map of field generators.
-// Note that the result types of the generators in gen have to match the type of the correspoinding
+// Note that the result types of the generators in gen have to match the type of the corresponding
 // field in the struct. Also note that only public fields of a struct can be generated
 func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() == reflect.Ptr {
@@ -77,7 +77,7 @@ func Struct(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 // Note that StructPtr does not generate nil, if you want to include nil in your
 // testing you should combine gen.PtrOf with gen.Struct.
 // rt has to be the reflect type of the struct, gens contains a map of field generators.
-// Note that the result types of the generators in gen have to match the type of the correspoinding
+// Note that the result types of the generators in gen have to match the type of the corresponding
 // field in the struct. Also note that only public fields of a struct can be generated
 func StructPtr(rt reflect.Type, gens map[string]gopter.Gen) gopter.Gen {
 	if rt.Kind() == reflect.Ptr {
