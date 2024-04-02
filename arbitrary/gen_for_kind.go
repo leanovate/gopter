@@ -1,6 +1,7 @@
 package arbitrary
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/leanovate/gopter"
@@ -336,6 +337,8 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 		keyGen := a.GenForType(rt.Key())
 		valueGen := a.GenForType(rt.Elem())
 		return gen.MapOf(keyGen, valueGen)
+	default:
+		panic(fmt.Sprintf("Unsupported GenForType: %v", rt.Kind()))
 	}
 	return nil
 }
