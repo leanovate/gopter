@@ -94,15 +94,19 @@ var buggyCounterCommands = &commands.ProtoCommands{
 // implementation that only occurs if the counter is above 3.
 //
 // The output of this example will be
-//  ! buggy counter: Falsified after 45 passed tests.
-//  ARG_0: initial=0 sequential=[INC INC INC INC DEC GET]
-//  ARG_0_ORIGINAL (9 shrinks): initial=0 sequential=[DEC RESET GET GET GET
-//     RESET DEC DEC INC INC RESET RESET DEC INC RESET INC INC GET INC INC DEC
-//     DEC GET RESET INC INC DEC INC INC INC RESET RESET INC INC GET INC DEC GET
-//     DEC GET INC RESET INC INC RESET]
+//
+//	! buggy counter: Falsified after 45 passed tests.
+//	ARG_0: initial=0 sequential=[INC INC INC INC DEC GET]
+//	ARG_0_ORIGINAL (9 shrinks): initial=0 sequential=[DEC RESET GET GET GET
+//	   RESET DEC DEC INC INC RESET RESET DEC INC RESET INC INC GET INC INC DEC
+//	   DEC GET RESET INC INC DEC INC INC INC RESET RESET INC INC GET INC DEC GET
+//	   DEC GET INC RESET INC INC RESET]
+//
 // I.e. gopter found an invalid state with a rather long sequence of arbitrary
 // commands/function calls, and then shrank that sequence down to
-//  INC INC INC INC DEC GET
+//
+//	INC INC INC INC DEC GET
+//
 // which is indeed the minimal set of commands one has to perform to find the
 // bug.
 func Example_buggyCounter() {

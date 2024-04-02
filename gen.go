@@ -41,7 +41,9 @@ func (g Gen) WithLabel(label string) Gen {
 // SuchThat creates a derived generator by adding a sieve.
 // f: has to be a function with one parameter (matching the generated value) returning a bool.
 // All generated values are expected to satisfy
-//  f(value) == true.
+//
+//	f(value) == true.
+//
 // Use this care, if the sieve to to fine the generator will have many misses which results
 // in an undecided property.
 func (g Gen) SuchThat(f interface{}) Gen {

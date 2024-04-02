@@ -10,7 +10,7 @@ import (
 func TestWeighted(t *testing.T) {
 	parameters := gopter.DefaultGenParameters()
 	parameters.Rng.Seed(1234)
-	
+
 	weighted := gen.Weighted([]gen.WeightedGen{
 		{Weight: 1, Gen: gen.Const("A")},
 		{Weight: 2, Gen: gen.Const("B")},

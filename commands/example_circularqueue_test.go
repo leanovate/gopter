@@ -196,32 +196,33 @@ var cbCommands = &commands.ProtoCommands{
 // ... of course he did not implemented the bug, that was evil me
 //
 // The bug only occures on the following conditions:
-//  - the queue size has to be greater than 4
-//  - the queue has to be filled entirely once
-//  - Get operations have to be at least 5 elements behind put
-//  - The Put at the end of the queue and 5 elements later have to be non-zero
+//   - the queue size has to be greater than 4
+//   - the queue has to be filled entirely once
+//   - Get operations have to be at least 5 elements behind put
+//   - The Put at the end of the queue and 5 elements later have to be non-zero
 //
 // Lets see what gopter has to say:
 //
 // The output of this example will be
-//  ! circular buffer: Falsified after 96 passed tests.
-//  ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
-//     Get Put(0) Get Put(0) Put(0) Get Put(0) Get Put(0) Get Put(-1) Put(0)
-//     Put(0) Put(0) Put(0) Get Get Put(2) Get]
-//  ARG_0_ORIGINAL (85 shrinks): initialState=State(size=7, elements=[])
-//     sequential=[Put(-1855365712) Put(-1591723498) Get Size Size
-//     Put(-1015561691) Get Put(397128011) Size Get Put(1943174048) Size
-//     Put(1309500770) Size Get Put(-879438231) Size Get Put(-1644094687) Get
-//     Put(-1818606323) Size Put(488620313) Size Put(-1219794505)
-//     Put(1166147059) Get Put(11390361) Get Size Put(-1407993944) Get Get Size
-//     Put(1393923085) Get Put(1222853245) Size Put(2070918543) Put(1741323168)
-//     Size Get Get Size Put(2019939681) Get Put(-170089451) Size Get Get Size
-//     Size Put(-49249034) Put(1229062846) Put(642598551) Get Put(1183453167)
-//     Size Get Get Get Put(1010460728) Put(6828709) Put(-185198587) Size Size
-//     Get Put(586459644) Get Size Put(-1802196502) Get Size Put(2097590857) Get
-//     Get Get Get Size Put(-474576011) Size Get Size Size Put(771190414) Size
-//     Put(-1509199920) Get Put(967212411) Size Get Put(578995532) Size Get Size
-//     Get]
+//
+//	! circular buffer: Falsified after 96 passed tests.
+//	ARG_0: initialState=State(size=7, elements=[]) sequential=[Put(0) Put(0)
+//	   Get Put(0) Get Put(0) Put(0) Get Put(0) Get Put(0) Get Put(-1) Put(0)
+//	   Put(0) Put(0) Put(0) Get Get Put(2) Get]
+//	ARG_0_ORIGINAL (85 shrinks): initialState=State(size=7, elements=[])
+//	   sequential=[Put(-1855365712) Put(-1591723498) Get Size Size
+//	   Put(-1015561691) Get Put(397128011) Size Get Put(1943174048) Size
+//	   Put(1309500770) Size Get Put(-879438231) Size Get Put(-1644094687) Get
+//	   Put(-1818606323) Size Put(488620313) Size Put(-1219794505)
+//	   Put(1166147059) Get Put(11390361) Get Size Put(-1407993944) Get Get Size
+//	   Put(1393923085) Get Put(1222853245) Size Put(2070918543) Put(1741323168)
+//	   Size Get Get Size Put(2019939681) Get Put(-170089451) Size Get Get Size
+//	   Size Put(-49249034) Put(1229062846) Put(642598551) Get Put(1183453167)
+//	   Size Get Get Get Put(1010460728) Put(6828709) Put(-185198587) Size Size
+//	   Get Put(586459644) Get Size Put(-1802196502) Get Size Put(2097590857) Get
+//	   Get Get Get Size Put(-474576011) Size Get Size Size Put(771190414) Size
+//	   Put(-1509199920) Get Put(967212411) Size Get Put(578995532) Size Get Size
+//	   Get]
 //
 // Though this is not the minimal possible combination of command, its already
 // pretty close.

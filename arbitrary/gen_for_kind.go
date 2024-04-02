@@ -303,6 +303,10 @@ func (a *Arbitraries) genForKind(rt reflect.Type) gopter.Gen {
 				},
 			}
 		})
+	case reflect.Array:
+		if elementGen := a.GenForType(rt.Elem()); elementGen != nil {
+			return gen.ArrayOfN(rt.Len(), elementGen)
+		}
 	case reflect.Slice:
 		if elementGen := a.GenForType(rt.Elem()); elementGen != nil {
 			return gen.SliceOf(elementGen)

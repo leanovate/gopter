@@ -8,10 +8,10 @@ import (
 // Shrink is a stream of shrunk down values.
 // Once the result of a shrink is false, it is considered to be exhausted.
 // Important notes for implementors:
-//   * Ensure that the returned stream is finite, even though shrinking will
+//   - Ensure that the returned stream is finite, even though shrinking will
 //     eventually be aborted, infinite streams may result in very slow running
 //     test.
-//   * Ensure that modifications to the returned value will not affect the
+//   - Ensure that modifications to the returned value will not affect the
 //     internal state of your Shrink. If in doubt return by value not by reference
 type Shrink func() (interface{}, bool)
 
