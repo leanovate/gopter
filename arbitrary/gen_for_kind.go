@@ -1,7 +1,6 @@
 package arbitrary
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/leanovate/gopter"
