@@ -21,7 +21,7 @@ func Int64Range(min, max int64) gopter.Gen {
 	rangeSize := uint64(max - min + 1)
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		var nextResult = uint64(min) + (genParams.NextUint64() % rangeSize)
-		genResult := gopter.NewGenResult(int64(nextResult), Int64Shrinker)
+		genResult := gopter.NewGenResult(int64(nextResult), int64RangeShrinker(min, max))
 		genResult.Sieve = func(v interface{}) bool {
 			return v.(int64) >= min && v.(int64) <= max
 		}

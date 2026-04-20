@@ -93,3 +93,33 @@ func IntShrinker(v interface{}) gopter.Shrink {
 func UIntShrinker(v interface{}) gopter.Shrink {
 	return UInt64Shrinker(uint64(v.(uint))).Map(uint64ToUint)
 }
+
+// int64RangeShrinker returns a shrinker that shrinks toward min, staying within [min, max].
+func int64RangeShrinker(min, max int64) gopter.Shrinker {
+	return func(v interface{}) gopter.Shrink {
+		value := v.(int64)
+		if value <= min {
+			return gopter.NoShrink
+		}
+		// Shrink toward min by halving the distance
+		shrink := int64Shrink{
+			original: value - min,
+			half:     (value - min) / 2,
+		}
+		return func() (interface{}, bool) {
+			candidate, ok := shrink.Next()
+			if !ok {
+				return nil, false
+			}
+			// Convert from distance-from-min back to actual value
+			result := value - candidate.(int64)
+			if result < min {
+				result = min
+			}
+			if result > max {
+				return nil, false
+			}
+			return result, true
+		}
+	}
+}
